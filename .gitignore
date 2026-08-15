@@ -1,0 +1,38 @@
+# 字节编译缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 构建
+build/
+dist/
+*.egg-info/
+
+# 用户自定义
+*.log
+.env
+.env.local
+
+# 数据缓存（用户级别，不是仓库级别）
+# 注：模型部署检测的智能缓存在 ~/.cache/open-source-model-deploy/
+# 不在仓库内，不需 ignore

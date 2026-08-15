@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "open-source-model-deploy"
+version = "1.0.0"
+description = "开源大模型部署可行性鉴别工具 - 动态拉取 HF/GitHub/arXiv/硬件报价，输出 5 步鉴别报告"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "汐构信息", email = "kratoslee@aliyun.com"},
+]
+keywords = ["llm", "deployment", "huggingface", "ai-infrastructure"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8+",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.scripts]
+osm-deploy = "src.cli:main"
+osm-mcp = "src.mcp_server:run_mcp_server"
+osm-http = "src.http_server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+src = ["templates/*.md.j2"]
