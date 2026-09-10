@@ -166,6 +166,14 @@ Memory-Usage  43MiB / 6144MiB
   └─ 硬件基准表（每月刷新）+ 本机硬件扫描
 ```
 
+**交互式架构图**（推荐 · archify-diagrams 生成 · 9/9 artifact checks 通过）：
+
+→ **[docs/archify/architecture.html](docs/archify/architecture.html)**（728 KB 自包含 SVG，支持缩放 / 暗亮主题切换 / 演示模式 / 路径追踪）
+
+预览（PNG 截图）：
+
+![架构图预览](docs/screenshots/12-archify-architecture.png)
+
 ## 🛠️ 三种使用方式
 
 ### 1️⃣ CLI（开发者）

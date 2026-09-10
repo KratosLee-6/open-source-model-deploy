@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "开源大模型部署可行性鉴别工具 · 架构图",
+    "subtitle": "Agent 实时拉取 HF 元数据 + GPU 价格 + 部署建议",
+    "locale": "zh-CN",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "viewBox": [1000, 1020]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "用户 / Agent",
+      "sublabel": "Hermes / Claude / CLI",
+      "pos": [430, 80],
+      "size": [140, 60]
+    },
+    {
+      "id": "entry-bar",
+      "type": "backend",
+      "label": "三种部署方式（任选其一）",
+      "sublabel": "CLI · MCP Server · HTTP API",
+      "pos": [40, 200],
+      "size": [920, 60]
+    },
+    {
+      "id": "layer-cli",
+      "type": "frontend",
+      "label": "CLI",
+      "sublabel": "osm-deploy list / detect / assess / deploy",
+      "pos": [80, 320],
+      "size": [220, 70]
+    },
+    {
+      "id": "layer-mcp",
+      "type": "backend",
+      "label": "MCP Server",
+      "sublabel": "Agent 原生协议 · Claude / Codex 直连",
+      "pos": [390, 320],
+      "size": [220, 70]
+    },
+    {
+      "id": "layer-http",
+      "type": "cloud",
+      "label": "HTTP API (FastAPI)",
+      "sublabel": "REST · /v1/models · /v1/deploy",
+      "pos": [700, 320],
+      "size": [220, 70]
+    },
+    {
+      "id": "core-bar",
+      "type": "backend",
+      "label": "核心鉴别引擎",
+      "sublabel": "5 步鉴别 + 硬件检测 + 部署脚本生成",
+      "pos": [40, 450],
+      "size": [920, 60]
+    },
+    {
+      "id": "assess",
+      "type": "backend",
+      "label": "5 步鉴别器",
+      "sublabel": "1) 查 KNOWN_MODELS  2) 算 token×3  3) 算 budget  4) 选 engine  5) 生成 cmd",
+      "pos": [40, 560],
+      "size": [300, 80]
+    },
+    {
+      "id": "hw-scan",
+      "type": "backend",
+      "label": "硬件自动检测",
+      "sublabel": "NVIDIA / AMD / Apple Silicon · 跨平台",
+      "pos": [360, 560],
+      "size": [280, 80]
+    },
+    {
+      "id": "deploy-gen",
+      "type": "backend",
+      "label": "部署脚本生成器",
+      "sublabel": "vLLM / SGLang / Ollama / llama.cpp / HF",
+      "pos": [660, 560],
+      "size": [300, 80]
+    },
+    {
+      "id": "data-bar",
+      "type": "backend",
+      "label": "动态数据源层（智能缓存 TTL=24h）",
+      "sublabel": "GitHub Actions 每周自动刷新",
+      "pos": [40, 700],
+      "size": [920, 60]
+    },
+    {
+      "id": "hf",
+      "type": "external",
+      "label": "HuggingFace Hub API",
+      "sublabel": "tags · downloads · license · GGUF",
+      "pos": [40, 900],
+      "size": [220, 80]
+    },
+    {
+      "id": "gh",
+      "type": "external",
+      "label": "GitHub raw",
+      "sublabel": "官方 README · LICENSE",
+      "pos": [280, 900],
+      "size": [220, 80]
+    },
+    {
+      "id": "arxiv",
+      "type": "external",
+      "label": "arXiv API",
+      "sublabel": "论文标题 · 摘要",
+      "pos": [520, 900],
+      "size": [220, 80]
+    },
+    {
+      "id": "hw-baseline",
+      "type": "database",
+      "label": "硬件基准表",
+      "sublabel": "NVIDIA / Apple / 云租 价格",
+      "pos": [760, 900],
+      "size": [200, 80]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "本仓库（KratosLee-6/open-source-model-deploy · MIT）",
+      "wraps": ["user", "entry-bar", "layer-cli", "layer-mcp", "layer-http", "core-bar", "assess", "hw-scan", "deploy-gen", "data-bar", "hw-baseline"]
+    },
+    {
+      "kind": "region",
+      "label": "外部数据源（只读）",
+      "wraps": ["hf", "gh", "arxiv"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "user-to-entry",
+      "from": "user",
+      "to": "entry-bar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "entry-to-cli",
+      "from": "entry-bar",
+      "to": "layer-cli",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "entry-to-mcp",
+      "from": "entry-bar",
+      "to": "layer-mcp",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "entry-to-http",
+      "from": "entry-bar",
+      "to": "layer-http",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "cli-to-core",
+      "from": "layer-cli",
+      "to": "core-bar",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "mcp-to-core",
+      "from": "layer-mcp",
+      "to": "core-bar",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "http-to-core",
+      "from": "layer-http",
+      "to": "core-bar",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "core-to-assess",
+      "from": "core-bar",
+      "to": "assess",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "core-to-hw",
+      "from": "core-bar",
+      "to": "hw-scan",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "core-to-deploy",
+      "from": "core-bar",
+      "to": "deploy-gen",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "assess-to-data",
+      "from": "assess",
+      "to": "data-bar",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "拉数据",
+      "labelDy": 30
+    },
+    {
+      "id": "hw-to-data",
+      "from": "hw-scan",
+      "to": "data-bar",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "deploy-to-data",
+      "from": "deploy-gen",
+      "to": "data-bar",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "data-to-hf",
+      "from": "data-bar",
+      "to": "hf",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "GET /api/models",
+      "labelDy": 30
+    },
+    {
+      "id": "data-to-gh",
+      "from": "data-bar",
+      "to": "gh",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "raw README",
+      "labelDy": 30
+    },
+    {
+      "id": "data-to-arxiv",
+      "from": "data-bar",
+      "to": "arxiv",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "arxiv abs",
+      "labelDy": 30
+    },
+    {
+      "id": "data-to-hw-base",
+      "from": "data-bar",
+      "to": "hw-baseline",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "查表",
+      "labelDy": 30
+    }
+  ]
+}
