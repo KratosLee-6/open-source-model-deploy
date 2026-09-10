@@ -1,0 +1,143 @@
+{
+  "snapshot_at": "2026-09-10T14:22:48",
+  "snapshot_source": "GitHub Actions / auto refresh",
+  "nvidia_geforce": {
+    "RTX 5060 Ti 16GB": {
+      "vram_gb": 16,
+      "tdp_w": 180,
+      "price_usd": 429,
+      "tier": "consumer"
+    },
+    "RTX 5070 12GB": {
+      "vram_gb": 12,
+      "tdp_w": 250,
+      "price_usd": 549,
+      "tier": "consumer"
+    },
+    "RTX 5070 Ti 16GB": {
+      "vram_gb": 16,
+      "tdp_w": 300,
+      "price_usd": 749,
+      "tier": "consumer"
+    },
+    "RTX 5080 16GB": {
+      "vram_gb": 16,
+      "tdp_w": 360,
+      "price_usd": 999,
+      "tier": "consumer"
+    },
+    "RTX 5090 32GB": {
+      "vram_gb": 32,
+      "tdp_w": 575,
+      "price_usd": 1999,
+      "tier": "consumer"
+    }
+  },
+  "nvidia_datacenter": {
+    "L4 24GB": {
+      "vram_gb": 24,
+      "tdp_w": 72,
+      "price_usd": 2400,
+      "tier": "datacenter"
+    },
+    "L40S 48GB": {
+      "vram_gb": 48,
+      "tdp_w": 350,
+      "price_usd": 9800,
+      "tier": "datacenter"
+    },
+    "A100 80GB": {
+      "vram_gb": 80,
+      "tdp_w": 400,
+      "price_usd": 12000,
+      "tier": "datacenter"
+    },
+    "H100 80GB PCIe": {
+      "vram_gb": 80,
+      "tdp_w": 350,
+      "price_usd": 25000,
+      "tier": "datacenter"
+    },
+    "H100 80GB SXM": {
+      "vram_gb": 80,
+      "tdp_w": 700,
+      "price_usd": 30000,
+      "tier": "datacenter"
+    },
+    "H200 141GB": {
+      "vram_gb": 141,
+      "tdp_w": 700,
+      "price_usd": 35000,
+      "tier": "datacenter"
+    }
+  },
+  "apple_silicon": {
+    "Mac mini M4 Pro 24GB": {
+      "unified_mem_gb": 24,
+      "price_usd": 1399,
+      "tier": "consumer"
+    },
+    "Mac mini M4 Max 36GB": {
+      "unified_mem_gb": 36,
+      "price_usd": 1999,
+      "tier": "consumer"
+    },
+    "Mac Studio M4 Max 64GB": {
+      "unified_mem_gb": 64,
+      "price_usd": 3599,
+      "tier": "consumer"
+    },
+    "Mac Studio M3 Ultra 192GB": {
+      "unified_mem_gb": 192,
+      "price_usd": 5999,
+      "tier": "consumer"
+    },
+    "Mac Pro M2 Ultra 192GB": {
+      "unified_mem_gb": 192,
+      "price_usd": 12999,
+      "tier": "workstation"
+    }
+  },
+  "cloud_rental": {
+    "AWS p4d.24xlarge (8× A100 40GB)": {
+      "hourly_usd": 32.77,
+      "monthly_usd": 24284,
+      "provider": "AWS"
+    },
+    "AWS p5.48xlarge (8× H100 80GB)": {
+      "hourly_usd": 98.32,
+      "monthly_usd": 72851,
+      "provider": "AWS"
+    },
+    "AliyC GPU gn7 (8× A100 80GB)": {
+      "hourly_usd": 30.43,
+      "monthly_usd": 22063,
+      "provider": "Aliyun"
+    },
+    "AliyC GPU gn7e (8× A100 80GB)": {
+      "hourly_usd": 38.52,
+      "monthly_usd": 28103,
+      "provider": "Aliyun"
+    },
+    "AliyC GPU gn8 (8× H100 80GB)": {
+      "hourly_usd": 78.5,
+      "monthly_usd": 57186,
+      "provider": "Aliyun"
+    },
+    "AutoDL RTX 4090 单卡": {
+      "hourly_usd": 1.2,
+      "monthly_usd": 864,
+      "provider": "AutoDL"
+    },
+    "AutoDL A100 80GB 单卡": {
+      "hourly_usd": 4.5,
+      "monthly_usd": 3276,
+      "provider": "AutoDL"
+    },
+    "AutoDL H100 80GB 单卡": {
+      "hourly_usd": 10.0,
+      "monthly_usd": 7200,
+      "provider": "AutoDL"
+    }
+  }
+}
