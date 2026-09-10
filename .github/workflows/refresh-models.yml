@@ -1,0 +1,164 @@
+# 自动刷新模型元数据 + GPU 价格 + 部署建议报告
+#
+# 触发：
+#   1. 每周一 UTC 00:00（北京时间 8:00）定时跑
+#   2. 手动触发（Actions 页面 → Run workflow）
+#   3. KNOWN_MODELS 字典变更时自动跑（path 过滤）
+#
+# 工作流：
+#   Step 1: refresh_hf_metadata.py   → data/hf-metadata-snapshot.json
+#   Step 2: refresh_gpu_prices.py    → data/gpu-prices-snapshot.json
+#   Step 3: render_report.py         → references/deployment-recommendations.md
+#   Step 4: 自动 commit + 推送
+#
+# 权限：
+#   - contents: write    允许自动 commit
+#   - pull-requests: read + write  自动 PR 评论
+
+name: Refresh Models Data
+
+on:
+  # 每周一 UTC 00:00 = 北京时间 08:00
+  schedule:
+    - cron: "0 0 * * 1"
+
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "部署场景"
+        required: true
+        default: "default"
+        type: choice
+        options:
+          - default
+          - consumer-gpu
+          - studio
+          - cloud
+      force:
+        description: "强制全量刷新（否则用增量）"
+        required: false
+        default: "false"
+        type: boolean
+
+  # KNOWN_MODELS 字典变更时自动触发
+  push:
+    paths:
+      - "src/core/model_resolver.py"
+      - "scripts/auto_expand_models.py"
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  refresh-data:
+    name: 刷新模型元数据 + GPU 价格 + 部署报告
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 打印环境信息
+        run: |
+          python3 --version
+          echo "=== KNOWN_MODELS 当前模型数 ==="
+          grep -cE "^\s+\"[a-z0-9-]+\":\s*\{" src/core/model_resolver.py
+
+      # ===== Step 1: 刷新 HF 模型元数据 =====
+      - name: Step 1/3 - 刷新 HuggingFace 模型元数据
+        id: refresh-hf
+        run: |
+          echo "=== 拉取 47 个模型的最新 HF 元数据 ==="
+          python3 scripts/refresh_hf_metadata.py
+        continue-on-error: true
+
+      # ===== Step 2: 刷新 GPU 价格 =====
+      - name: Step 2/3 - 刷新 GPU 价格基准
+        id: refresh-gpu
+        run: |
+          echo "=== 刷新 NVIDIA / Apple / 云租价格 ==="
+          python3 scripts/refresh_gpu_prices.py
+        continue-on-error: true
+
+      # ===== Step 3: 渲染最终报告 =====
+      - name: Step 3/3 - 渲染部署建议报告
+        run: |
+          echo "=== 渲染 4 个 target 的报告 ==="
+          for target in default consumer-gpu studio cloud; do
+            echo "--- target=$target ---"
+            python3 scripts/render_report.py --target=$target
+          done
+
+      # ===== 检查失败 =====
+      - name: 检查 Step 1/2 是否都成功
+        if: steps.refresh-hf.outcome == 'failure' && steps.refresh-gpu.outcome == 'failure'
+        run: |
+          echo "ERROR: HF 和 GPU 刷新都失败"
+          exit 1
+
+      # ===== 上传 artifacts =====
+      - name: 上传 snapshot artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: refresh-data-${{ github.run_number }}
+          path: |
+            data/hf-metadata-snapshot.json
+            data/gpu-prices-snapshot.json
+            references/deployment-recommendations.md
+            references/hardware-baseline.md
+            references/hf-models-snapshot.md
+          retention-days: 90
+
+      # ===== 自动 commit =====
+      - name: 配置 git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 检查是否有变更
+        id: check-changes
+        run: |
+          git add -A
+          git diff --staged --quiet && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+          echo "变更文件:"
+          git diff --staged --name-only | head -20
+
+      - name: 自动 commit 变更
+        if: steps.check-changes.outputs.changed == 'true'
+        run: |
+          STAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告
+
+          触发: ${{ github.event_name }} ${{ github.ref_name }}
+          时间: $STAMP
+          HF 元数据: $([ -f data/hf-metadata-snapshot.json ] && jq '.model_count' data/hf-metadata-snapshot.json || echo 0) 个模型
+          GPU 价格: $([ -f data/gpu-prices-snapshot.json ] && jq '.nvidia_geforce | length' data/gpu-prices-snapshot.json || echo 0) 款 NVIDIA"
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: 总结
+        if: always()
+        run: |
+          echo "=== Refresh Models Data Workflow Done ==="
+          echo "运行 ID: ${{ github.run_id }}"
+          echo "时间: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          echo ""
+          if [ -f data/hf-metadata-snapshot.json ]; then
+            echo "HF 快照: $(jq -r '.snapshot_at' data/hf-metadata-snapshot.json)"
+            echo "  模型数: $(jq -r '.model_count' data/hf-metadata-snapshot.json)"
+          fi
+          if [ -f data/gpu-prices-snapshot.json ]; then
+            echo "GPU 快照: $(jq -r '.snapshot_at' data/gpu-prices-snapshot.json)"
+          fi
+          echo ""
+          echo "下一步: 查看 deployment-recommendations.md"
