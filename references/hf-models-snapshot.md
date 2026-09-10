@@ -1,4 +1,4 @@
-# HF 模型元数据快照 · 2026-09-10T14:34:15
+# HF 模型元数据快照 · 2026-09-10T17:31:50
 
 > 自动生成：`python3 scripts/refresh_hf_metadata.py`
 > 数据源：HuggingFace Hub API（自动 fallback hf-mirror.com）
@@ -21,7 +21,7 @@
 | llama-3.1-405b | `meta-llama/Llama-3.1-405B` | international-dense | 405.0 | llama3.1 | 131,924 | 987 | 2024-09-25 | 0 |
 | llama-3.1-70b | `meta-llama/Llama-3.1-70B` | international-dense | 70.0 | llama3.1 | 42,776 | 437 | 2024-09-25 | 0 |
 | llama-3.2-3b | `meta-llama/Llama-3.2-3B` | international-edge | 3.0 | llama3.2 | 355,044 | 915 | 2024-10-24 | 0 |
-| llama-3.2-1b | `meta-llama/Llama-3.2-1B` | international-edge | 1.0 | llama3.2 | 1,246,103 | 2582 | 2024-10-24 | 0 |
+| llama-3.2-1b | `meta-llama/Llama-3.2-1B` | international-edge | 1.0 | llama3.2 | 1,246,103 | 2583 | 2024-10-24 | 0 |
 | mistral-large-2 | `mistralai/Mistral-Large-Instruct-2407` | international-dense | 123.0 | other | 4,929 | 865 | 2025-07-28 | 0 |
 | mistral-small-3 | `mistralai/Mistral-Small-3` | international-dense | - | - | **FETCH ERROR** | - | - | - |
 | gemma-3-27b | `google/gemma-3-27b-it` | international-dense | 27.0 | gemma | 360,496 | 2023 | 2025-03-21 | 0 |
@@ -50,7 +50,7 @@
 | deepseek-r1-distill-qwen-32b | `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` | domestic-reasoning | 32.0 | mit | 522,681 | 1612 | 2025-02-24 | 0 |
 | deepseek-r1-distill-llama-70b | `deepseek-ai/DeepSeek-R1-Distill-Llama-70B` | domestic-reasoning | 70.0 | mit | 76,970 | 800 | 2025-02-24 | 0 |
 | deepseek-r1-distill-qwen-14b | `deepseek-ai/DeepSeek-R1-Distill-Qwen-14B` | domestic-reasoning | 14.0 | mit | 347,879 | 678 | 2025-02-24 | 0 |
-| deepseek-r1-distill-qwen-7b | `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B` | domestic-reasoning | 7.0 | mit | 359,985 | 886 | 2025-02-24 | 0 |
+| deepseek-r1-distill-qwen-7b | `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B` | domestic-reasoning | 7.0 | mit | 359,985 | 887 | 2025-02-24 | 0 |
 | deepseek-r1-distill-llama-8b | `deepseek-ai/DeepSeek-R1-Distill-Llama-8B` | domestic-reasoning | 8.0 | mit | 334,184 | 875 | 2025-02-24 | 0 |
 | deepseek-r1-distill-qwen-1.5b | `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B` | domestic-reasoning | 1.5 | mit | 416,880 | 1573 | 2025-02-24 | 0 |
 
