@@ -1,4 +1,4 @@
-# HF 模型元数据快照 · 2026-09-10T14:22:21
+# HF 模型元数据快照 · 2026-09-10T14:29:59
 
 > 自动生成：`python3 scripts/refresh_hf_metadata.py`
 > 数据源：HuggingFace Hub API（自动 fallback hf-mirror.com）
