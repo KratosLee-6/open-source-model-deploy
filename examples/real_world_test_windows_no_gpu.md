@@ -30,7 +30,7 @@
     -H "Content-Type: application/json" \\
     -d '{"messages":[{"role":"user","content":"Introduce Beijing in one sentence."}],"max_tokens":80}'
 
-实测响应（2026-08-15 12:08 UTC+8）：
+实测响应（v1.0.0 发布时实测，2026-08-15 12:08 UTC+8）：
 {
   "choices": [{
     "message": {

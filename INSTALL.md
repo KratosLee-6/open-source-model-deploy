@@ -265,7 +265,8 @@ mcp_servers:
     "standard": 208000,
     "high": 2600000
   },
-  "timestamp": "2026-08-15 12:00:00"
+  "timestamp": "2026-09-10T14:30:00Z",
+  "_note": "示例 JSON 输出，演示 v1.0.0+ API 响应结构。实际 timestamp 会随运行变化。"
 }
 ```
 

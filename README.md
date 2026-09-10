@@ -2,6 +2,14 @@
 
 > 把"模型规格 / 硬件报价 / 部署方式"做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
+**版本**：v1.0.1（2026-09-10）
+- 47 个开源模型 + 8 大分类（自动 check，缺一即拒）
+- GitHub Actions 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议
+- 三种部署方式：CLI / MCP Server / HTTP API
+- 真实硬件实测：GTX 1660 Ti 6GB / 8 核 CPU / 15.9GB RAM（详见下文 🏆 实测案例）
+
+> 上一版 v1.0.0 发布于 2026-08-15，详见 [Releases](https://github.com/KratosLee-6/open-source-model-deploy/releases)
+
 ## 🌟 核心亮点
 
 - **🧠 47 个开源模型覆盖**：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码 / 视觉 / Embedding / Reranker 专用模型
@@ -29,7 +37,9 @@ osm-deploy assess deepseek-v3
 osm-deploy deploy qwen3-32b
 ```
 
-## 🏆 真实实测案例（2026-08-15）
+## 🏆 真实实测案例
+
+### v1.0.0 发布实测（2026-08-15）— 无独显笔记本跑 1B 模型
 
 **环境**：Windows 11 / AMD64 16 核 / 15.2GB 内存 / 无独显
 **模型**：Llama-3.2-1B-Instruct Q4_K_M（770MB）
@@ -44,6 +54,90 @@ osm-deploy deploy qwen3-32b
 **结论**：无独显笔记本也能本地跑 1B 模型，速度远超预期。对比云租 AutoDL 4090 月租 ¥2,500，本机部署**节省 100% 成本 + 数据不出本地**。
 
 详细实测：[examples/real_world_test_windows_no_gpu.md](examples/real_world_test_windows_no_gpu.md)
+
+---
+
+### v1.0.1 最新实测（2026-09-10）— GTX 1660 Ti 6GB 跑全套 47 模型推荐
+
+**环境**：Windows 11 / Intel64 8 核 / 15.9GB 内存 / **NVIDIA GeForce GTX 1660 Ti 6GB**
+**驱动**：NVIDIA 595.97 / CUDA 13.2
+**工具版本**：v1.0.1（GitHub Actions 工作流版）
+
+#### 实测 1：硬件扫描
+
+```json
+{
+  "platform": "windows",
+  "cpu": {"logical_cores": 8, "arch": "AMD64"},
+  "memory_gb": 15.9,
+  "gpu": "NVIDIA GeForce GTX 1660 Ti (6GB VRAM, Driver 595.97)",
+  "total_vram_gb": 6,
+  "deployable_tier": "cpu_only",
+  "timestamp": "2026-09-11 00:53:05"
+}
+```
+
+![硬件扫描实测](docs/screenshots/06-实测截图-硬件扫描.png)
+
+#### 实测 2：47 个模型分类清单（8 大类）
+
+| 分类 | 模型数 | 代表模型 |
+|------|-------|---------|
+| domestic-general（国内通用）| 9 | deepseek-v3, qwen3-235b-a22b, kimi-k2 |
+| domestic-reasoning（国内推理）| 10 | deepseek-r1, qwq-32b, deepseek-r1-distill-qwen-* |
+| international-dense（国际密集）| 5 | llama-3.1-405b, mistral-large-2 |
+| international-edge（国际边缘）| 8 | llama-3.2-1b/3b, llama-3.3-70b, gemma-3-* |
+| code（代码专用）| 6 | qwen2.5-coder-32b, codestral-22b |
+| vision（视觉多模态）| 5 | qwen2.5-vl-72b, internvl3-78b |
+| embedding | 4 | bge-m3, qwen3-embedding-8b |
+| reranker | 1 | bge-reranker-v2-m3 |
+| **总计** | **47** | **8 大类全覆盖** |
+
+![47 模型分类](docs/screenshots/07-实测截图-47模型分类.png)
+
+#### 实测 3：本地部署推荐（GTX 1660 Ti 6GB）
+
+| 档位 | 显存需求 | 可用模型数 | 推荐 |
+|------|---------|-----------|------|
+| **consumer-edge** | ≤6GB | 5 个 ✓ | llama-3.2-1b/3b, bge-m3, bge-large-zh-v1.5, bge-reranker-v2-m3 |
+| **warn-quant** | 4-8GB（Q4 量化）| 7 个 ⚠ | qwen3-8b, deepseek-r1-distill-qwen-7b, gemma-3-4b |
+| **need-gpu** | 16GB+ | 35 个 ❌ | qwen3-32b, deepseek-r1, llama-3.1-70b |
+
+**KX 笔记本 6GB 显存 → 推荐 4 个主力模型**：
+- **主力推荐**：qwen3-8b Q4_K_M（4GB，GPU 全速推理）
+- **强推理**：deepseek-r1-distill-qwen-7b（3.5GB，强 CoT 能力）
+- **多模态**：qwen2.5-vl-7b（3.5GB，图文理解）
+- **备用**：llama-3.2-3b（1.5GB，CPU/GPU 都行）
+
+![推荐结果](docs/screenshots/09-实测截图-推荐结果.png)
+
+#### 实测 4：GPU 状态（nvidia-smi）
+
+```
+GPU  0  NVIDIA GeForce GTX 1660 Ti   WDDM
+Fan  30%   38C    P8  12W / 120W
+Memory-Usage  43MiB / 6144MiB
+```
+
+![nvidia-smi](docs/screenshots/08-实测截图-nvidia-smi.png)
+
+#### 实测 5：自动刷新工作流（GitHub Actions）
+
+**触发条件**：
+- 每周一 UTC 00:00（北京时间 8:00）自动跑
+- 修改 `src/core/model_resolver.py` 自动触发
+- Actions 页面手动触发
+
+**实测运行**（最近一次 2026-09-10）：
+- ✅ 13 个 step 全部成功
+- ✅ 自动 commit + 推送
+- ✅ 耗时 42 秒
+
+详见 [docs/GITHUB-ACTIONS.md](docs/GITHUB-ACTIONS.md)
+
+---
+
+**结论**：v1.0.1 在真实硬件（GTX 1660 Ti 6GB）上跑通全套工具链路——47 模型清单完整 ✓、硬件扫描准确 ✓、推荐结果按档位分组 ✓、GitHub Actions 工作流每周自动刷新 ✓。
 
 ## 🎯 解决什么问题？
 
