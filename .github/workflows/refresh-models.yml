@@ -144,6 +144,8 @@ jobs:
           时间: $STAMP
           HF 元数据: $([ -f data/hf-metadata-snapshot.json ] && jq '.model_count' data/hf-metadata-snapshot.json || echo 0) 个模型
           GPU 价格: $([ -f data/gpu-prices-snapshot.json ] && jq '.nvidia_geforce | length' data/gpu-prices-snapshot.json || echo 0) 款 NVIDIA"
+          # 拉取远端以防并发 push 冲突，再 rebase 后 push
+          git pull --rebase --autostash origin ${{ github.ref_name }} || true
           git push origin HEAD:${{ github.ref_name }}
 
       - name: 总结
