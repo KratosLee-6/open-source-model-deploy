@@ -1,8 +1,8 @@
-# 47 个开源模型部署建议 · 2026-09-11 14:24 自动生成
+# 47 个开源模型部署建议 · 2026-09-11 14:51 自动生成
 
 > **目标场景**: 云租按量（H100/A100）
-> **HF 元数据快照**: 2026-09-11T14:23:08
-> **GPU 价格快照**: 2026-09-11T14:24:13
+> **HF 元数据快照**: 2026-09-11T14:50:09
+> **GPU 价格快照**: 2026-09-11T14:51:36
 > **生成方式**: GitHub Actions 每周自动跑 (`scripts/render_report.py`)
 > **手动重生成**: `python3 scripts/render_report.py --target=cloud`
 
@@ -81,7 +81,7 @@
 | qwen2.5-coder-32b | `Qwen/Qwen2.5-Coder-32B-Instruct` | 32.0B | 1,546,277 | ✓ 云租 (64GB fp16) | vLLM |
 | deepseek-coder-v2 | `deepseek-ai/DeepSeek-Coder-V2-Instruct` | 236.0B | 10,634 | ✓ 云租 (472GB fp16) | vLLM |
 
-## 👁️ 视觉多模态 (9 个)
+## 👁️ 视觉多模态 (10 个)
 
 | 模型 | HF Repo | size | Downloads | 档位 | 框架 |
 |---|---|---|---|---|---|
@@ -91,21 +91,24 @@
 | llava-onevision-qwen2-7b | `lmms-lab/llava-onevision-qwen2-7b-ov` | 7.0B | 34,609 | ✓ 云租 (14GB fp16) | vLLM |
 | internvl3-8b | `OpenGVLab/InternVL3-8B` | 8.0B | 100,472 | ✓ 云租 (16GB fp16) | vLLM |
 | qwen3-vl-8b-instruct | `Qwen/Qwen3-VL-8B-Instruct` | 8.77B | 16,515,105 | ✓ 云租 (18GB fp16) | vLLM |
+| gemma-4-26b-a4b | `google/gemma-4-26B-A4B-it` | 25.81B | 8,983,063 | ✓ 云租 (52GB fp16) | vLLM |
 | qwen3-vl-32b-instruct | `Qwen/Qwen3-VL-32B-Instruct` | 33.36B | 335,538 | ✓ 云租 (67GB fp16) | vLLM |
 | qwen2.5-vl-72b | `Qwen/Qwen2.5-VL-72B-Instruct` | 72.0B | 145,415 | ✓ 云租 (144GB fp16) | vLLM |
 | internvl3-78b | `OpenGVLab/InternVL3-78B` | 78.0B | 14,285 | ✓ 云租 (156GB fp16) | vLLM |
 
-## 🌍 国际密集 (5 个)
+## 🌍 国际密集 (7 个)
 
 | 模型 | HF Repo | size | Downloads | 档位 | 框架 |
 |---|---|---|---|---|---|
 | mistral-small-3 | `mistralai/Mistral-Small-3` | 22.0B | N/A | ✓ 云租 (44GB fp16) | vLLM |
 | gemma-3-27b | `google/gemma-3-27b-it` | 27.0B | 354,329 | ✓ 云租 (54GB fp16) | vLLM |
+| gemma-4-31b | `google/gemma-4-31B-it` | 31.27B | 8,676,676 | ✓ 云租 (63GB fp16) | vLLM |
 | llama-3.1-70b | `meta-llama/Llama-3.1-70B` | 70.0B | 41,644 | ✓ 云租 (140GB fp16) | vLLM |
+| openai-gpt-oss-120b | `openai/gpt-oss-120b` | 116.83B | 5,463,732 | ✓ 云租 (234GB fp16) | vLLM |
 | mistral-large-2 | `mistralai/Mistral-Large-Instruct-2407` | 123.0B | 2,728 | ✓ 云租 (246GB fp16) | vLLM |
 | llama-3.1-405b | `meta-llama/Llama-3.1-405B` | 405.0B | 121,656 | ✓ 云租 (810GB fp16) | vLLM |
 
-## ⚡ 国际边缘 (7 个)
+## ⚡ 国际边缘 (10 个)
 
 | 模型 | HF Repo | size | Downloads | 档位 | 框架 |
 |---|---|---|---|---|---|
@@ -113,23 +116,39 @@
 | llama-3.2-3b | `meta-llama/Llama-3.2-3B` | 3.0B | 357,642 | ✓ 云租 (6GB fp16) | vLLM |
 | phi-4-mini | `microsoft/Phi-4-mini-instruct` | 3.8B | 454,378 | ✓ 云租 (8GB fp16) | vLLM |
 | phi-3.5-mini | `microsoft/Phi-3.5-mini-instruct` | 3.8B | 354,875 | ✓ 云租 (8GB fp16) | vLLM |
+| nvidia-nemotron-3-nano-4b | `nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16` | 3.97B | 3,451,595 | ✓ 云租 (8GB fp16) | vLLM |
 | gemma-3-4b | `google/gemma-3-4b-it` | 4.0B | 1,682,782 | ✓ 云租 (8GB fp16) | vLLM |
+| llama-3.1-8b-instruct | `meta-llama/Llama-3.1-8B-Instruct` | 8.03B | 5,620,096 | ✓ 云租 (16GB fp16) | vLLM |
 | gemma-3-9b | `google/gemma-3-9b-it` | 9.0B | N/A | ✓ 云租 (18GB fp16) | vLLM |
 | phi-4 | `microsoft/phi-4` | 14.0B | 708,128 | ✓ 云租 (28GB fp16) | vLLM |
+| openai-gpt-oss-20b | `openai/gpt-oss-20b` | 20.91B | 6,599,829 | ✓ 云租 (42GB fp16) | vLLM |
 
-## 🔢 Embedding (4 个)
+## 🔢 Embedding (16 个)
 
 | 模型 | HF Repo | size | Downloads | 档位 | 框架 |
 |---|---|---|---|---|---|
+| all-MiniLM-L6-v2 | `sentence-transformers/all-MiniLM-L6-v2` | 0.02B | 254,035,929 | ✓ 云租 (0GB fp16) | vLLM |
+| bge-small-zh-v1.5 | `BAAI/bge-small-zh-v1.5` | 0.02B | 4,949,237 | ✓ 云租 (0GB fp16) | vLLM |
+| bge-small-en-v1.5 | `BAAI/bge-small-en-v1.5` | 0.03B | 64,607,097 | ✓ 云租 (0GB fp16) | vLLM |
+| bge-base-zh-v1.5 | `BAAI/bge-base-zh-v1.5` | 0.1B | 799,812 | ✓ 云租 (0GB fp16) | vLLM |
+| all-mpnet-base-v2 | `sentence-transformers/all-mpnet-base-v2` | 0.11B | 24,088,055 | ✓ 云租 (0GB fp16) | vLLM |
+| bge-base-en-v1.5 | `BAAI/bge-base-en-v1.5` | 0.11B | 10,684,922 | ✓ 云租 (0GB fp16) | vLLM |
+| paraphrase-multilingual-MiniLM-L12-v2 | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | 0.12B | 46,383,496 | ✓ 云租 (0GB fp16) | vLLM |
+| multilingual-e5-small | `intfloat/multilingual-e5-small` | 0.12B | 12,176,490 | ✓ 云租 (0GB fp16) | vLLM |
+| nomic-embed-text-v1.5 | `nomic-ai/nomic-embed-text-v1.5` | 0.14B | 16,063,720 | ✓ 云租 (0GB fp16) | vLLM |
+| multilingual-e5-base | `intfloat/multilingual-e5-base` | 0.28B | 7,246,005 | ✓ 云租 (1GB fp16) | vLLM |
 | bge-large-zh-v1.5 | `BAAI/bge-large-zh-v1.5` | 0.3B | 1,204,667 | ✓ 云租 (1GB fp16) | vLLM |
+| multilingual-e5-large | `intfloat/multilingual-e5-large` | 0.56B | 6,991,169 | ✓ 云租 (1GB fp16) | vLLM |
 | bge-m3 | `BAAI/bge-m3` | 0.6B | 37,793,325 | ✓ 云租 (1GB fp16) | vLLM |
+| qwen3-embedding-0.6b | `Qwen/Qwen3-Embedding-0.6B` | 0.6B | 7,972,644 | ✓ 云租 (1GB fp16) | vLLM |
 | gte-qwen2-7b-instruct | `Alibaba-NLP/gte-Qwen2-7B-instruct` | 7.0B | 110,835 | ✓ 云租 (14GB fp16) | vLLM |
 | qwen3-embedding-8b | `Qwen/Qwen3-Embedding-8B` | 8.0B | 2,326,476 | ✓ 云租 (16GB fp16) | vLLM |
 
-## 📊 Reranker (1 个)
+## 📊 Reranker (2 个)
 
 | 模型 | HF Repo | size | Downloads | 档位 | 框架 |
 |---|---|---|---|---|---|
+| bge-reranker-large | `BAAI/bge-reranker-large` | 0.56B | 2,693,780 | ✓ 云租 (1GB fp16) | vLLM |
 | bge-reranker-v2-m3 | `BAAI/bge-reranker-v2-m3` | 0.6B | 18,178,285 | ✓ 云租 (1GB fp16) | vLLM |
 
 ---
@@ -148,7 +167,7 @@
 
 ---
 
-**快照时间**: 2026-09-11 14:24
+**快照时间**: 2026-09-11 14:51
 **下次更新**: 下周一北京时间 8:00
 
 **数据源**:

@@ -1,13 +1,13 @@
-# HF 模型元数据快照 · 2026-09-11T14:23:08
+# HF 模型元数据快照 · 2026-09-11T14:50:09
 
 > 自动生成：`python3 scripts/refresh_hf_metadata.py`
 > 数据源：HuggingFace Hub API（自动 fallback hf-mirror.com）
-> 覆盖：75 个模型
+> 覆盖：94 个模型
 
 | 模型 | HF Repo | 类别 | 大小(B) | License | Downloads | Likes | Last Modified | GGUF 数量 |
 |---|---|---|---|---|---|---|---|---|
 | deepseek-v3 | `deepseek-ai/DeepSeek-V3` | domestic-general | 671.0 | - | 1,066,832 | 4182 | 2025-03-27 | 0 |
-| deepseek-v4.1-flash | `deepseek-ai/DeepSeek-V4.1-Flash` | domestic-general | 522.0 | mit | 75,774 | 1679 | 2026-09-10 | 0 |
+| deepseek-v4.1-flash | `deepseek-ai/DeepSeek-V4.1-Flash` | domestic-general | 522.0 | mit | 75,774 | 1685 | 2026-09-10 | 0 |
 | deepseek-v4-flash-0731 | `deepseek-ai/DeepSeek-V4-Flash-0731` | domestic-general | 284.0 | mit | 4,397,122 | 3932 | 2026-08-01 | 0 |
 | deepseek-r1 | `deepseek-ai/DeepSeek-R1` | domestic-reasoning | 671.0 | mit | 670,913 | 13619 | 2025-03-27 | 0 |
 | deepseek-v2.5 | `deepseek-ai/DeepSeek-V2.5` | domestic-general | 236.0 | other | 5,934 | 734 | 2024-12-11 | 0 |
@@ -29,7 +29,7 @@
 | qwen3.5-397b-a17b | `Qwen/Qwen3.5-397B-A17B` | domestic-general | 403.4 | apache-2.0 | 194,888 | 1559 | 2026-04-24 | 0 |
 | qwen3.6-27b | `Qwen/Qwen3.6-27B` | domestic-general | 27.78 | apache-2.0 | 4,445,698 | 2291 | 2026-04-24 | 0 |
 | qwen3.6-35b-a3b | `Qwen/Qwen3.6-35B-A3B` | domestic-general | 35.95 | apache-2.0 | 3,931,259 | 2801 | 2026-04-24 | 0 |
-| qwen3.8-27b | `Qwen/Qwen3.8-27B` | domestic-general | 27.78 | apache-2.0 | 7,563,763 | 14720 | 2026-08-14 | 0 |
+| qwen3.8-27b | `Qwen/Qwen3.8-27B` | domestic-general | 27.78 | apache-2.0 | 7,563,763 | 14721 | 2026-08-14 | 0 |
 | qwen2.5-0.5b-instruct | `Qwen/Qwen2.5-0.5B-Instruct` | domestic-general | 0.5 | apache-2.0 | 7,225,322 | 623 | 2024-09-25 | 0 |
 | qwen2.5-1.5b-instruct | `Qwen/Qwen2.5-1.5B-Instruct` | domestic-general | 1.5 | apache-2.0 | 7,268,416 | 824 | 2024-09-25 | 0 |
 | qwen2.5-3b-instruct | `Qwen/Qwen2.5-3B-Instruct` | domestic-general | 3.0 | other | 5,415,262 | 566 | 2024-09-25 | 0 |
@@ -48,7 +48,7 @@
 | kimi-k2 | `moonshotai/Kimi-K2-Instruct` | domestic-general | 1000.0 | other | 173,023 | 2377 | 2026-04-23 | 0 |
 | llama-3.1-405b | `meta-llama/Llama-3.1-405B` | international-dense | 405.0 | llama3.1 | 121,656 | 987 | 2024-09-25 | 0 |
 | llama-3.1-70b | `meta-llama/Llama-3.1-70B` | international-dense | 70.0 | llama3.1 | 41,644 | 438 | 2024-09-25 | 0 |
-| llama-3.2-3b | `meta-llama/Llama-3.2-3B` | international-edge | 3.0 | llama3.2 | 357,642 | 917 | 2024-10-24 | 0 |
+| llama-3.2-3b | `meta-llama/Llama-3.2-3B` | international-edge | 3.0 | llama3.2 | 357,642 | 919 | 2024-10-24 | 0 |
 | llama-3.2-1b | `meta-llama/Llama-3.2-1B` | international-edge | 1.0 | llama3.2 | 1,226,103 | 2588 | 2024-10-24 | 0 |
 | mistral-large-2 | `mistralai/Mistral-Large-Instruct-2407` | international-dense | 123.0 | other | 2,728 | 865 | 2025-07-28 | 0 |
 | mistral-small-3 | `mistralai/Mistral-Small-3` | international-dense | - | - | **FETCH ERROR** | - | - | - |
@@ -58,6 +58,12 @@
 | phi-4 | `microsoft/phi-4` | international-edge | 14.0 | mit | 708,128 | 2299 | 2026-07-14 | 0 |
 | phi-4-mini | `microsoft/Phi-4-mini-instruct` | international-edge | 3.8 | mit | 454,378 | 828 | 2025-12-10 | 0 |
 | phi-3.5-mini | `microsoft/Phi-3.5-mini-instruct` | international-edge | 3.8 | mit | 354,875 | 1075 | 2025-12-10 | 0 |
+| llama-3.1-8b-instruct | `meta-llama/Llama-3.1-8B-Instruct` | international-edge | 8.03 | llama3.1 | 5,620,096 | 6892 | 2024-09-25 | 0 |
+| openai-gpt-oss-20b | `openai/gpt-oss-20b` | international-edge | 20.91 | apache-2.0 | 6,599,829 | 5017 | 2025-08-26 | 0 |
+| openai-gpt-oss-120b | `openai/gpt-oss-120b` | international-dense | 116.83 | apache-2.0 | 5,463,732 | 5186 | 2025-08-26 | 0 |
+| nvidia-nemotron-3-nano-4b | `nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16` | international-edge | 3.97 | other | 3,451,595 | 117 | 2026-03-20 | 0 |
+| gemma-4-26b-a4b | `google/gemma-4-26B-A4B-it` | vision | 25.81 | apache-2.0 | 8,983,063 | 1487 | 2026-07-20 | 0 |
+| gemma-4-31b | `google/gemma-4-31B-it` | international-dense | 31.27 | apache-2.0 | 8,676,676 | 3762 | 2026-07-20 | 0 |
 | deepseek-coder-v2 | `deepseek-ai/DeepSeek-Coder-V2-Instruct` | code | 236.0 | other | 10,634 | 701 | 2024-08-21 | 0 |
 | deepseek-coder-v2-lite | `deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct` | code | 16.0 | other | 772,166 | 654 | 2024-07-03 | 0 |
 | qwen3-coder-30b | `Qwen/Qwen3-Coder-30B-A3B-Instruct` | code | 30.0 | apache-2.0 | 684,863 | 1236 | 2025-12-03 | 0 |
@@ -71,7 +77,20 @@
 | llava-onevision-qwen2-7b | `lmms-lab/llava-onevision-qwen2-7b-ov` | vision | 7.0 | apache-2.0 | 34,609 | 64 | 2024-09-02 | 0 |
 | bge-m3 | `BAAI/bge-m3` | embedding | 0.6 | mit | 37,793,325 | 3491 | 2024-07-03 | 0 |
 | bge-large-zh-v1.5 | `BAAI/bge-large-zh-v1.5` | embedding | 0.3 | mit | 1,204,667 | 646 | 2024-04-02 | 0 |
+| all-MiniLM-L6-v2 | `sentence-transformers/all-MiniLM-L6-v2` | embedding | 0.02 | apache-2.0 | 254,035,929 | 5788 | 2026-06-01 | 0 |
+| all-mpnet-base-v2 | `sentence-transformers/all-mpnet-base-v2` | embedding | 0.11 | apache-2.0 | 24,088,055 | 1352 | 2025-08-19 | 0 |
+| paraphrase-multilingual-MiniLM-L12-v2 | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | embedding | 0.12 | apache-2.0 | 46,383,496 | 1370 | 2026-01-28 | 0 |
+| nomic-embed-text-v1.5 | `nomic-ai/nomic-embed-text-v1.5` | embedding | 0.14 | apache-2.0 | 16,063,720 | 908 | 2026-04-07 | 0 |
+| multilingual-e5-small | `intfloat/multilingual-e5-small` | embedding | 0.12 | mit | 12,176,490 | 401 | 2026-04-02 | 0 |
+| multilingual-e5-base | `intfloat/multilingual-e5-base` | embedding | 0.28 | mit | 7,246,005 | 383 | 2026-04-02 | 0 |
+| multilingual-e5-large | `intfloat/multilingual-e5-large` | embedding | 0.56 | mit | 6,991,169 | 1248 | 2026-04-02 | 0 |
+| bge-small-en-v1.5 | `BAAI/bge-small-en-v1.5` | embedding | 0.03 | mit | 64,607,097 | 551 | 2024-02-22 | 0 |
+| bge-base-en-v1.5 | `BAAI/bge-base-en-v1.5` | embedding | 0.11 | mit | 10,684,922 | 470 | 2024-02-21 | 0 |
+| bge-small-zh-v1.5 | `BAAI/bge-small-zh-v1.5` | embedding | 0.02 | mit | 4,949,237 | 139 | 2023-10-12 | 0 |
+| bge-base-zh-v1.5 | `BAAI/bge-base-zh-v1.5` | embedding | 0.1 | mit | 799,812 | 110 | 2023-10-12 | 0 |
+| qwen3-embedding-0.6b | `Qwen/Qwen3-Embedding-0.6B` | embedding | 0.6 | apache-2.0 | 7,972,644 | 1192 | 2026-04-20 | 0 |
 | bge-reranker-v2-m3 | `BAAI/bge-reranker-v2-m3` | reranker | 0.6 | apache-2.0 | 18,178,285 | 1168 | 2024-06-24 | 0 |
+| bge-reranker-large | `BAAI/bge-reranker-large` | reranker | 0.56 | mit | 2,693,780 | 468 | 2024-05-11 | 0 |
 | qwen3-embedding-8b | `Qwen/Qwen3-Embedding-8B` | embedding | 8.0 | apache-2.0 | 2,326,476 | 799 | 2025-07-07 | 0 |
 | gte-qwen2-7b-instruct | `Alibaba-NLP/gte-Qwen2-7B-instruct` | embedding | 7.0 | apache-2.0 | 110,835 | 483 | 2025-03-24 | 0 |
 | qwq-32b | `Qwen/QwQ-32B` | domestic-reasoning | 32.0 | apache-2.0 | 76,612 | 2963 | 2025-03-11 | 0 |
