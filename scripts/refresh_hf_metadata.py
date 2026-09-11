@@ -114,6 +114,138 @@ def fetch_gguf_files(repo_id: str) -> list:
     ]
 
 
+def fetch_recommended_hardware(repo_id: str) -> dict | None:
+    """从 HF model card README.md + vLLM recipes 解析"官方推荐硬件"段。
+
+    策略：
+      1. 抓主 README.md + inference/README.md（DeepSeek 家族风格）
+      2. 找以下关键字：
+         - "Hardware Requirements" / "Hardware" / "Prerequisites" 段
+         - 提到 H100/H200/A100/RTX/GB200/MI300/vRAM/V100/TPU/节点
+         - vLLM recipe（recipes.vllm.ai/<repo>）—— 权威第三方部署文档
+    返回精简结构：{
+      "official_source": "HF model card" | "inference/README.md" | "vLLM recipe" | None,
+      "recommended_gpu": ["GB200", "H200"],   # 提及的 GPU 型号
+      "recommended_memory_gb": [...],         # 显存/内存数字
+      "recommended_nodes": [...],             # 节点数量
+      "raw_excerpt": "...原始段摘录..."
+    }
+    """
+    # 1. 先抓主 README + inference/README
+    readme_urls = [
+        f"https://huggingface.co/{repo_id}/raw/main/README.md",
+        f"https://huggingface.co/{repo_id}/raw/main/inference/README.md",
+        f"https://huggingface.co/{repo_id}/raw/main/inference.md",
+        f"https://huggingface.co/{repo_id}/raw/main/DEPLOYMENT.md",
+    ]
+    readme_text = ""
+    source = None
+    for u in readme_urls:
+        bases = [u, u.replace("huggingface.co", "hf-mirror.com")]
+        for try_url in bases:
+            req = urllib.request.Request(try_url, headers={"User-Agent": "osm-deploy-gh/1.0"})
+            try:
+                with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+                    readme_text += "\n\n" + resp.read().decode("utf-8")
+                source = u.split("/")[-1]
+                break
+            except Exception:
+                continue
+        if readme_text:
+            break
+
+    # 2. 抓 vLLM recipe（权威第三方部署文档）—— 给大型 MoE / 闭源/前沿模型很有用
+    vllm_recipe_text = ""
+    vllm_url = f"https://recipes.vllm.ai/{repo_id}"
+    try:
+        req = urllib.request.Request(vllm_url, headers={"User-Agent": "osm-deploy-gh/1.0"})
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            vllm_recipe_text = resp.read().decode("utf-8")
+        if source is None:
+            source = "vLLM recipe"
+        else:
+            source = f"{source} + vLLM recipe"
+    except Exception:
+        pass
+
+    combined_text = readme_text + "\n\n" + vllm_recipe_text
+
+    if not combined_text.strip():
+        return None
+
+    # 3. 找 hardware 段
+    gpu_pat = re.compile(
+        r"\b(H100|H200|A100|B200|GB200|MI300(?:X)?|RTX\s?\d{4}|V100|TPU\s?v\d+|H800|L40S|L4)\b"
+    )
+    # 提取"Hardware"/"Prerequisites"/"Memory"/"Serving" 段
+    section_pat = re.compile(
+        r"^##\s+([^#\n]+?(?:Hardware|Requirements|Prerequisites|Memory|Serving|Inference|Deployment)[^#\n]*?)\s*$",
+        re.IGNORECASE | re.MULTILINE,
+    )
+    sections = section_pat.split(combined_text)
+    # sections = [pre, title1, body1, title2, body2, ...]
+    hardware_text = ""
+    if len(sections) >= 3:
+        for i in range(1, len(sections), 2):
+            title = sections[i].strip()
+            body = sections[i + 1] if i + 1 < len(sections) else ""
+            if any(kw in title.lower() for kw in ["hardware", "prerequisites", "memory", "requirements", "deployment"]):
+                hardware_text += f"\n## {title}\n{body[:1500]}"
+
+    # 4. 扫整文抓 GPU 型号（可能 hardware 段没 ## 标记）
+    gpus_in_hardware = sorted(set(gpu_pat.findall(hardware_text)))
+    gpus_in_full = sorted(set(gpu_pat.findall(combined_text)))
+
+    # 5. 抓显存/内存数字 + 单位（GB/GiB/TB/TiB）
+    mem_pat = re.compile(
+        r"(\d+(?:\.\d+)?)\s*(GB|GiB|TB|TiB)\b[^.\n]{0,80}?(?:VRAM|memory|HBM|GPU memory)",
+        re.IGNORECASE,
+    )
+    mem_match = mem_pat.findall(combined_text[:5000])
+
+    # 6. 节点数量（如 "8 GPUs" / "1×8 H200"）
+    node_pat = re.compile(
+        r"(\d+\s*[×x]\s*\d+\s*(?:GPU|H100|H200|A100|GB200|B200|MI300))", re.IGNORECASE
+    )
+    nodes = node_pat.findall(combined_text[:5000])
+
+    # 7. 抓 vLLM recipe 的 vram_minimum_gb（最直接的官方推荐硬件数字）
+    #    注意：vLLM recipe 页面顶部 model description 里的值最权威（页面后部的 JSON 是侧边栏推荐其他模型）
+    #    格式可能是：
+    #      - <code>vram_minimum_gb: 614</code>      # markdown 转 HTML
+    #      - "vram_minimum_gb":614                  # 原始 JSON
+    vram_min = None
+    if vllm_recipe_text:
+        header = vllm_recipe_text[:250000]
+        # 宽松匹配：可选引号 + 可选空格
+        vram_match = re.search(r'vram_minimum_gb[^0-9]*?(\d+(?:\.\d+)?)', header)
+        if vram_match:
+            vram_min = float(vram_match.group(1))
+
+    # 8. 抓 vLLM recipe 的硬件推荐段
+    vllm_hw_excerpt = ""
+    if vllm_recipe_text:
+        # 找 "Fills a GB200" / "1×8 H200" / "vram_minimum_gb" 周围上下文
+        for kw in ["GB200 NVL4", "H200", "vram_minimum_gb", "Hardware"]:
+            idx = vllm_recipe_text.find(kw)
+            if idx > 0:
+                s = max(0, idx - 100)
+                e = min(len(vllm_recipe_text), idx + 400)
+                vllm_hw_excerpt += f"\n--- {kw} ---\n{vllm_recipe_text[s:e]}\n"
+                break
+
+    return {
+        "official_source": source or "unknown",
+        "section_count": len(sections) // 2,
+        "hardware_section_found": bool(hardware_text),
+        "recommended_gpu": gpus_in_hardware if gpus_in_hardware else gpus_in_full[:8],
+        "recommended_memory_gb": [f"{n[0]} {n[1]}" for n in mem_match[:3]],
+        "recommended_nodes": nodes[:3],
+        "vram_minimum_gb": vram_min,  # vLLM recipe 直接给的官方最小显存
+        "raw_excerpt": (hardware_text[:500] if hardware_text else vllm_hw_excerpt or "(未找到)"),
+    }
+
+
 def refresh_all(only: list | None = None) -> dict:
     """刷新所有（或指定）模型的元数据"""
     models = parse_resolver()
@@ -157,9 +289,20 @@ def refresh_all(only: list | None = None) -> dict:
             "gguf_files": fetch_gguf_files(repo)[:10],  # 最多 10 个 GGUF
             **info,  # 保留 model_resolver 的本地元数据
         }
+        # 自动解析官方推荐硬件（仅 large 模型 > 30B 拉取，避免小模型浪费时间）
+        if (info.get("size_b") or 0) >= 30:
+            try:
+                rec = fetch_recommended_hardware(repo)
+                if rec:
+                    clean["recommended_hardware"] = rec
+            except Exception as e:
+                clean["recommended_hardware"] = {"official_source": "parse failed", "error": str(e)}
         snapshot["models"][name] = clean
         ok += 1
-        print(f"OK (downloads={clean['downloads']:,}, gguf={len(clean['gguf_files'])})")
+        hw_info = ""
+        if "recommended_hardware" in clean and clean["recommended_hardware"].get("recommended_gpu"):
+            hw_info = f" [hw: {'/'.join(clean['recommended_hardware']['recommended_gpu'][:2])}]"
+        print(f"OK (downloads={clean['downloads']:,}, gguf={len(clean['gguf_files'])}){hw_info}")
         time.sleep(RATE_LIMIT_SEC)
 
     print(f"\n[refresh_hf_metadata] 完成: {ok} OK, {fail} FAIL")

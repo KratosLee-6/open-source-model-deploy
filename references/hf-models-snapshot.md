@@ -1,12 +1,17 @@
+<<<<<<< Updated upstream
 # HF 模型元数据快照 · 2026-09-10T17:31:50
+=======
+# HF 模型元数据快照 · 2026-09-11T01:34:17
+>>>>>>> Stashed changes
 
 > 自动生成：`python3 scripts/refresh_hf_metadata.py`
 > 数据源：HuggingFace Hub API（自动 fallback hf-mirror.com）
-> 覆盖：47 个模型
+> 覆盖：48 个模型
 
 | 模型 | HF Repo | 类别 | 大小(B) | License | Downloads | Likes | Last Modified | GGUF 数量 |
 |---|---|---|---|---|---|---|---|---|
 | deepseek-v3 | `deepseek-ai/DeepSeek-V3` | domestic-general | 671.0 | - | 1,065,138 | 4182 | 2025-03-27 | 0 |
+| deepseek-v4.1-flash | `deepseek-ai/DeepSeek-V4.1-Flash` | domestic-general | 522.0 | mit | 6 | 1146 | 2026-09-10 | 0 |
 | deepseek-r1 | `deepseek-ai/DeepSeek-R1` | domestic-reasoning | 671.0 | mit | 709,327 | 13619 | 2025-03-27 | 0 |
 | deepseek-v2.5 | `deepseek-ai/DeepSeek-V2.5` | domestic-general | 236.0 | other | 5,831 | 734 | 2024-12-11 | 0 |
 | qwen3-235b-a22b | `Qwen/Qwen3-235B-A22B` | domestic-general | 235.0 | apache-2.0 | 346,243 | 1111 | 2025-07-26 | 0 |
@@ -20,8 +25,13 @@
 | kimi-k2 | `moonshotai/Kimi-K2-Instruct` | domestic-general | 1000.0 | other | 169,441 | 2377 | 2026-04-23 | 0 |
 | llama-3.1-405b | `meta-llama/Llama-3.1-405B` | international-dense | 405.0 | llama3.1 | 131,924 | 987 | 2024-09-25 | 0 |
 | llama-3.1-70b | `meta-llama/Llama-3.1-70B` | international-dense | 70.0 | llama3.1 | 42,776 | 437 | 2024-09-25 | 0 |
+<<<<<<< Updated upstream
 | llama-3.2-3b | `meta-llama/Llama-3.2-3B` | international-edge | 3.0 | llama3.2 | 355,044 | 915 | 2024-10-24 | 0 |
 | llama-3.2-1b | `meta-llama/Llama-3.2-1B` | international-edge | 1.0 | llama3.2 | 1,246,103 | 2583 | 2024-10-24 | 0 |
+=======
+| llama-3.2-3b | `meta-llama/Llama-3.2-3B` | international-edge | 3.0 | llama3.2 | 355,044 | 916 | 2024-10-24 | 0 |
+| llama-3.2-1b | `meta-llama/Llama-3.2-1B` | international-edge | 1.0 | llama3.2 | 1,246,103 | 2584 | 2024-10-24 | 0 |
+>>>>>>> Stashed changes
 | mistral-large-2 | `mistralai/Mistral-Large-Instruct-2407` | international-dense | 123.0 | other | 4,929 | 865 | 2025-07-28 | 0 |
 | mistral-small-3 | `mistralai/Mistral-Small-3` | international-dense | - | - | **FETCH ERROR** | - | - | - |
 | gemma-3-27b | `google/gemma-3-27b-it` | international-dense | 27.0 | gemma | 360,496 | 2023 | 2025-03-21 | 0 |
