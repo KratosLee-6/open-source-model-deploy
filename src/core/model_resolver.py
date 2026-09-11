@@ -417,6 +417,49 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "size_b": 3.8,
         "note": "上一代 3.8B",
     },
+    "llama-3.1-8b-instruct": {
+        "hf_repo": "meta-llama/Llama-3.1-8B-Instruct",
+        "github": "meta-llama/llama-models",
+        "category": "international-edge",
+        "size_b": 8.03,
+        "note": "Llama 3.1 8B Instruct（实际 8.03B），单卡 4090 友好，HF 5.6M DLs",
+    },
+    "openai-gpt-oss-20b": {
+        "hf_repo": "openai/gpt-oss-20b",
+        "github": "openai/gpt-oss",
+        "category": "international-edge",
+        "size_b": 20.91,
+        "note": "OpenAI 首个开源 LLM（gpt-oss-20b），apache-2.0，HF 6.6M DLs",
+    },
+    "openai-gpt-oss-120b": {
+        "hf_repo": "openai/gpt-oss-120b",
+        "github": "openai/gpt-oss",
+        "category": "international-dense",
+        "size_b": 116.83,
+        "note": "OpenAI gpt-oss-120b（实际 116.83B），apache-2.0，HF 5.5M DLs",
+    },
+    "nvidia-nemotron-3-nano-4b": {
+        "hf_repo": "nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16",
+        "github": "NVIDIA/Nemotron",
+        "category": "international-edge",
+        "size_b": 3.97,
+        "note": "NVIDIA Nemotron-3 Nano 4B（实际 3.97B），HF 3.5M DLs",
+    },
+    "gemma-4-26b-a4b": {
+        "hf_repo": "google/gemma-4-26B-A4B-it",
+        "github": "google-deepmind/gemma",
+        "category": "vision",
+        "size_b": 25.81,
+        "activated_b": 4,
+        "note": "Google Gemma 4 26B-A4B MoE（25.81B 总参 / 4B 激活），多模态，HF 8.9M DLs",
+    },
+    "gemma-4-31b": {
+        "hf_repo": "google/gemma-4-31B-it",
+        "github": "google-deepmind/gemma",
+        "category": "international-dense",
+        "size_b": 31.27,
+        "note": "Google Gemma 4 31B（实际 31.27B），密集模型，HF 8.7M DLs",
+    },
 
     # ===== 代码专用模型 =====
     "deepseek-coder-v2": {
@@ -518,12 +561,106 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "size_b": 0.3,  # 326M
         "note": "BGE 中文 Embedding",
     },
+
+    # ===== Embedding 工业标准（HF 主流）=====
+    "all-MiniLM-L6-v2": {
+        "hf_repo": "sentence-transformers/all-MiniLM-L6-v2",
+        "github": "UKPLab/sentence-transformers",
+        "category": "embedding",
+        "size_b": 0.02,  # 22M
+        "note": "Sentence-Transformers 工业标准（2.54 亿 DLs，HF 最流行 embedding），英文 384 维",
+    },
+    "all-mpnet-base-v2": {
+        "hf_repo": "sentence-transformers/all-mpnet-base-v2",
+        "github": "UKPLab/sentence-transformers",
+        "category": "embedding",
+        "size_b": 0.11,  # 110M
+        "note": "MPNet base 768 维，英文强 baseline，HF 24M DLs",
+    },
+    "paraphrase-multilingual-MiniLM-L12-v2": {
+        "hf_repo": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "github": "UKPLab/sentence-transformers",
+        "category": "embedding",
+        "size_b": 0.12,  # 118M
+        "note": "多语言 paraphrase 模型（HF 46M DLs），50+ 语言",
+    },
+    "nomic-embed-text-v1.5": {
+        "hf_repo": "nomic-ai/nomic-embed-text-v1.5",
+        "github": "nomic-ai/nomic-embed-text-v1.5",
+        "category": "embedding",
+        "size_b": 0.14,  # 137M
+        "note": "Nomic Embed v1.5，英文强模型，768 维，HF 16M DLs",
+    },
+    "multilingual-e5-small": {
+        "hf_repo": "intfloat/multilingual-e5-small",
+        "github": "microsoft/unilm",
+        "category": "embedding",
+        "size_b": 0.12,  # 118M
+        "note": "Microsoft E5 small 多语言，384 维，HF 12.2M DLs",
+    },
+    "multilingual-e5-base": {
+        "hf_repo": "intfloat/multilingual-e5-base",
+        "github": "microsoft/unilm",
+        "category": "embedding",
+        "size_b": 0.28,  # 278M
+        "note": "Microsoft E5 base 多语言，768 维，HF 7.2M DLs",
+    },
+    "multilingual-e5-large": {
+        "hf_repo": "intfloat/multilingual-e5-large",
+        "github": "microsoft/unilm",
+        "category": "embedding",
+        "size_b": 0.56,  # 560M
+        "note": "Microsoft E5 large 多语言，1024 维，HF 7M DLs",
+    },
+    "bge-small-en-v1.5": {
+        "hf_repo": "BAAI/bge-small-en-v1.5",
+        "github": "FlagOpen/FlagEmbedding",
+        "category": "embedding",
+        "size_b": 0.03,  # 33M
+        "note": "BGE 英文 small，384 维，HF 64.6M DLs",
+    },
+    "bge-base-en-v1.5": {
+        "hf_repo": "BAAI/bge-base-en-v1.5",
+        "github": "FlagOpen/FlagEmbedding",
+        "category": "embedding",
+        "size_b": 0.11,  # 109M
+        "note": "BGE 英文 base，768 维，HF 10.7M DLs",
+    },
+    "bge-small-zh-v1.5": {
+        "hf_repo": "BAAI/bge-small-zh-v1.5",
+        "github": "FlagOpen/FlagEmbedding",
+        "category": "embedding",
+        "size_b": 0.02,  # 24M
+        "note": "BGE 中文 small，512 维，HF 4.9M DLs",
+    },
+    "bge-base-zh-v1.5": {
+        "hf_repo": "BAAI/bge-base-zh-v1.5",
+        "github": "FlagOpen/FlagEmbedding",
+        "category": "embedding",
+        "size_b": 0.1,  # 100M（HF mirror 数据不完整，按 bge-base 标准估算）
+        "note": "BGE 中文 base，768 维，HF 0.8M DLs",
+    },
+    "qwen3-embedding-0.6b": {
+        "hf_repo": "Qwen/Qwen3-Embedding-0.6B",
+        "github": "QwenLM/Qwen3-Embedding",
+        "category": "embedding",
+        "size_b": 0.6,
+        "note": "Qwen3 Embedding 0.6B（HF 7.8M DLs），阿里新一代 embedding",
+    },
+
     "bge-reranker-v2-m3": {
         "hf_repo": "BAAI/bge-reranker-v2-m3",
         "github": "FlagOpen/FlagEmbedding",
         "category": "reranker",
         "size_b": 0.6,  # 568M
         "note": "BGE 多语言 Reranker",
+    },
+    "bge-reranker-large": {
+        "hf_repo": "BAAI/bge-reranker-large",
+        "github": "FlagOpen/FlagEmbedding",
+        "category": "reranker",
+        "size_b": 0.56,  # 560M
+        "note": "BGE 英文 Reranker large，HF 2.7M DLs",
     },
     "qwen3-embedding-8b": {
         "hf_repo": "Qwen/Qwen3-Embedding-8B",

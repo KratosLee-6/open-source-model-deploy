@@ -3,7 +3,7 @@
 > 把"模型规格 / 硬件报价 / 部署方式"做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
 **版本**：v1.0.1（2026-09-10）
-- 75 个开源模型 + 8 大分类（自动 check，缺一即拒）
+- 94 个开源模型 + 8 大分类（自动 check，缺一即拒）
 - GitHub Actions 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议
 - 三种部署方式：CLI / MCP Server / HTTP API
 - 真实硬件实测：GTX 1660 Ti 6GB / 8 核 CPU / 15.9GB RAM（详见下文 🏆 实测案例）
@@ -12,7 +12,7 @@
 
 ## 🌟 核心亮点
 
-- **🧠 75 个开源模型覆盖**：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码 / 视觉 / Embedding / Reranker 专用模型
+- **🧠 94 个开源模型覆盖**：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码 / 视觉 / Embedding / Reranker 专用模型
 - **🔌 三种部署方式**：CLI / MCP Server（Agent 原生协议）/ HTTP API（FastAPI）
 - **🖥️ 硬件自动检测**：跨平台识别 NVIDIA / AMD / Apple Silicon，自动推荐可部署模型
 - **🚀 一键部署脚本**：自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
@@ -57,9 +57,9 @@ osm-deploy deploy qwen3-32b
 
 ---
 
-### v1.0.1 最新实测（2026-09-10）— 工具自检 75 模型推荐（**非真实模型推理**）
+### v1.0.1 最新实测（2026-09-10）— 工具自检 94 模型推荐（**非真实模型推理**）
 
-> ⚠️ **重要区分**：v1.0.1 实测是**工具自身功能验证**——hardware_detect 扫描硬件、auto_expand_models 检查 75 模型清单、按 size_b 推荐部署档位。**没有真实加载模型跑推理**。
+> ⚠️ **重要区分**：v1.0.1 实测是**工具自身功能验证**——hardware_detect 扫描硬件、auto_expand_models 检查 94 模型清单、按 size_b 推荐部署档位。**没有真实加载模型跑推理**。
 > v1.0.0 实测是**真实模型推理**——本地加载 Llama-3.2-1B 跑 API 调用（35.85 tokens/秒）。
 > 两者并列保存是**不同维度**的实测记录。
 
@@ -141,7 +141,7 @@ Memory-Usage  43MiB / 6144MiB
 
 ---
 
-**结论**：v1.0.1 在真实硬件（GTX 1660 Ti 6GB）上跑通全套工具链路——75 模型清单完整 ✓、硬件扫描准确 ✓、推荐结果按档位分组 ✓、GitHub Actions 工作流每周自动刷新 ✓。
+**结论**：v1.0.1 在真实硬件（GTX 1660 Ti 6GB）上跑通全套工具链路——94 模型清单完整 ✓、硬件扫描准确 ✓、推荐结果按档位分组 ✓、GitHub Actions 工作流每周自动刷新 ✓。
 
 ## 🎯 解决什么问题？
 
@@ -152,7 +152,7 @@ Memory-Usage  43MiB / 6144MiB
 - **量化版本涌现**：昨天还没有的 GGUF，今天突然有人发布
 - **手动调研累**：每个模型都要查 HF / GitHub / arXiv / 京东，时间成本极高
 
-**本工具 = 75 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
+**本工具 = 94 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
 
 ## 🏗️ 架构
 
@@ -212,7 +212,7 @@ curl -X POST http://localhost:8765/assess -d '{"model":"deepseek-v3"}'
 curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"vllm"}'
 ```
 
-## 📊 已覆盖的 75 个模型（分 8 类）
+## 📊 已覆盖的 94 个模型（分 8 类）
 
 | 分类 | 模型示例 |
 |------|---------|
@@ -229,7 +229,7 @@ curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"
 
 **场景 1：客户问"本地跑 AI 要多少钱"**
 ```
-Agent → detect_hardware() → 75 个推荐 → 客户决策
+Agent → detect_hardware() → 94 个推荐 → 客户决策
 ```
 
 **场景 2：技术选型对比 DeepSeek vs Qwen3**

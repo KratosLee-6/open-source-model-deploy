@@ -1,0 +1,182 @@
+[
+  {
+    "hf_repo": "sentence-transformers/all-MiniLM-L6-v2",
+    "size_b": 0.02,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 254035929,
+    "likes": 5775,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "sentence-transformers/all-mpnet-base-v2",
+    "size_b": 0.11,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 24033268,
+    "likes": 1352,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "size_b": 0.12,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 46383496,
+    "likes": 1370,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "nomic-ai/nomic-embed-text-v1.5",
+    "size_b": 0.14,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 16063720,
+    "likes": 908,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "intfloat/multilingual-e5-small",
+    "size_b": 0.12,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 12176490,
+    "likes": 401,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "intfloat/multilingual-e5-base",
+    "size_b": 0.28,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 7246005,
+    "likes": 383,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "intfloat/multilingual-e5-large",
+    "size_b": 0.56,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 6991169,
+    "likes": 1248,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "BAAI/bge-small-en-v1.5",
+    "size_b": 0.03,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 64607097,
+    "likes": 551,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "BAAI/bge-base-en-v1.5",
+    "size_b": 0.11,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 10718782,
+    "likes": 470,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "BAAI/bge-large-en-v1.5",
+    "size_b": 0.34,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 13042109,
+    "likes": 721,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "BAAI/bge-small-zh-v1.5",
+    "size_b": 0.02,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 4949237,
+    "likes": 139,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "BAAI/bge-base-zh-v1.5",
+    "size_b": 0,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 799812,
+    "likes": 110,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "BAAI/bge-reranker-large",
+    "size_b": 0.56,
+    "activated_b": null,
+    "category": "reranker",
+    "downloads": 2675702,
+    "likes": 468,
+    "license": "mit"
+  },
+  {
+    "hf_repo": "openai/gpt-oss-20b",
+    "size_b": 20.91,
+    "activated_b": null,
+    "category": "international-edge",
+    "downloads": 6589538,
+    "likes": 5016,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "openai/gpt-oss-120b",
+    "size_b": 116.83,
+    "activated_b": null,
+    "category": "international-dense",
+    "downloads": 5463732,
+    "likes": 5186,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "google/gemma-4-26B-A4B-it",
+    "size_b": 25.81,
+    "activated_b": 4,
+    "category": "vision",
+    "downloads": 8867625,
+    "likes": 1486,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "google/gemma-4-31B-it",
+    "size_b": 31.27,
+    "activated_b": null,
+    "category": "international-dense",
+    "downloads": 8676676,
+    "likes": 3762,
+    "license": "apache-2.0"
+  },
+  {
+    "hf_repo": "meta-llama/Llama-3.1-8B-Instruct",
+    "size_b": 8.03,
+    "activated_b": null,
+    "category": "international-edge",
+    "downloads": 5620096,
+    "likes": 6892,
+    "license": "llama3.1"
+  },
+  {
+    "hf_repo": "nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16",
+    "size_b": 3.97,
+    "activated_b": null,
+    "category": "international-edge",
+    "downloads": 3451595,
+    "likes": 117,
+    "license": "other"
+  },
+  {
+    "hf_repo": "Qwen/Qwen3-Embedding-0.6B",
+    "size_b": 0.6,
+    "activated_b": null,
+    "category": "embedding",
+    "downloads": 7806497,
+    "likes": 1189,
+    "license": "apache-2.0"
+  }
+]

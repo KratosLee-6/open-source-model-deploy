@@ -20,7 +20,7 @@ import urllib.error
 from typing import Any, Dict, List, Optional
 
 # ============================================================
-# 配置：75 个期望模型（2026-09-10 大规模扩充）
+# 配置：94 个期望模型（2026-09-10 大规模扩充第二轮）
 # ============================================================
 EXPECTED_MODELS = [
     # domestic-general (33 个)
@@ -127,7 +127,9 @@ EXPECTED_MODELS = [
     {"name": "qwen3-coder-30b", "hf_repo": "Qwen/Qwen3-Coder-30B-A3B-Instruct", "github": "QwenLM/Qwen3-Coder",
      "category": "code", "size_b": 30, "note": "MoE 30B/3B，Qwen3 代码版"},
 
-    # vision (9 个)
+    # vision (10 个)
+    {"name": "gemma-4-26b-a4b", "hf_repo": "google/gemma-4-26B-A4B-it", "github": "google-deepmind/gemma",
+     "category": "vision", "size_b": 25.81, "note": "Google Gemma 4 26B-A4B MoE（25.81B 总参 / 4B 激活），多模态，HF 8.9M DLs"},
     {"name": "internvl3-78b", "hf_repo": "OpenGVLab/InternVL3-78B", "github": "OpenGVLab/InternVL",
      "category": "vision", "size_b": 78, "note": "InternVL3 旗舰"},
     {"name": "internvl3-8b", "hf_repo": "OpenGVLab/InternVL3-8B", "github": "OpenGVLab/InternVL",
@@ -147,9 +149,11 @@ EXPECTED_MODELS = [
     {"name": "qwen3-vl-8b-instruct", "hf_repo": "Qwen/Qwen3-VL-8B-Instruct", "github": "QwenLM/Qwen3-VL",
      "category": "vision", "size_b": 8.77, "note": "Qwen3-VL 8B Instruct（实际 8.77B），多模态旗舰，HF 16.5M DLs"},
 
-    # international-dense (5 个)
+    # international-dense (7 个)
     {"name": "gemma-3-27b", "hf_repo": "google/gemma-3-27b-it", "github": "google-deepmind/gemma",
      "category": "international-dense", "size_b": 27, "note": "Gemma 3 中等规模"},
+    {"name": "gemma-4-31b", "hf_repo": "google/gemma-4-31B-it", "github": "google-deepmind/gemma",
+     "category": "international-dense", "size_b": 31.27, "note": "Google Gemma 4 31B（实际 31.27B），密集模型，HF 8.7M DLs"},
     {"name": "llama-3.1-405b", "hf_repo": "meta-llama/Llama-3.1-405B", "github": "meta-llama/llama-models",
      "category": "international-dense", "size_b": 405, "note": "Llama 3.1 旗舰，密集模型"},
     {"name": "llama-3.1-70b", "hf_repo": "meta-llama/Llama-3.1-70B", "github": "meta-llama/llama-models",
@@ -158,16 +162,24 @@ EXPECTED_MODELS = [
      "category": "international-dense", "size_b": 123, "note": "Mistral 旗舰"},
     {"name": "mistral-small-3", "hf_repo": "mistralai/Mistral-Small-3", "github": "mistralai/mistral-finetune",
      "category": "international-dense", "size_b": 22, "note": "Mistral 中等规模"},
+    {"name": "openai-gpt-oss-120b", "hf_repo": "openai/gpt-oss-120b", "github": "openai/gpt-oss",
+     "category": "international-dense", "size_b": 116.83, "note": "OpenAI gpt-oss-120b（实际 116.83B），apache-2.0，HF 5.5M DLs"},
 
-    # international-edge (7 个)
+    # international-edge (10 个)
     {"name": "gemma-3-4b", "hf_repo": "google/gemma-3-4b-it", "github": "google-deepmind/gemma",
      "category": "international-edge", "size_b": 4, "note": "边缘/移动友好"},
     {"name": "gemma-3-9b", "hf_repo": "google/gemma-3-9b-it", "github": "google-deepmind/gemma",
      "category": "international-edge", "size_b": 9, "note": "Gemma 3 轻量"},
+    {"name": "llama-3.1-8b-instruct", "hf_repo": "meta-llama/Llama-3.1-8B-Instruct", "github": "meta-llama/llama-models",
+     "category": "international-edge", "size_b": 8.03, "note": "Llama 3.1 8B Instruct（实际 8.03B），单卡 4090 友好，HF 5.6M DLs"},
     {"name": "llama-3.2-1b", "hf_repo": "meta-llama/Llama-3.2-1B", "github": "meta-llama/llama-models",
      "category": "international-edge", "size_b": 1, "note": "极致轻量"},
     {"name": "llama-3.2-3b", "hf_repo": "meta-llama/Llama-3.2-3B", "github": "meta-llama/llama-models",
      "category": "international-edge", "size_b": 3, "note": "边缘部署友好"},
+    {"name": "nvidia-nemotron-3-nano-4b", "hf_repo": "nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16", "github": "NVIDIA/Nemotron",
+     "category": "international-edge", "size_b": 3.97, "note": "NVIDIA Nemotron-3 Nano 4B（实际 3.97B），HF 3.5M DLs"},
+    {"name": "openai-gpt-oss-20b", "hf_repo": "openai/gpt-oss-20b", "github": "openai/gpt-oss",
+     "category": "international-edge", "size_b": 20.91, "note": "OpenAI 首个开源 LLM（gpt-oss-20b），apache-2.0，HF 6.6M DLs"},
     {"name": "phi-3.5-mini", "hf_repo": "microsoft/Phi-3.5-mini-instruct", "github": "microsoft/PhiCookBook",
      "category": "international-edge", "size_b": 3.8, "note": "上一代 3.8B"},
     {"name": "phi-4", "hf_repo": "microsoft/phi-4", "github": "microsoft/PhiCookBook",
@@ -175,20 +187,48 @@ EXPECTED_MODELS = [
     {"name": "phi-4-mini", "hf_repo": "microsoft/Phi-4-mini-instruct", "github": "microsoft/PhiCookBook",
      "category": "international-edge", "size_b": 3.8, "note": "3.8B 极致轻量"},
 
-    # embedding (4 个)
+    # embedding (16 个)
+    {"name": "all-MiniLM-L6-v2", "hf_repo": "sentence-transformers/all-MiniLM-L6-v2", "github": "UKPLab/sentence-transformers",
+     "category": "embedding", "size_b": 0.02, "note": "Sentence-Transformers 工业标准（2.54 亿 DLs，HF 最流行 embedding），英文 384 维"},
+    {"name": "all-mpnet-base-v2", "hf_repo": "sentence-transformers/all-mpnet-base-v2", "github": "UKPLab/sentence-transformers",
+     "category": "embedding", "size_b": 0.11, "note": "MPNet base 768 维，英文强 baseline，HF 24M DLs"},
+    {"name": "bge-base-en-v1.5", "hf_repo": "BAAI/bge-base-en-v1.5", "github": "FlagOpen/FlagEmbedding",
+     "category": "embedding", "size_b": 0.11, "note": "BGE 英文 base，768 维，HF 10.7M DLs"},
+    {"name": "bge-base-zh-v1.5", "hf_repo": "BAAI/bge-base-zh-v1.5", "github": "FlagOpen/FlagEmbedding",
+     "category": "embedding", "size_b": 0.1, "note": "BGE 中文 base，768 维，HF 0.8M DLs"},
     {"name": "bge-large-zh-v1.5", "hf_repo": "BAAI/bge-large-zh-v1.5", "github": "FlagOpen/FlagEmbedding",
      "category": "embedding", "size_b": 0.3, "note": "BGE 中文 Embedding"},
     {"name": "bge-m3", "hf_repo": "BAAI/bge-m3", "github": "FlagOpen/FlagEmbedding",
      "category": "embedding", "size_b": 0.6, "note": "BGE 多语言 Embedding"},
+    {"name": "bge-small-en-v1.5", "hf_repo": "BAAI/bge-small-en-v1.5", "github": "FlagOpen/FlagEmbedding",
+     "category": "embedding", "size_b": 0.03, "note": "BGE 英文 small，384 维，HF 64.6M DLs"},
+    {"name": "bge-small-zh-v1.5", "hf_repo": "BAAI/bge-small-zh-v1.5", "github": "FlagOpen/FlagEmbedding",
+     "category": "embedding", "size_b": 0.02, "note": "BGE 中文 small，512 维，HF 4.9M DLs"},
     {"name": "gte-qwen2-7b-instruct", "hf_repo": "Alibaba-NLP/gte-Qwen2-7B-instruct", "github": "Alibaba-NLP/gte-Qwen",
      "category": "embedding", "size_b": 7, "note": "阿里 GTE Embedding"},
+    {"name": "multilingual-e5-base", "hf_repo": "intfloat/multilingual-e5-base", "github": "microsoft/unilm",
+     "category": "embedding", "size_b": 0.28, "note": "Microsoft E5 base 多语言，768 维，HF 7.2M DLs"},
+    {"name": "multilingual-e5-large", "hf_repo": "intfloat/multilingual-e5-large", "github": "microsoft/unilm",
+     "category": "embedding", "size_b": 0.56, "note": "Microsoft E5 large 多语言，1024 维，HF 7M DLs"},
+    {"name": "multilingual-e5-small", "hf_repo": "intfloat/multilingual-e5-small", "github": "microsoft/unilm",
+     "category": "embedding", "size_b": 0.12, "note": "Microsoft E5 small 多语言，384 维，HF 12.2M DLs"},
+    {"name": "nomic-embed-text-v1.5", "hf_repo": "nomic-ai/nomic-embed-text-v1.5", "github": "nomic-ai/nomic-embed-text-v1.5",
+     "category": "embedding", "size_b": 0.14, "note": "Nomic Embed v1.5，英文强模型，768 维，HF 16M DLs"},
+    {"name": "paraphrase-multilingual-MiniLM-L12-v2", "hf_repo": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", "github": "UKPLab/sentence-transformers",
+     "category": "embedding", "size_b": 0.12, "note": "多语言 paraphrase 模型（HF 46M DLs），50+ 语言"},
+    {"name": "qwen3-embedding-0.6b", "hf_repo": "Qwen/Qwen3-Embedding-0.6B", "github": "QwenLM/Qwen3-Embedding",
+     "category": "embedding", "size_b": 0.6, "note": "Qwen3 Embedding 0.6B（HF 7.8M DLs），阿里新一代 embedding"},
     {"name": "qwen3-embedding-8b", "hf_repo": "Qwen/Qwen3-Embedding-8B", "github": "QwenLM/Qwen3-Embedding",
      "category": "embedding", "size_b": 8, "note": "Qwen3 Embedding 8B"},
 
-    # reranker (1 个)
+    # reranker (2 个)
+    {"name": "bge-reranker-large", "hf_repo": "BAAI/bge-reranker-large", "github": "FlagOpen/FlagEmbedding",
+     "category": "reranker", "size_b": 0.56, "note": "BGE 英文 Reranker large，HF 2.7M DLs"},
     {"name": "bge-reranker-v2-m3", "hf_repo": "BAAI/bge-reranker-v2-m3", "github": "FlagOpen/FlagEmbedding",
      "category": "reranker", "size_b": 0.6, "note": "BGE 多语言 Reranker"},
+
 ]
+
 
 
 HF_API_BASE = "https://huggingface.co/api"
