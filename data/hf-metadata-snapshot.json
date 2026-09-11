@@ -1,19 +1,11 @@
 {
-<<<<<<< Updated upstream
-  "snapshot_at": "2026-09-10T17:31:50",
-=======
-  "snapshot_at": "2026-09-11T01:34:17",
->>>>>>> Stashed changes
+  "snapshot_at": "2026-09-11T14:23:08",
   "snapshot_source": "GitHub Actions / auto refresh",
-  "model_count": 48,
+  "model_count": 75,
   "models": {
     "deepseek-v3": {
       "hf_repo": "deepseek-ai/DeepSeek-V3",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:50",
-=======
-      "fetched_at": "2026-09-11T01:34:18",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:08",
       "id": "deepseek-ai/DeepSeek-V3",
       "tags": [
         "transformers",
@@ -30,7 +22,7 @@
         "region:us"
       ],
       "license": null,
-      "downloads": 1065138,
+      "downloads": 1066832,
       "likes": 4182,
       "last_modified": "2025-03-27T04:01:45.000Z",
       "pipeline_tag": "text-generation",
@@ -57,12 +49,12 @@
         "recommended_memory_gb": [],
         "recommended_nodes": [],
         "vram_minimum_gb": 614.0,
-        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is recommended and enabled by\n"
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
       }
     },
     "deepseek-v4.1-flash": {
       "hf_repo": "deepseek-ai/DeepSeek-V4.1-Flash",
-      "fetched_at": "2026-09-11T01:34:25",
+      "fetched_at": "2026-09-11T14:23:09",
       "id": "deepseek-ai/DeepSeek-V4.1-Flash",
       "tags": [
         "transformers",
@@ -78,8 +70,8 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 6,
-      "likes": 1146,
+      "downloads": 75774,
+      "likes": 1679,
       "last_modified": "2026-09-10T08:18:10.000Z",
       "pipeline_tag": "image-text-to-text",
       "gguf_files": [],
@@ -108,13 +100,59 @@
         "raw_excerpt": "\n--- GB200 NVL4 ---\n>vram_minimum_gb: 614</code> is that total times the schema&#x27;s 1.2 headroom factor. It fits\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\nKV cache, but 1M context will need the context or batch capped — measure before\nassuming.</p>\n<h2 id=\"prerequisites\">Prerequisites</h2>\n<ul>\n<li>The <code>vllm/vllm-openai:deepseekv41-flash</code> image (vLLM 0.30.0+). No pip wheel serves this\narchitecture, so the Install block only offers Docker.</li>\n<li>The Rust Ope\n"
       }
     },
+    "deepseek-v4-flash-0731": {
+      "hf_repo": "deepseek-ai/DeepSeek-V4-Flash-0731",
+      "fetched_at": "2026-09-11T14:23:10",
+      "id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "deepseek_v4",
+        "text-generation",
+        "conversational",
+        "arxiv:2606.19348",
+        "license:mit",
+        "eval-results",
+        "endpoints_compatible",
+        "8-bit",
+        "fp8",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "mit",
+      "downloads": 4397122,
+      "likes": 3932,
+      "last_modified": "2026-08-01T03:07:41.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "deepseek-ai/DeepSeek-V4-Flash",
+      "category": "domestic-general",
+      "size_b": 284.0,
+      "activated_b": 13.0,
+      "note": "DeepSeek-V4 Flash 正式版（0731），MoE 284B/13B，1M context，多模态（DeepSeek-V4 系列代表）",
+      "recommended_hardware": {
+        "official_source": "README.md + vLLM recipe",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [
+          "A100",
+          "B200",
+          "GB200",
+          "H100",
+          "H200",
+          "H800",
+          "L4",
+          "L40S"
+        ],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": 614.0,
+        "raw_excerpt": "\n--- GB200 NVL4 ---\nmulti-GPU supported hardware: single-node DP + EP with\n<code>--data-parallel-size 4</code>. Fills a GB200 NVL4 tray exactly; uses 4 of 8 GPUs per\nreplica on H200/B200/B300 (leaving headroom for throughput-vs-latency tuning).\nOn DGX Station, use the single-GPU launch below. For disaggregated prefill/decode\non GB200, use the PD Cluster tab.</p>\n<h3 id=\"dgx-spark-gb10-cluster\">DGX Spark (GB10) cluster</h3>\n<p>DGX Spark requires the community Spark vLLM build for this model rather than the\nstock vLL\n"
+      }
+    },
     "deepseek-r1": {
       "hf_repo": "deepseek-ai/DeepSeek-R1",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:50",
-=======
-      "fetched_at": "2026-09-11T01:34:35",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:11",
       "id": "deepseek-ai/DeepSeek-R1",
       "tags": [
         "transformers",
@@ -133,7 +171,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 709327,
+      "downloads": 670913,
       "likes": 13619,
       "last_modified": "2025-03-27T04:01:59.000Z",
       "pipeline_tag": "text-generation",
@@ -160,16 +198,12 @@
         "recommended_memory_gb": [],
         "recommended_nodes": [],
         "vram_minimum_gb": 614.0,
-        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is recommended and enabled by\n"
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
       }
     },
     "deepseek-v2.5": {
       "hf_repo": "deepseek-ai/DeepSeek-V2.5",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:51",
-=======
-      "fetched_at": "2026-09-11T01:34:47",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:12",
       "id": "deepseek-ai/DeepSeek-V2.5",
       "tags": [
         "transformers",
@@ -186,7 +220,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 5831,
+      "downloads": 5934,
       "likes": 734,
       "last_modified": "2024-12-11T12:08:06.000Z",
       "pipeline_tag": "text-generation",
@@ -209,11 +243,7 @@
     },
     "qwen3-235b-a22b": {
       "hf_repo": "Qwen/Qwen3-235B-A22B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:52",
-=======
-      "fetched_at": "2026-09-11T01:34:50",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:13",
       "id": "Qwen/Qwen3-235B-A22B",
       "tags": [
         "transformers",
@@ -229,7 +259,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 346243,
+      "downloads": 341961,
       "likes": 1111,
       "last_modified": "2025-07-26T03:45:13.000Z",
       "pipeline_tag": "text-generation",
@@ -252,11 +282,7 @@
     },
     "qwen3-32b": {
       "hf_repo": "Qwen/Qwen3-32B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:52",
-=======
-      "fetched_at": "2026-09-11T01:34:54",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:14",
       "id": "Qwen/Qwen3-32B",
       "tags": [
         "transformers",
@@ -275,8 +301,8 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 5212359,
-      "likes": 744,
+      "downloads": 5273218,
+      "likes": 745,
       "last_modified": "2025-07-26T03:45:22.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -302,16 +328,12 @@
         "recommended_memory_gb": [],
         "recommended_nodes": [],
         "vram_minimum_gb": 614.0,
-        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is recommended and enabled by\n"
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
       }
     },
     "qwen3-14b": {
       "hf_repo": "Qwen/Qwen3-14B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:53",
-=======
-      "fetched_at": "2026-09-11T01:35:02",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:15",
       "id": "Qwen/Qwen3-14B",
       "tags": [
         "transformers",
@@ -331,7 +353,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 1676957,
+      "downloads": 1692953,
       "likes": 465,
       "last_modified": "2025-07-26T03:49:23.000Z",
       "pipeline_tag": "text-generation",
@@ -344,11 +366,7 @@
     },
     "qwen3-8b": {
       "hf_repo": "Qwen/Qwen3-8B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:53",
-=======
-      "fetched_at": "2026-09-11T01:35:04",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:16",
       "id": "Qwen/Qwen3-8B",
       "tags": [
         "transformers",
@@ -369,8 +387,8 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 12883281,
-      "likes": 1365,
+      "downloads": 12880447,
+      "likes": 1366,
       "last_modified": "2025-07-26T03:49:13.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -380,13 +398,934 @@
       "activated_b": null,
       "note": "单卡 4090 友好"
     },
+    "qwen3-0.6b": {
+      "hf_repo": "Qwen/Qwen3-0.6B",
+      "fetched_at": "2026-09-11T14:23:17",
+      "id": "Qwen/Qwen3-0.6B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3",
+        "text-generation",
+        "conversational",
+        "arxiv:2505.09388",
+        "base_model:Qwen/Qwen3-0.6B-Base",
+        "base_model:finetune:Qwen/Qwen3-0.6B-Base",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 20685071,
+      "likes": 1596,
+      "last_modified": "2025-07-26T03:46:27.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 0.75,
+      "activated_b": null,
+      "note": "Qwen3 超轻量（0.6B 实际 0.75B），CPU/edge 设备友好，HF 20M DLs"
+    },
+    "qwen3-1.7b": {
+      "hf_repo": "Qwen/Qwen3-1.7B",
+      "fetched_at": "2026-09-11T14:23:17",
+      "id": "Qwen/Qwen3-1.7B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3",
+        "text-generation",
+        "conversational",
+        "arxiv:2505.09388",
+        "base_model:Qwen/Qwen3-1.7B-Base",
+        "base_model:finetune:Qwen/Qwen3-1.7B-Base",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 3464727,
+      "likes": 533,
+      "last_modified": "2025-07-26T03:46:32.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 2.03,
+      "activated_b": null,
+      "note": "Qwen3 1.7B（实际 2.03B），边缘部署友好"
+    },
+    "qwen3-4b": {
+      "hf_repo": "Qwen/Qwen3-4B",
+      "fetched_at": "2026-09-11T14:23:18",
+      "id": "Qwen/Qwen3-4B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3",
+        "text-generation",
+        "conversational",
+        "arxiv:2309.00071",
+        "arxiv:2505.09388",
+        "base_model:Qwen/Qwen3-4B-Base",
+        "base_model:finetune:Qwen/Qwen3-4B-Base",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 6222186,
+      "likes": 696,
+      "last_modified": "2025-07-26T03:46:39.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 4.02,
+      "activated_b": null,
+      "note": "Qwen3 4B（实际 4.02B），单卡 4090/3090 友好，HF 6.3M DLs"
+    },
+    "qwen3-4b-instruct-2507": {
+      "hf_repo": "Qwen/Qwen3-4B-Instruct-2507",
+      "fetched_at": "2026-09-11T14:23:18",
+      "id": "Qwen/Qwen3-4B-Instruct-2507",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3",
+        "text-generation",
+        "conversational",
+        "arxiv:2505.09388",
+        "license:apache-2.0",
+        "eval-results",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 3579530,
+      "likes": 958,
+      "last_modified": "2025-09-17T06:56:53.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 4.02,
+      "activated_b": null,
+      "note": "Qwen3 4B Instruct 2507 版本，HF 3.6M DLs"
+    },
+    "qwen3.5-0.8b": {
+      "hf_repo": "Qwen/Qwen3.5-0.8B",
+      "fetched_at": "2026-09-11T14:23:19",
+      "id": "Qwen/Qwen3.5-0.8B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "base_model:Qwen/Qwen3.5-0.8B-Base",
+        "base_model:finetune:Qwen/Qwen3.5-0.8B-Base",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 2411632,
+      "likes": 699,
+      "last_modified": "2026-03-02T11:26:58.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 0.87,
+      "activated_b": null,
+      "note": "Qwen3.5 0.8B（实际 0.87B），CPU/edge 友好"
+    },
+    "qwen3.5-2b": {
+      "hf_repo": "Qwen/Qwen3.5-2B",
+      "fetched_at": "2026-09-11T14:23:19",
+      "id": "Qwen/Qwen3.5-2B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "base_model:Qwen/Qwen3.5-2B-Base",
+        "base_model:finetune:Qwen/Qwen3.5-2B-Base",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 3881229,
+      "likes": 387,
+      "last_modified": "2026-03-02T11:26:29.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 2.27,
+      "activated_b": null,
+      "note": "Qwen3.5 2B（实际 2.27B）"
+    },
+    "qwen3.5-4b": {
+      "hf_repo": "Qwen/Qwen3.5-4B",
+      "fetched_at": "2026-09-11T14:23:20",
+      "id": "Qwen/Qwen3.5-4B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "base_model:Qwen/Qwen3.5-4B-Base",
+        "base_model:finetune:Qwen/Qwen3.5-4B-Base",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 7196884,
+      "likes": 910,
+      "last_modified": "2026-03-02T00:52:52.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 4.66,
+      "activated_b": null,
+      "note": "Qwen3.5 4B（实际 4.66B），单卡 4090 友好，HF 7.2M DLs"
+    },
+    "qwen3.5-9b": {
+      "hf_repo": "Qwen/Qwen3.5-9B",
+      "fetched_at": "2026-09-11T14:23:20",
+      "id": "Qwen/Qwen3.5-9B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "base_model:Qwen/Qwen3.5-9B-Base",
+        "base_model:finetune:Qwen/Qwen3.5-9B-Base",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 10588820,
+      "likes": 1922,
+      "last_modified": "2026-03-02T00:51:43.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 9.65,
+      "activated_b": null,
+      "note": "Qwen3.5 9B（实际 9.65B），单卡 4090 友好，HF 10.6M DLs（Qwen3.5 旗舰轻量）"
+    },
+    "qwen3.5-27b": {
+      "hf_repo": "Qwen/Qwen3.5-27B",
+      "fetched_at": "2026-09-11T14:23:21",
+      "id": "Qwen/Qwen3.5-27B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 2188340,
+      "likes": 1044,
+      "last_modified": "2026-04-24T02:54:49.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 27.78,
+      "activated_b": null,
+      "note": "Qwen3.5 27B（实际 27.78B），HF 2.2M DLs"
+    },
+    "qwen3.5-35b-a3b": {
+      "hf_repo": "Qwen/Qwen3.5-35B-A3B",
+      "fetched_at": "2026-09-11T14:23:21",
+      "id": "Qwen/Qwen3.5-35B-A3B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5_moe",
+        "image-text-to-text",
+        "conversational",
+        "base_model:Qwen/Qwen3.5-35B-A3B-Base",
+        "base_model:finetune:Qwen/Qwen3.5-35B-A3B-Base",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 2164576,
+      "likes": 1501,
+      "last_modified": "2026-04-24T02:38:38.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 35.95,
+      "activated_b": 3.0,
+      "note": "Qwen3.5 35B-A3B MoE（35.95B 总参 / 3B 激活），HF 2.2M DLs",
+      "recommended_hardware": {
+        "official_source": "README.md + vLLM recipe",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [
+          "A100",
+          "B200",
+          "GB200",
+          "H100",
+          "H200",
+          "H800",
+          "L4",
+          "L40S"
+        ],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": 614.0,
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
+      }
+    },
+    "qwen3.5-122b-a10b": {
+      "hf_repo": "Qwen/Qwen3.5-122B-A10B",
+      "fetched_at": "2026-09-11T14:23:22",
+      "id": "Qwen/Qwen3.5-122B-A10B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5_moe",
+        "image-text-to-text",
+        "conversational",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:azure",
+        "deploy:sagemaker",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 647901,
+      "likes": 617,
+      "last_modified": "2026-04-24T03:55:23.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 125.09,
+      "activated_b": 10.0,
+      "note": "Qwen3.5 122B-A10B MoE（125B 总参 / 10B 激活），需多卡 H100/A100",
+      "recommended_hardware": {
+        "official_source": "README.md + vLLM recipe",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [
+          "A100",
+          "B200",
+          "GB200",
+          "H100",
+          "H200",
+          "H800",
+          "L4",
+          "L40S"
+        ],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": 614.0,
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
+      }
+    },
+    "qwen3.5-397b-a17b": {
+      "hf_repo": "Qwen/Qwen3.5-397B-A17B",
+      "fetched_at": "2026-09-11T14:23:23",
+      "id": "Qwen/Qwen3.5-397B-A17B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5_moe",
+        "image-text-to-text",
+        "conversational",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 194888,
+      "likes": 1559,
+      "last_modified": "2026-04-24T05:51:23.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3",
+      "category": "domestic-general",
+      "size_b": 403.4,
+      "activated_b": 17.0,
+      "note": "Qwen3.5 397B-A17B MoE（403B 总参 / 17B 激活），需 H200/8×H100 节点（vram ≥400GB）",
+      "recommended_hardware": {
+        "official_source": "README.md + vLLM recipe",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [
+          "A100",
+          "B200",
+          "GB200",
+          "H100",
+          "H200",
+          "H800",
+          "L4",
+          "L40S"
+        ],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": 614.0,
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
+      }
+    },
+    "qwen3.6-27b": {
+      "hf_repo": "Qwen/Qwen3.6-27B",
+      "fetched_at": "2026-09-11T14:23:24",
+      "id": "Qwen/Qwen3.6-27B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 4445698,
+      "likes": 2291,
+      "last_modified": "2026-04-24T02:39:16.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3.6",
+      "category": "domestic-general",
+      "size_b": 27.78,
+      "activated_b": null,
+      "note": "Qwen3.6 27B（实际 27.78B），密集模型，HF 4.4M DLs"
+    },
+    "qwen3.6-35b-a3b": {
+      "hf_repo": "Qwen/Qwen3.6-35B-A3B",
+      "fetched_at": "2026-09-11T14:23:25",
+      "id": "Qwen/Qwen3.6-35B-A3B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5_moe",
+        "image-text-to-text",
+        "conversational",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 3931259,
+      "likes": 2801,
+      "last_modified": "2026-04-24T02:53:42.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3.6",
+      "category": "domestic-general",
+      "size_b": 35.95,
+      "activated_b": 3.0,
+      "note": "Qwen3.6 35B-A3B MoE（35.95B 总参 / 3B 激活），HF 4.0M DLs",
+      "recommended_hardware": {
+        "official_source": "README.md + vLLM recipe",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [
+          "A100",
+          "B200",
+          "GB200",
+          "H100",
+          "H200",
+          "H800",
+          "L4",
+          "L40S"
+        ],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": 614.0,
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
+      }
+    },
+    "qwen3.8-27b": {
+      "hf_repo": "Qwen/Qwen3.8-27B",
+      "fetched_at": "2026-09-11T14:23:25",
+      "id": "Qwen/Qwen3.8-27B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_5",
+        "image-text-to-text",
+        "conversational",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:azure",
+        "deploy:sagemaker",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 7563763,
+      "likes": 14720,
+      "last_modified": "2026-08-14T15:00:01.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3.8",
+      "category": "domestic-general",
+      "size_b": 27.78,
+      "activated_b": null,
+      "note": "Qwen3.8 27B（实际 27.78B），Qwen3.5/3.6 升级版，HF 7.3M DLs / 14719 likes 顶流"
+    },
+    "qwen2.5-0.5b-instruct": {
+      "hf_repo": "Qwen/Qwen2.5-0.5B-Instruct",
+      "fetched_at": "2026-09-11T14:23:26",
+      "id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen2",
+        "text-generation",
+        "chat",
+        "conversational",
+        "en",
+        "arxiv:2407.10671",
+        "base_model:Qwen/Qwen2.5-0.5B",
+        "base_model:finetune:Qwen/Qwen2.5-0.5B",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 7225322,
+      "likes": 623,
+      "last_modified": "2024-09-25T12:32:56.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen2.5",
+      "category": "domestic-general",
+      "size_b": 0.5,
+      "activated_b": null,
+      "note": "Qwen2.5 0.5B Instruct，HF 7.2M DLs"
+    },
+    "qwen2.5-1.5b-instruct": {
+      "hf_repo": "Qwen/Qwen2.5-1.5B-Instruct",
+      "fetched_at": "2026-09-11T14:23:26",
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen2",
+        "text-generation",
+        "chat",
+        "conversational",
+        "en",
+        "arxiv:2407.10671",
+        "base_model:Qwen/Qwen2.5-1.5B",
+        "base_model:finetune:Qwen/Qwen2.5-1.5B",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 7268416,
+      "likes": 824,
+      "last_modified": "2024-09-25T12:32:50.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen2.5",
+      "category": "domestic-general",
+      "size_b": 1.5,
+      "activated_b": null,
+      "note": "Qwen2.5 1.5B Instruct，HF 7.3M DLs"
+    },
+    "qwen2.5-3b-instruct": {
+      "hf_repo": "Qwen/Qwen2.5-3B-Instruct",
+      "fetched_at": "2026-09-11T14:23:27",
+      "id": "Qwen/Qwen2.5-3B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen2",
+        "text-generation",
+        "chat",
+        "conversational",
+        "en",
+        "arxiv:2407.10671",
+        "base_model:Qwen/Qwen2.5-3B",
+        "base_model:finetune:Qwen/Qwen2.5-3B",
+        "license:other",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "other",
+      "downloads": 5415262,
+      "likes": 566,
+      "last_modified": "2024-09-25T12:33:00.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen2.5",
+      "category": "domestic-general",
+      "size_b": 3.0,
+      "activated_b": null,
+      "note": "Qwen2.5 3B Instruct，HF 5.4M DLs"
+    },
+    "qwen2.5-7b-instruct": {
+      "hf_repo": "Qwen/Qwen2.5-7B-Instruct",
+      "fetched_at": "2026-09-11T14:23:28",
+      "id": "Qwen/Qwen2.5-7B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen2",
+        "text-generation",
+        "chat",
+        "conversational",
+        "en",
+        "arxiv:2309.00071",
+        "arxiv:2407.10671",
+        "base_model:Qwen/Qwen2.5-7B",
+        "base_model:finetune:Qwen/Qwen2.5-7B",
+        "license:apache-2.0",
+        "eval-results",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 10059299,
+      "likes": 1588,
+      "last_modified": "2025-01-12T02:10:10.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen2.5",
+      "category": "domestic-general",
+      "size_b": 7.0,
+      "activated_b": null,
+      "note": "Qwen2.5 7B Instruct，HF 10.1M DLs（Qwen2.5 旗舰轻量）"
+    },
+    "qwen2.5-14b-instruct": {
+      "hf_repo": "Qwen/Qwen2.5-14B-Instruct",
+      "fetched_at": "2026-09-11T14:23:28",
+      "id": "Qwen/Qwen2.5-14B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen2",
+        "text-generation",
+        "chat",
+        "conversational",
+        "en",
+        "arxiv:2309.00071",
+        "arxiv:2407.10671",
+        "base_model:Qwen/Qwen2.5-14B",
+        "base_model:finetune:Qwen/Qwen2.5-14B",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 2617681,
+      "likes": 364,
+      "last_modified": "2024-09-25T12:33:04.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen2.5",
+      "category": "domestic-general",
+      "size_b": 14.0,
+      "activated_b": null,
+      "note": "Qwen2.5 14B Instruct，HF 2.6M DLs"
+    },
+    "qwen2.5-32b-instruct": {
+      "hf_repo": "Qwen/Qwen2.5-32B-Instruct",
+      "fetched_at": "2026-09-11T14:23:29",
+      "id": "Qwen/Qwen2.5-32B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen2",
+        "text-generation",
+        "chat",
+        "conversational",
+        "en",
+        "arxiv:2309.00071",
+        "arxiv:2407.10671",
+        "base_model:Qwen/Qwen2.5-32B",
+        "base_model:finetune:Qwen/Qwen2.5-32B",
+        "license:apache-2.0",
+        "text-generation-inference",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 2209951,
+      "likes": 359,
+      "last_modified": "2024-09-25T12:33:09.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen2.5",
+      "category": "domestic-general",
+      "size_b": 32.0,
+      "activated_b": null,
+      "note": "Qwen2.5 32B Instruct，HF 2.2M DLs",
+      "recommended_hardware": {
+        "official_source": "README.md",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": null,
+        "raw_excerpt": "(未找到)"
+      }
+    },
+    "qwen-72b": {
+      "hf_repo": "Qwen/Qwen-72B",
+      "fetched_at": "2026-09-11T14:23:30",
+      "id": "Qwen/Qwen-72B",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen",
+        "text-generation",
+        "custom_code",
+        "zh",
+        "en",
+        "arxiv:2309.16609",
+        "license:other",
+        "region:us"
+      ],
+      "license": "other",
+      "downloads": 3790415,
+      "likes": 362,
+      "last_modified": "2024-10-09T05:59:26.000Z",
+      "pipeline_tag": "text-generation",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen",
+      "category": "domestic-general",
+      "size_b": 72.0,
+      "activated_b": null,
+      "note": "Qwen 72B（前 Qwen2 代），HF 3.8M DLs",
+      "recommended_hardware": {
+        "official_source": "README.md",
+        "section_count": 1,
+        "hardware_section_found": true,
+        "recommended_gpu": [],
+        "recommended_memory_gb": [
+          "144 GB",
+          "48 GB"
+        ],
+        "recommended_nodes": [],
+        "vram_minimum_gb": null,
+        "raw_excerpt": "\n## 要求（Requirements）\n\n* python 3.8及以上版本\n* pytorch 1.12及以上版本，推荐2.0及以上版本\n* 建议使用CUDA 11.4及以上（GPU用户、flash-attention用户等需考虑此选项）\n* **运行BF16或FP16模型需要多卡至少144GB显存（例如2xA100-80G或5xV100-32G）；运行Int4模型至少需要48GB显存（例如1xA100-80G或2xV100-32G）。**\n* python 3.8 and above\n* pytorch 1.12 and above, 2.0 and above are recommended\n* CUDA 11.4 and above are recommended (this is for GPU users, flash-attention users, etc.)\n   **To run Qwen-72B-Chat in bf16/fp16, at least 144GB GPU memory is required (e.g., 2xA100-80G or 5xV100"
+      }
+    },
+    "qwen3-vl-2b-instruct": {
+      "hf_repo": "Qwen/Qwen3-VL-2B-Instruct",
+      "fetched_at": "2026-09-11T14:23:31",
+      "id": "Qwen/Qwen3-VL-2B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_vl",
+        "image-text-to-text",
+        "conversational",
+        "arxiv:2505.09388",
+        "arxiv:2502.13923",
+        "arxiv:2409.12191",
+        "arxiv:2308.12966",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 3029751,
+      "likes": 463,
+      "last_modified": "2025-10-23T11:30:44.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3-VL",
+      "category": "vision",
+      "size_b": 2.13,
+      "activated_b": null,
+      "note": "Qwen3-VL 2B Instruct（实际 2.13B），多模态轻量，HF 3.0M DLs"
+    },
+    "qwen3-vl-4b-instruct": {
+      "hf_repo": "Qwen/Qwen3-VL-4B-Instruct",
+      "fetched_at": "2026-09-11T14:23:32",
+      "id": "Qwen/Qwen3-VL-4B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_vl",
+        "image-text-to-text",
+        "conversational",
+        "arxiv:2505.09388",
+        "arxiv:2502.13923",
+        "arxiv:2409.12191",
+        "arxiv:2308.12966",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 4185427,
+      "likes": 463,
+      "last_modified": "2025-10-15T16:15:55.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3-VL",
+      "category": "vision",
+      "size_b": 4.44,
+      "activated_b": null,
+      "note": "Qwen3-VL 4B Instruct（实际 4.44B），多模态中等，HF 4.2M DLs"
+    },
+    "qwen3-vl-8b-instruct": {
+      "hf_repo": "Qwen/Qwen3-VL-8B-Instruct",
+      "fetched_at": "2026-09-11T14:23:32",
+      "id": "Qwen/Qwen3-VL-8B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_vl",
+        "image-text-to-text",
+        "conversational",
+        "arxiv:2505.09388",
+        "arxiv:2502.13923",
+        "arxiv:2409.12191",
+        "arxiv:2308.12966",
+        "license:apache-2.0",
+        "eval-results",
+        "endpoints_compatible",
+        "deploy:sagemaker",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 16515105,
+      "likes": 1087,
+      "last_modified": "2025-10-15T16:16:59.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3-VL",
+      "category": "vision",
+      "size_b": 8.77,
+      "activated_b": null,
+      "note": "Qwen3-VL 8B Instruct（实际 8.77B），多模态旗舰，HF 16.5M DLs"
+    },
+    "qwen3-vl-32b-instruct": {
+      "hf_repo": "Qwen/Qwen3-VL-32B-Instruct",
+      "fetched_at": "2026-09-11T14:23:33",
+      "id": "Qwen/Qwen3-VL-32B-Instruct",
+      "tags": [
+        "transformers",
+        "safetensors",
+        "qwen3_vl",
+        "image-text-to-text",
+        "conversational",
+        "arxiv:2505.09388",
+        "arxiv:2502.13923",
+        "arxiv:2409.12191",
+        "arxiv:2308.12966",
+        "license:apache-2.0",
+        "endpoints_compatible",
+        "deploy:azure",
+        "region:us"
+      ],
+      "license": "apache-2.0",
+      "downloads": 335538,
+      "likes": 238,
+      "last_modified": "2025-10-21T18:26:34.000Z",
+      "pipeline_tag": "image-text-to-text",
+      "gguf_files": [],
+      "github": "QwenLM/Qwen3-VL",
+      "category": "vision",
+      "size_b": 33.36,
+      "activated_b": null,
+      "note": "Qwen3-VL 32B Instruct（实际 33.36B），多模态最强，单卡 A100/4090×2",
+      "recommended_hardware": {
+        "official_source": "README.md",
+        "section_count": 0,
+        "hardware_section_found": false,
+        "recommended_gpu": [],
+        "recommended_memory_gb": [],
+        "recommended_nodes": [],
+        "vram_minimum_gb": null,
+        "raw_excerpt": "(未找到)"
+      }
+    },
     "qwq-32b-preview": {
       "hf_repo": "Qwen/QwQ-32B-Preview",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:54",
-=======
-      "fetched_at": "2026-09-11T01:35:06",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:34",
       "id": "Qwen/QwQ-32B-Preview",
       "tags": [
         "transformers",
@@ -407,7 +1346,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 10160,
+      "downloads": 10537,
       "likes": 1743,
       "last_modified": "2025-01-12T01:58:42.000Z",
       "pipeline_tag": "text-generation",
@@ -431,11 +1370,7 @@
     "glm-4.5": {
       "hf_repo": "THUDM/GLM-4.5",
       "error": "fetch failed",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:55",
-=======
-      "fetched_at": "2026-09-11T01:35:14",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:36",
       "github": "THUDM/GLM-4",
       "category": "domestic-general",
       "size_b": 355.0,
@@ -445,11 +1380,7 @@
     "glm-4-32b": {
       "hf_repo": "THUDM/glm-4-32b-0414",
       "error": "fetch failed",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:55",
-=======
-      "fetched_at": "2026-09-11T01:35:17",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:37",
       "github": "THUDM/GLM-4",
       "category": "domestic-general",
       "size_b": 32.0,
@@ -458,11 +1389,7 @@
     },
     "glm-z1-32b": {
       "hf_repo": "THUDM/GLM-Z1-32B-0414",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:56",
-=======
-      "fetched_at": "2026-09-11T01:35:20",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:37",
       "id": "zai-org/GLM-Z1-32B-0414",
       "tags": [
         "transformers",
@@ -478,7 +1405,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 50606,
+      "downloads": 50584,
       "likes": 196,
       "last_modified": "2025-04-28T10:03:37.000Z",
       "pipeline_tag": "text-generation",
@@ -501,11 +1428,7 @@
     },
     "kimi-k2": {
       "hf_repo": "moonshotai/Kimi-K2-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:57",
-=======
-      "fetched_at": "2026-09-11T01:35:26",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:39",
       "id": "moonshotai/Kimi-K2-Instruct",
       "tags": [
         "transformers",
@@ -522,7 +1445,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 169441,
+      "downloads": 173023,
       "likes": 2377,
       "last_modified": "2026-04-23T02:08:36.000Z",
       "pipeline_tag": "text-generation",
@@ -554,11 +1477,7 @@
     },
     "llama-3.1-405b": {
       "hf_repo": "meta-llama/Llama-3.1-405B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:57",
-=======
-      "fetched_at": "2026-09-11T01:35:36",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:40",
       "id": "meta-llama/Llama-3.1-405B",
       "tags": [
         "transformers",
@@ -585,7 +1504,7 @@
         "region:us"
       ],
       "license": "llama3.1",
-      "downloads": 131924,
+      "downloads": 121656,
       "likes": 987,
       "last_modified": "2024-09-25T17:01:49.000Z",
       "pipeline_tag": "text-generation",
@@ -598,11 +1517,7 @@
     },
     "llama-3.1-70b": {
       "hf_repo": "meta-llama/Llama-3.1-70B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:58",
-=======
-      "fetched_at": "2026-09-11T01:35:56",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:43",
       "id": "meta-llama/Llama-3.1-70B",
       "tags": [
         "transformers",
@@ -630,8 +1545,8 @@
         "region:us"
       ],
       "license": "llama3.1",
-      "downloads": 42776,
-      "likes": 437,
+      "downloads": 41644,
+      "likes": 438,
       "last_modified": "2024-09-25T17:01:13.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -643,11 +1558,7 @@
     },
     "llama-3.2-3b": {
       "hf_repo": "meta-llama/Llama-3.2-3B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:58",
-=======
-      "fetched_at": "2026-09-11T01:36:19",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:47",
       "id": "meta-llama/Llama-3.2-3B",
       "tags": [
         "transformers",
@@ -676,8 +1587,8 @@
         "region:us"
       ],
       "license": "llama3.2",
-      "downloads": 355044,
-      "likes": 916,
+      "downloads": 357642,
+      "likes": 917,
       "last_modified": "2024-10-24T15:07:40.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -689,11 +1600,7 @@
     },
     "llama-3.2-1b": {
       "hf_repo": "meta-llama/Llama-3.2-1B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:59",
-=======
-      "fetched_at": "2026-09-11T01:36:23",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:48",
       "id": "meta-llama/Llama-3.2-1B",
       "tags": [
         "transformers",
@@ -722,12 +1629,8 @@
         "region:us"
       ],
       "license": "llama3.2",
-      "downloads": 1246103,
-<<<<<<< Updated upstream
-      "likes": 2583,
-=======
-      "likes": 2584,
->>>>>>> Stashed changes
+      "downloads": 1226103,
+      "likes": 2588,
       "last_modified": "2024-10-24T15:08:03.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -739,11 +1642,7 @@
     },
     "mistral-large-2": {
       "hf_repo": "mistralai/Mistral-Large-Instruct-2407",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:31:59",
-=======
-      "fetched_at": "2026-09-11T01:36:27",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:48",
       "id": "mistralai/Mistral-Large-Instruct-2407",
       "tags": [
         "vllm",
@@ -765,7 +1664,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 4929,
+      "downloads": 2728,
       "likes": 865,
       "last_modified": "2025-07-28T17:16:38.000Z",
       "pipeline_tag": null,
@@ -779,11 +1678,7 @@
     "mistral-small-3": {
       "hf_repo": "mistralai/Mistral-Small-3",
       "error": "fetch failed",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:00",
-=======
-      "fetched_at": "2026-09-11T01:36:48",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:52",
       "github": "mistralai/mistral-finetune",
       "category": "international-dense",
       "size_b": 22.0,
@@ -792,11 +1687,7 @@
     },
     "gemma-3-27b": {
       "hf_repo": "google/gemma-3-27b-it",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:01",
-=======
-      "fetched_at": "2026-09-11T01:36:49",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:53",
       "id": "google/gemma-3-27b-it",
       "tags": [
         "transformers",
@@ -842,7 +1733,7 @@
         "region:us"
       ],
       "license": "gemma",
-      "downloads": 360496,
+      "downloads": 354329,
       "likes": 2023,
       "last_modified": "2025-03-21T20:29:02.000Z",
       "pipeline_tag": "image-text-to-text",
@@ -856,11 +1747,7 @@
     "gemma-3-9b": {
       "hf_repo": "google/gemma-3-9b-it",
       "error": "fetch failed",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:02",
-=======
-      "fetched_at": "2026-09-11T01:36:55",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:54",
       "github": "google-deepmind/gemma",
       "category": "international-edge",
       "size_b": 9.0,
@@ -869,11 +1756,7 @@
     },
     "gemma-3-4b": {
       "hf_repo": "google/gemma-3-4b-it",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:02",
-=======
-      "fetched_at": "2026-09-11T01:36:56",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:54",
       "id": "google/gemma-3-4b-it",
       "tags": [
         "transformers",
@@ -919,8 +1802,8 @@
         "region:us"
       ],
       "license": "gemma",
-      "downloads": 1668779,
-      "likes": 1478,
+      "downloads": 1682782,
+      "likes": 1482,
       "last_modified": "2025-03-21T20:20:53.000Z",
       "pipeline_tag": "image-text-to-text",
       "gguf_files": [],
@@ -932,11 +1815,7 @@
     },
     "phi-4": {
       "hf_repo": "microsoft/phi-4",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:02",
-=======
-      "fetched_at": "2026-09-11T01:37:00",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:54",
       "id": "microsoft/phi-4",
       "tags": [
         "transformers",
@@ -959,8 +1838,8 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 711395,
-      "likes": 2298,
+      "downloads": 708128,
+      "likes": 2299,
       "last_modified": "2026-07-14T14:22:25.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -972,11 +1851,7 @@
     },
     "phi-4-mini": {
       "hf_repo": "microsoft/Phi-4-mini-instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:03",
-=======
-      "fetched_at": "2026-09-11T01:37:01",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:55",
       "id": "microsoft/Phi-4-mini-instruct",
       "tags": [
         "transformers",
@@ -1020,7 +1895,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 457692,
+      "downloads": 454378,
       "likes": 828,
       "last_modified": "2025-12-10T20:24:40.000Z",
       "pipeline_tag": "text-generation",
@@ -1033,11 +1908,7 @@
     },
     "phi-3.5-mini": {
       "hf_repo": "microsoft/Phi-3.5-mini-instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:04",
-=======
-      "fetched_at": "2026-09-11T01:37:05",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:56",
       "id": "microsoft/Phi-3.5-mini-instruct",
       "tags": [
         "transformers",
@@ -1060,7 +1931,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 356127,
+      "downloads": 354875,
       "likes": 1075,
       "last_modified": "2025-12-10T20:22:56.000Z",
       "pipeline_tag": "text-generation",
@@ -1073,11 +1944,7 @@
     },
     "deepseek-coder-v2": {
       "hf_repo": "deepseek-ai/DeepSeek-Coder-V2-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:04",
-=======
-      "fetched_at": "2026-09-11T01:37:07",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:56",
       "id": "deepseek-ai/DeepSeek-Coder-V2-Instruct",
       "tags": [
         "transformers",
@@ -1096,7 +1963,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 10491,
+      "downloads": 10634,
       "likes": 701,
       "last_modified": "2024-08-21T06:42:50.000Z",
       "pipeline_tag": "text-generation",
@@ -1119,11 +1986,7 @@
     },
     "deepseek-coder-v2-lite": {
       "hf_repo": "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:05",
-=======
-      "fetched_at": "2026-09-11T01:37:14",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:57",
       "id": "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct",
       "tags": [
         "transformers",
@@ -1140,7 +2003,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 754668,
+      "downloads": 772166,
       "likes": 654,
       "last_modified": "2024-07-03T05:16:11.000Z",
       "pipeline_tag": "text-generation",
@@ -1153,11 +2016,7 @@
     },
     "qwen3-coder-30b": {
       "hf_repo": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:05",
-=======
-      "fetched_at": "2026-09-11T01:37:16",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:58",
       "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
       "tags": [
         "transformers",
@@ -1173,8 +2032,8 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 692826,
-      "likes": 1234,
+      "downloads": 684863,
+      "likes": 1236,
       "last_modified": "2025-12-03T08:05:17.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -1196,11 +2055,7 @@
     },
     "qwen2.5-coder-32b": {
       "hf_repo": "Qwen/Qwen2.5-Coder-32B-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:06",
-=======
-      "fetched_at": "2026-09-11T01:37:21",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:23:59",
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct",
       "tags": [
         "transformers",
@@ -1227,7 +2082,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 1547400,
+      "downloads": 1546277,
       "likes": 2129,
       "last_modified": "2025-01-12T02:02:22.000Z",
       "pipeline_tag": "text-generation",
@@ -1250,11 +2105,7 @@
     },
     "qwen2.5-coder-7b": {
       "hf_repo": "Qwen/Qwen2.5-Coder-7B-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:06",
-=======
-      "fetched_at": "2026-09-11T01:37:29",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:00",
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct",
       "tags": [
         "transformers",
@@ -1281,8 +2132,8 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 2712497,
-      "likes": 796,
+      "downloads": 2673411,
+      "likes": 797,
       "last_modified": "2025-01-12T02:03:41.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -1294,11 +2145,7 @@
     },
     "codestral-22b": {
       "hf_repo": "mistralai/Codestral-22B-v0.1",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:07",
-=======
-      "fetched_at": "2026-09-11T01:37:34",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:01",
       "id": "mistralai/Codestral-22B-v0.1",
       "tags": [
         "vllm",
@@ -1310,7 +2157,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 5899,
+      "downloads": 5116,
       "likes": 1351,
       "last_modified": "2025-07-24T16:43:37.000Z",
       "pipeline_tag": null,
@@ -1323,11 +2170,7 @@
     },
     "qwen2.5-vl-72b": {
       "hf_repo": "Qwen/Qwen2.5-VL-72B-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:07",
-=======
-      "fetched_at": "2026-09-11T01:37:37",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:01",
       "id": "Qwen/Qwen2.5-VL-72B-Instruct",
       "tags": [
         "transformers",
@@ -1348,7 +2191,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 157221,
+      "downloads": 145415,
       "likes": 651,
       "last_modified": "2025-06-06T02:48:50.000Z",
       "pipeline_tag": "image-text-to-text",
@@ -1375,16 +2218,12 @@
         "recommended_memory_gb": [],
         "recommended_nodes": [],
         "vram_minimum_gb": 614.0,
-        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is recommended and enabled by\n"
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
       }
     },
     "qwen2.5-vl-7b": {
       "hf_repo": "Qwen/Qwen2.5-VL-7B-Instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:08",
-=======
-      "fetched_at": "2026-09-11T01:37:52",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:02",
       "id": "Qwen/Qwen2.5-VL-7B-Instruct",
       "tags": [
         "transformers",
@@ -1405,7 +2244,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 7682009,
+      "downloads": 7608609,
       "likes": 1702,
       "last_modified": "2025-04-06T16:23:01.000Z",
       "pipeline_tag": "image-text-to-text",
@@ -1418,11 +2257,7 @@
     },
     "internvl3-78b": {
       "hf_repo": "OpenGVLab/InternVL3-78B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:08",
-=======
-      "fetched_at": "2026-09-11T01:37:55",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:03",
       "id": "OpenGVLab/InternVL3-78B",
       "tags": [
         "transformers",
@@ -1447,7 +2282,7 @@
         "region:us"
       ],
       "license": "other",
-      "downloads": 14269,
+      "downloads": 14285,
       "likes": 239,
       "last_modified": "2025-09-11T12:51:29.000Z",
       "pipeline_tag": "image-text-to-text",
@@ -1470,11 +2305,7 @@
     },
     "internvl3-8b": {
       "hf_repo": "OpenGVLab/InternVL3-8B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:09",
-=======
-      "fetched_at": "2026-09-11T01:38:08",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:04",
       "id": "OpenGVLab/InternVL3-8B",
       "tags": [
         "transformers",
@@ -1499,7 +2330,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 100771,
+      "downloads": 100472,
       "likes": 112,
       "last_modified": "2025-09-11T12:50:07.000Z",
       "pipeline_tag": "image-text-to-text",
@@ -1512,11 +2343,7 @@
     },
     "llava-onevision-qwen2-7b": {
       "hf_repo": "lmms-lab/llava-onevision-qwen2-7b-ov",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:09",
-=======
-      "fetched_at": "2026-09-11T01:38:10",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:05",
       "id": "lmms-lab/llava-onevision-qwen2-7b-ov",
       "tags": [
         "transformers",
@@ -1535,7 +2362,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 34873,
+      "downloads": 34609,
       "likes": 64,
       "last_modified": "2024-09-02T07:25:03.000Z",
       "pipeline_tag": "text-generation",
@@ -1548,11 +2375,7 @@
     },
     "bge-m3": {
       "hf_repo": "BAAI/bge-m3",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:10",
-=======
-      "fetched_at": "2026-09-11T01:38:13",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:05",
       "id": "BAAI/bge-m3",
       "tags": [
         "sentence-transformers",
@@ -1575,8 +2398,8 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 37891167,
-      "likes": 3489,
+      "downloads": 37793325,
+      "likes": 3491,
       "last_modified": "2024-07-03T14:50:10.000Z",
       "pipeline_tag": "sentence-similarity",
       "gguf_files": [],
@@ -1588,11 +2411,7 @@
     },
     "bge-large-zh-v1.5": {
       "hf_repo": "BAAI/bge-large-zh-v1.5",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:10",
-=======
-      "fetched_at": "2026-09-11T01:38:16",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:06",
       "id": "BAAI/bge-large-zh-v1.5",
       "tags": [
         "sentence-transformers",
@@ -1614,7 +2433,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 1181768,
+      "downloads": 1204667,
       "likes": 646,
       "last_modified": "2024-04-02T14:00:04.000Z",
       "pipeline_tag": "feature-extraction",
@@ -1627,11 +2446,7 @@
     },
     "bge-reranker-v2-m3": {
       "hf_repo": "BAAI/bge-reranker-v2-m3",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:11",
-=======
-      "fetched_at": "2026-09-11T01:38:18",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:06",
       "id": "BAAI/bge-reranker-v2-m3",
       "tags": [
         "sentence-transformers",
@@ -1649,8 +2464,8 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 18212308,
-      "likes": 1164,
+      "downloads": 18178285,
+      "likes": 1168,
       "last_modified": "2024-06-24T14:08:45.000Z",
       "pipeline_tag": "text-classification",
       "gguf_files": [],
@@ -1662,11 +2477,7 @@
     },
     "qwen3-embedding-8b": {
       "hf_repo": "Qwen/Qwen3-Embedding-8B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:11",
-=======
-      "fetched_at": "2026-09-11T01:38:19",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:07",
       "id": "Qwen/Qwen3-Embedding-8B",
       "tags": [
         "sentence-transformers",
@@ -1686,7 +2497,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 2253605,
+      "downloads": 2326476,
       "likes": 799,
       "last_modified": "2025-07-07T09:02:21.000Z",
       "pipeline_tag": "feature-extraction",
@@ -1699,11 +2510,7 @@
     },
     "gte-qwen2-7b-instruct": {
       "hf_repo": "Alibaba-NLP/gte-Qwen2-7B-instruct",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:12",
-=======
-      "fetched_at": "2026-09-11T01:38:23",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:07",
       "id": "Alibaba-NLP/gte-Qwen2-7B-instruct",
       "tags": [
         "sentence-transformers",
@@ -1724,7 +2531,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 111229,
+      "downloads": 110835,
       "likes": 483,
       "last_modified": "2025-03-24T09:43:55.000Z",
       "pipeline_tag": "sentence-similarity",
@@ -1737,11 +2544,7 @@
     },
     "qwq-32b": {
       "hf_repo": "Qwen/QwQ-32B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:12",
-=======
-      "fetched_at": "2026-09-11T01:38:24",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:08",
       "id": "Qwen/QwQ-32B",
       "tags": [
         "transformers",
@@ -1764,7 +2567,7 @@
         "region:us"
       ],
       "license": "apache-2.0",
-      "downloads": 75026,
+      "downloads": 76612,
       "likes": 2963,
       "last_modified": "2025-03-11T12:15:48.000Z",
       "pipeline_tag": "text-generation",
@@ -1791,16 +2594,12 @@
         "recommended_memory_gb": [],
         "recommended_nodes": [],
         "vram_minimum_gb": 614.0,
-        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is recommended and enabled by\n"
+        "raw_excerpt": "\n--- GB200 NVL4 ---\n GiB |\\n\\n`vram_minimum_gb: 614` is that total times the schema's 1.2 headroom factor. It fits\\none GB200 NVL4 tray (768 GB) at TP4, or one 8-GPU H200 node (1128 GB) with room for\\nKV cache, but 1M context will need the context or batch capped — measure before\\nassuming.\\n\\n## Prerequisites\\n\\n- The `vllm/vllm-openai:deepseekv41-flash` image (vLLM 0.30.0+). No pip wheel serves this\\n  architecture, so the Install block only offers Docker.\\n- The Rust OpenAI frontend is selected by default in the\n"
       }
     },
     "deepseek-r1-distill-qwen-32b": {
       "hf_repo": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:13",
-=======
-      "fetched_at": "2026-09-11T01:38:36",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:09",
       "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
       "tags": [
         "transformers",
@@ -1816,7 +2615,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 522681,
+      "downloads": 511205,
       "likes": 1612,
       "last_modified": "2025-02-24T03:31:29.000Z",
       "pipeline_tag": "text-generation",
@@ -1839,11 +2638,7 @@
     },
     "deepseek-r1-distill-llama-70b": {
       "hf_repo": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:13",
-=======
-      "fetched_at": "2026-09-11T01:38:41",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:10",
       "id": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
       "tags": [
         "transformers",
@@ -1859,7 +2654,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 76970,
+      "downloads": 77228,
       "likes": 800,
       "last_modified": "2025-02-24T03:31:15.000Z",
       "pipeline_tag": "text-generation",
@@ -1882,11 +2677,7 @@
     },
     "deepseek-r1-distill-qwen-14b": {
       "hf_repo": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:14",
-=======
-      "fetched_at": "2026-09-11T01:38:49",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:11",
       "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
       "tags": [
         "transformers",
@@ -1902,7 +2693,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 347879,
+      "downloads": 345985,
       "likes": 678,
       "last_modified": "2025-02-24T03:31:45.000Z",
       "pipeline_tag": "text-generation",
@@ -1915,11 +2706,7 @@
     },
     "deepseek-r1-distill-qwen-7b": {
       "hf_repo": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:14",
-=======
-      "fetched_at": "2026-09-11T01:38:53",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:12",
       "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
       "tags": [
         "transformers",
@@ -1935,8 +2722,8 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 359985,
-      "likes": 887,
+      "downloads": 359822,
+      "likes": 888,
       "last_modified": "2025-02-24T03:32:20.000Z",
       "pipeline_tag": "text-generation",
       "gguf_files": [],
@@ -1948,11 +2735,7 @@
     },
     "deepseek-r1-distill-llama-8b": {
       "hf_repo": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:15",
-=======
-      "fetched_at": "2026-09-11T01:39:00",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:12",
       "id": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
       "tags": [
         "transformers",
@@ -1968,7 +2751,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 334184,
+      "downloads": 320588,
       "likes": 875,
       "last_modified": "2025-02-24T03:32:07.000Z",
       "pipeline_tag": "text-generation",
@@ -1981,11 +2764,7 @@
     },
     "deepseek-r1-distill-qwen-1.5b": {
       "hf_repo": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-<<<<<<< Updated upstream
-      "fetched_at": "2026-09-10T17:32:15",
-=======
-      "fetched_at": "2026-09-11T01:39:02",
->>>>>>> Stashed changes
+      "fetched_at": "2026-09-11T14:24:13",
       "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
       "tags": [
         "transformers",
@@ -2001,7 +2780,7 @@
         "region:us"
       ],
       "license": "mit",
-      "downloads": 416880,
+      "downloads": 416951,
       "likes": 1573,
       "last_modified": "2025-02-24T03:32:35.000Z",
       "pipeline_tag": "text-generation",
