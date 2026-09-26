@@ -1,23 +1,36 @@
 ---
 name: open-source-model-deploy
-description: 开源大模型部署可行性鉴别（v1.0 首发）。通过 MCP/HTTP 协议，Agent 可直接调用 5 步鉴别 + 硬件自动检测 + 一键部署脚本生成。客户咨询"本地部署 AI/私有化部署大模型/开源模型鉴别"时使用。
-version: 1.0.0
-updated: 2026-08-15
+description: 开源大模型部署可行性鉴别（v1.0.2，2026-09-26）。通过 MCP/HTTP 协议，Agent 可直接调用 5 步鉴别 + 硬件自动检测 + 一键部署脚本生成 + auto_fetch 自动拉取 HF 模型清单。客户咨询"本地部署 AI/私有化部署大模型/开源模型鉴别"时使用。
+version: 1.0.2
+updated: 2026-09-26
 type: project-skill
 project: 汐构信息-开源模型部署检测小工具（开源项目）
-covers: 47 个模型 / 8 分类 / MCP+HTTP 双协议
+covers: 127 个模型 / 8 分类 / CLI+MCP+HTTP 三协议 / 自动每周边补
 ---
 
-# 开源大模型部署可行性鉴别工具（v1.0）
+# 开源大模型部署可行性鉴别工具（v1.0.2）
 
-## v1.0 首发版本
+## v1.0.2 增量
 
-首个稳定版本，包含：
-- 47 个开源模型（分 8 类）
+v1.0 首发之上新增强项：
+
+- **模型库扩容**：47 → 127（+33% · sentence-transformers 全家桶 + E5 + GTE + Llama 3.2/3.3 + Mistral-7B-v0.2 + Phi-3.5-Vision + Qwen3-30B-A3B MoE）
+- **scripts/auto_fetch_models.py** 自动拉取工具（3 个 mode：stats / diff / patch）
+- **.github/workflows/auto-fetch-models.yml** 周日北京时间 23:30 自动开 PR（不动模型 → 自动建议模型）
+- **GH Actions 修复**：Node 20 弃用 → 全部显式 pin Node 24（setup-node@v4 / setup-python@v5）
+- **README/INSTALL/GITHUB-ACTIONS.md** 全仓文字同步 v1.0.2（GitHub project description 改 127 + topics：ci-cd / huggingface / llm / model-deployment）
+
+详细见主仓 README.md 与 `docs/releases/v1.0.2.md`。
+
+首个稳定版本（v1.0 / 2026-08-15），38→47→94→127 沿革：
+- v1.0 (2026-08-15)：47 个开源模型（分 8 类）— 历史快照
+- v1.0.1 (2026-09-10)：94 个开源模型
+- v1.0.2 (2026-09-26)：127 个开源模型（当前最新版）
 - 三种部署方式（CLI / MCP Server / HTTP API）
 - 硬件自动检测 + 智能推荐
 - 一键部署脚本生成（vLLM / SGLang / Ollama / llama.cpp）
 - 智能 24h 缓存 + 国内镜像 fallback
+- v1.0.2 新增：auto_fetch_models.py 自动拉取 + GH Actions 周日自动开 PR
 
 ## 何时使用
 
@@ -111,22 +124,23 @@ osm-deploy deploy qwen3-32b --framework vllm
 - **GPU**：NVIDIA（nvidia-smi）/ AMD（rocm-smi）/ Apple Silicon（统一内存）
 - **CPU**：型号 / 核数
 - **内存 / 硬盘**：总量 + 可用
-- **自动推荐**：47 个模型按本机适配度排序
+- **自动推荐**：`KNOWN_MODELS` 全部（v1.0.2 = 127 个）按本机适配度排序
 
-实测示例（本机 Windows + 16 核 + 15.2GB 内存，无独显）：
+实测示例（本机 Windows + 8 核 + 15.9GB 内存 + GTX 1660 Ti 6GB）：
 ```
 档位：cpu_only
-推荐 47 个模型（小到大）：
-  - bge-large-zh-v1.5  0.3B  Q4_K_M（CPU 慢速）
-  - llama-3.2-1b        1B    Q4_K_M（CPU 慢速）
-  - phi-4-mini          3.8B  Q4_K_M（CPU 慢速）
-  - qwen3-8b            8B    Q4_K_M（CPU 慢速）
+总共 127 个模型可在本机部署
+前 4 个推荐（GTX 1660 Ti 6GB）：
+  - qwen3-8b Q4_K_M（4GB · GPU 全速）
+  - deepseek-r1-distill-qwen-7b（3.5GB · 强 CoT）
+  - qwen2.5-vl-7b（3.5GB · 视觉）
+  - llama-3.2-3b（1.5GB · CPU/GPU 都行）
 ```
 
-## 当前支持的模型池（45 个，分 8 类）
+## 当前支持的模型池（v1.0.2 = 127 个，分 8 类）
 
-**国内通用 9 个**：DeepSeek-V3/V2.5、GLM-4.5/4-32B、Kimi-K2、Qwen3-235B/32B/14B/8B
-**国内推理 10 个**：DeepSeek-R1、GLM-Z1-32B、QwQ-32B(+preview)、DeepSeek-R1-Distill 全系（70B/32B/14B/8B/7B/1.5B）
+**国内通用 39 个**：DeepSeek-V3/V2.5/V3.2、GLM-4.5/4-32B、Kimi-K2、Qwen3-235B/32B/14B/8B 全系 + Qwen3.5/3.6/3.8 + Qwen3-30B-A3B MoE + DeepSeek-V3-0324/V4-Flash 全系 + Qwen2.5 全系 + Qwen2.5-Coder-14B
+**国内推理 10 个**：DeepSeek-R1、GLM-Z1-32B、QwQ-32B、DeepSeek-R1-Distill 全系（70B/32B/14B/8B/7B/1.5B）
 **代码专用 6 个**：DeepSeek-Coder-V2/V2-Lite、Qwen3-Coder-30B、Qwen2.5-Coder-32B/7B、Codestral-22B
 **视觉多模态 5 个**：Qwen2.5-VL-72B/7B、InternVL3-78B/8B、LLaVA-OneVision-Qwen2-7B
 **国际密集 5 个**：Llama-3.1-405B/70B、Mistral-Large-2/Small-3、Gemma-3-27B
