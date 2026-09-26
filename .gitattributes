@@ -1,0 +1,11 @@
+# Auto handle line endings for cross-platform team
+# Python scripts: force LF (POSIX-correct, easier to diff)
+*.py           text eol=lf
+*.sh           text eol=lf
+*.md           text eol=lf
+*.example      text eol=lf
+*.json         text eol=lf
+
+# OS/Windows shell / PowerShell: force CRLF
+*.ps1          text eol=crlf
+*.bat          text eol=crlf

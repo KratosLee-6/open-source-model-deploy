@@ -1,0 +1,38 @@
+# ============================================================
+# JEV (browser-use/jev-ultrafast) Environment Variables
+# 复制为 .env 并填入你的真实 key
+# ============================================================
+
+# ============ TypeSafe SaaS（判定模型，闭源）============
+# 在 https://typesafe.ai 注册获取（注意：商用需确认条款）
+TYPESAFE_API_KEY=tsk_REPLACE_ME_WITH_TYPESAFE_DASHBOARD_KEY
+TYPESAFE_MODEL=jev-latest
+TYPESAFE_BASE_URL=https://api.typesafe.ai/v1/systemone
+
+# ============ 文本生成模型（OpenAI-compatible）============
+# 默认 DeepSeek（中文性价比高）；可换 Mercury / GPT-4o / Gemini
+TEXT_MODEL_API_KEY=sk-REPLACE_ME_WITH_PROVIDER_KEY
+TEXT_MODEL_BASE_URL=https://api.deepseek.com/v1
+TEXT_MODEL=deepseek-chat
+
+# 可选：关闭 deepseek-thinking-style 推理（更快，更便宜）
+# TEXT_MODEL_REASONING=none
+
+# ============ 框架开关 ============
+# JEV 操作预算（防止跑飞）
+JEV_REQUEST_BUDGET=50
+# 单次 TypeSafe 判定超时（毫秒）
+JEV_DECISION_TIMEOUT_MS=25000
+# 文本生成 token 上限（字段填写用）
+JEV_TEXT_HELPER_BUDGET_TOKENS=1024
+
+# ============ 浏览器 ============
+# 默认 chromium；若需用系统 Chrome 设 CHROME_PATH
+# CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
+JEV_HEADLESS=false                # true = 无头；false = 显示浏览器便于调试
+JEV_VIEWPORT=1120x780             # 与 performance.md 基准一致
+
+# ============ 与 open-source-model-deploy 联动 ============
+# 让 JEV 用本工具推荐的 TEXT_MODEL（6GB / 24GB / 云租自动选）
+OSM_DEPLOY_AUTO_PICK_TEXT_MODEL=true
+OSM_DEPLOY_MIN_VRAM_GB=6          # 低于此值强制使用云租文本模型
