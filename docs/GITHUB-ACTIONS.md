@@ -1,6 +1,6 @@
 # GitHub Actions 自动刷新 · 部署指南
 
-> **目标**：让 GitHub 仓库每天/每周自动运行 3 个脚本，刷新 47 个模型的 HF 元数据 + GPU 价格 + 部署建议报告
+> **目标**：让 GitHub 仓库每天/每周自动运行 3 个脚本，刷新 `KNOWN_MODELS` 全部模型（v1.0.2 = 127）的 HF 元数据 + GPU 价格 + 部署建议报告
 > **自动化覆盖**：问题 1（HF 模型最新元数据）+ 问题 2（GPU 价格）+ 问题 3（部署建议报告）
 
 ---
@@ -55,7 +55,7 @@ git add data/ references/
 git commit -m "feat(ci): 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议报告
 
 新增 3 个脚本：
-- refresh_hf_metadata.py: 拉 47 模型最新 downloads/likes/license
+- refresh_hf_metadata.py: 拉 `KNOWN_MODELS` 全部模型（v1.0.2 = 127）最新 downloads/likes/license
 - refresh_gpu_prices.py: 拉 NVIDIA / Apple / 云租价格
 - render_report.py: 综合两者生成部署建议
 
@@ -233,7 +233,7 @@ GH Actions 跑一次 3 step 共需约 **2-3 分钟**：
 
 | Step | 时长 | 输出 |
 |---|---|---|
-| Step 1 (47 个 HF) | ~1-2 分钟（0.3s × 47 + 网络） | `data/hf-metadata-snapshot.json` (~150 KB) |
+| Step 1 (`KNOWN_MODELS` 全部 · v1.0.2 = 127 HF 模型) | ~1-2 分钟（0.2s × 127 + 网络） | `data/hf-metadata-snapshot.json` (~200 KB) |
 | Step 2 (内置参考价) | ~5 秒 | `data/gpu-prices-snapshot.json` (~3 KB) |
 | Step 3 (4 target 渲染) | ~2 秒 | `references/deployment-recommendations.md` (~10 KB × 4) |
 | 自动 commit | ~5 秒 | git push |
@@ -245,7 +245,7 @@ GH Actions 跑一次 3 step 共需约 **2-3 分钟**：
 ## 🎁 立即获得的能力
 
 ✅ **每周一 8:00**：KX 打开 GitHub 仓库就能看到最新一周的：
-- 47 个模型 HF 下载数 / Likes / License / 最新更新时间
+- `KNOWN_MODELS` 全部（v1.0.2 = 127 个）HF 下载数 / Likes / License / 最新更新时间
 - NVIDIA RTX 50 系列 + 数据中心 + Apple Silicon + 云租价格
 - 4 个场景（default/consumer-gpu/studio/cloud）的部署建议
 

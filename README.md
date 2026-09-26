@@ -98,7 +98,7 @@ osm-deploy deploy qwen3-32b
 | vision（视觉多模态）| 5 | qwen2.5-vl-72b, internvl3-78b |
 | embedding | 4 | bge-m3, qwen3-embedding-8b |
 | reranker | 1 | bge-reranker-v2-m3 |
-| **总计** | **47** | **8 大类全覆盖** |
+| **总计 (v1.0.0)** | **47** | **8 大类全覆盖（历史快照）** |
 
 ![47 模型分类（v1.0.0 历史快照 · 当时 47 个）](docs/screenshots/07-实测截图-47模型分类.png)
 
