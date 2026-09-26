@@ -2,17 +2,18 @@
 
 > 把"模型规格 / 硬件报价 / 部署方式"做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-**版本**：v1.0.1（2026-09-10）
-- 94 个开源模型 + 8 大分类（自动 check，缺一即拒）
+**版本**：v1.0.2（2026-09-26）
+- **127 个**开源模型 + 8 大分类（自动 check，缺一即拒）
+- 🤖 **auto_fetch_models.py 自动拉取**：每周扫描 HF API，新模型自动出 patch
 - GitHub Actions 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议
 - 三种部署方式：CLI / MCP Server / HTTP API
 - 真实硬件实测：GTX 1660 Ti 6GB / 8 核 CPU / 15.9GB RAM（详见下文 🏆 实测案例）
 
-> 上一版 v1.0.0 发布于 2026-08-15，详见 [Releases](https://github.com/KratosLee-6/open-source-model-deploy/releases)
+> 上一版 v1.0.1 发布于 2026-09-10（94 模型） → v1.0.0 发布于 2026-08-15（47 模型），详见 [Releases](https://github.com/KratosLee-6/open-source-model-deploy/releases)
 
 ## 🌟 核心亮点
 
-- **🧠 94 个开源模型覆盖**：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码 / 视觉 / Embedding / Reranker 专用模型
+- **🧠 127 个开源模型覆盖**（v1.0.2 · 较 v1.0.1 +33）：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码 / 视觉 / Embedding / Reranker 专用模型
 - **🔌 三种部署方式**：CLI / MCP Server（Agent 原生协议）/ HTTP API（FastAPI）
 - **🖥️ 硬件自动检测**：跨平台识别 NVIDIA / AMD / Apple Silicon，自动推荐可部署模型
 - **🚀 一键部署脚本**：自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
@@ -152,7 +153,7 @@ Memory-Usage  43MiB / 6144MiB
 - **量化版本涌现**：昨天还没有的 GGUF，今天突然有人发布
 - **手动调研累**：每个模型都要查 HF / GitHub / arXiv / 京东，时间成本极高
 
-**本工具 = 94 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
+**本工具 = 127 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
 
 ## 🏗️ 架构
 
@@ -212,7 +213,19 @@ curl -X POST http://localhost:8765/assess -d '{"model":"deepseek-v3"}'
 curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"vllm"}'
 ```
 
-## 📊 已覆盖的 94 个模型（分 8 类）
+## 📊 已覆盖的 127 个模型（分 8 类 · 2026-09-26 更新）
+
+| 分类 | 模型数 | 2026-09-26 新增代表 |
+|---|---:|---|
+| **国内通用** | 39 | Qwen3-30B-A3B MoE · Qwen2.5-0.5B/1.5B base · DeepSeek-V3-0324 · DeepSeek-V4-Flash |
+| **国内推理** | 10 | （v1.0.2 无新增） |
+| **代码专用** | 8 | Qwen2.5-Coder-14B-Instruct · DeepSeek-Coder-7B-Instruct-v1.5 |
+| **视觉多模态** | 17 | Qwen2.5-VL-3B/32B-Instruct · Qwen2-VL-7B-Instruct · Phi-3.5-Vision-Instruct · Florence-2-base · InternVL2-1B/2B |
+| **国际密集** | 9 | Llama-3.3-70B-Instruct · Gemma-2-9B-IT |
+| **国际边缘** | 14 | Llama-3.2-1B/3B-Instruct · Mistral-7B-Instruct-v0.2 · Gemma-3-1B-IT |
+| **Embedding** | 28 | sentence-transformers 全家桶（MiniLM-L12 / paraphrase / distilroberta / multi-qa / distilUSE）+ E5 large/base + GTE multilingual/large-en + EmbeddingGemma-300M |
+| **Reranker** | 2 | （v1.0.2 无新增） |
+| **总计** | **127** | |
 
 | 分类 | 模型示例 |
 |------|---------|
@@ -229,7 +242,7 @@ curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"
 
 **场景 1：客户问"本地跑 AI 要多少钱"**
 ```
-Agent → detect_hardware() → 94 个推荐 → 客户决策
+Agent → detect_hardware() → 127 个推荐 → 客户决策
 ```
 
 **场景 2：技术选型对比 DeepSeek vs Qwen3**

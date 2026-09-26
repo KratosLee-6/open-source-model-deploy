@@ -1,0 +1,121 @@
+name: auto-fetch-models
+
+on:
+  schedule:
+    # cron UTC: Sun 15:30 = Beijing Mon 23:30 (周日 23:30 · 与 refresh-models 错开)
+    - cron: "30 15 * * 0"
+  workflow_dispatch:
+    inputs:
+      min_downloads:
+        description: "min downloads (default 50000)"
+        required: false
+        default: "50000"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch-and-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run auto_fetch_models --mode=stats
+        id: stats
+        run: |
+          python3 scripts/auto_fetch_models.py --mode=stats > auto_fetch_stats.txt 2>&1 || true
+          cat auto_fetch_stats.txt
+          C=$(grep -oP "\xe5\x80\x91\xe9\x80\x89\xe6\x80\xbb\xe8\xae\xa1 \K[0-9]+" auto_fetch_stats.txt || echo "0")
+          echo "candidates=$C" >> "$GITHUB_OUTPUT"
+          if [ "$C" = "0" ]; then
+            echo "noop=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate patch
+        if: steps.stats.outputs.noop != 'true'
+        run: |
+          MIN_DL="${{ inputs.min_downloads || '50000' }}"
+          python3 scripts/auto_fetch_models.py --mode=patch --min-downloads "$MIN_DL" > auto_fetch_patch.py 2>&1 || true
+          wc -l auto_fetch_patch.py
+          head -3 auto_fetch_patch.py
+
+      - name: Apply patch to model_resolver.py
+        id: apply
+        if: steps.stats.outputs.noop != 'true'
+        run: |
+          python3 scripts/apply_auto_fetch_patch.py
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Detect noop after apply
+        if: steps.stats.outputs.noop != 'true'
+        id: detect_noop
+        run: |
+          if [ "${{ steps.apply.outputs.rc }}" = "2" ]; then
+            echo "noop=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push branch
+        if: steps.stats.outputs.noop != 'true' && steps.detect_noop.outputs.noop != 'true'
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "noop=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BR="auto-fetch-models/$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BR"
+          MISS=$(grep -c '^[[:space:]]*"[a-zA-Z]' data/auto-fetch-this-run.patch.py || echo "0")
+          git commit -m "feat(models): auto-fetch-models · +${MISS} HF top downloads
+
+          Triggered by: scripts/auto_fetch_models.py weekly scan
+          Min downloads threshold: ${{ inputs.min_downloads || '50000' }}
+          New models in this PR: ${MISS}
+          Full patch snapshot: data/auto-fetch-this-run.patch.py
+
+          Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          git push origin "$BR"
+          echo "branch=$BR" >> "$GITHUB_OUTPUT"
+
+      - name: Open Pull Request
+        if: steps.stats.outputs.noop != 'true' && steps.detect_noop.outputs.noop != 'true' && steps.commit.outputs.noop != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BR: ${{ steps.commit.outputs.branch }}
+        run: |
+          TITLE="auto-fetch-models $(date +%Y-%m-%d) · +N HF top downloads"
+          BODY="Auto-generated PR by auto-fetch-models workflow (weekly cron · Beijing Sun 23:30).
+
+          Source: scripts/auto_fetch_models.py · HuggingFace API
+          4 pipeline tags: text-generation / image-text-to-text / sentence-similarity / text-to-image
+          Authoritative namespace whitelist applied.
+
+          Review checklist:
+          - [ ] Verify new models size_b matches HF README
+          - [ ] Verify category mapping (heuristic, may be off)
+          - [ ] Run osm-deploy list and confirm new entries display
+          - [ ] Run osm-deploy assess <new-slug> to verify resolve works"
+          gh pr create --base main --head "$BR" --title "$TITLE" --body "$BODY"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## auto-fetch-models run summary"
+            echo ""
+            echo "- candidates: ${{ steps.stats.outputs.candidates }}"
+            echo "- branch: ${{ steps.commit.outputs.branch || 'noop' }}"
+          } >> "$GITHUB_STEP_SUMMARY"
