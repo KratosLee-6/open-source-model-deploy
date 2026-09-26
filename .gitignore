@@ -36,3 +36,7 @@ dist/
 # 数据缓存（用户级别，不是仓库级别）
 # 注：模型部署检测的智能缓存在 ~/.cache/open-source-model-deploy/
 # 不在仓库内，不需 ignore
+
+# Marketing / XHS 渲染素材（不进主仓库）
+.claude/
+xhs-render-v102/
