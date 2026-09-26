@@ -1,11 +1,25 @@
 ---
+slug: kratoslee-open-source-model-deploy
+displayName: 开源大模型部署鉴别器 · KratosLee
 name: open-source-model-deploy
-description: 开源大模型部署可行性鉴别（v1.0.2，2026-09-26）。通过 MCP/HTTP 协议，Agent 可直接调用 5 步鉴别 + 硬件自动检测 + 一键部署脚本生成 + auto_fetch 自动拉取 HF 模型清单。客户咨询"本地部署 AI/私有化部署大模型/开源模型鉴别"时使用。
+description: 开源大模型部署可行性鉴别器。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 127 个主流开源模型（DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码/视觉/Embedding/Reranker）的部署方案、硬件需求估算和启动脚本生成（vLLM / SGLang / Ollama / llama.cpp），覆盖 CLI / MCP Server / HTTP API 三协议。含 auto_fetch_models.py 自动拉取工具，每周从 HF API 补模型。当客户咨询"本地部署 AI / 私有化部署大模型 / 开源模型鉴别 / GPT-OSS / DeepSeek-V4-Flash"时使用。
 version: 1.0.2
 updated: 2026-09-26
+summary: 开源大模型本地部署可行性评估工具。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 127 个主流开源模型的部署方案、硬件需求估算和启动脚本生成，覆盖三大协议（CLI / MCP Server / HTTP API），并提供 auto_fetch_models 自动拉取工具。
 type: project-skill
 project: 汐构信息-开源模型部署检测小工具（开源项目）
+license: MIT
 covers: 127 个模型 / 8 分类 / CLI+MCP+HTTP 三协议 / 自动每周边补
+keywords:
+  - llm
+  - deployment
+  - huggingface
+  - ai-infrastructure
+  - mcp
+  - vllm
+  - ollama
+homepage: https://github.com/KratosLee-6/open-source-model-deploy
+repository: https://github.com/KratosLee-6/open-source-model-deploy
 ---
 
 # 开源大模型部署可行性鉴别工具（v1.0.2）
