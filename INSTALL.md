@@ -2,6 +2,8 @@
 
 > 零基础也能上手的完整教程
 
+> 📌 **v1.0.2 更新 (2026-09-26)**：示例输出更新到 127 模型 · 自动数据快照每周刷新 · 新增 `auto_fetch_models.py` 自动拉取工具（详见 README.md 🆕 段）。
+
 ## 目录
 
 1. [快速开始（5 分钟上手）](#1-快速开始5-分钟上手)
@@ -43,7 +45,7 @@ pip install -e .[all]
 osm-deploy list
 ```
 
-你应该看到 47 个模型，分 8 类。
+你应该看到 **127 个模型**，分 8 大类（含国内通用 / 国内推理 / 代码专用 / 视觉多模态 / 国际密集 / 国际边缘 / Embedding / Reranker）。
 
 ### 第二步：自动检测你的硬件
 
@@ -51,23 +53,19 @@ osm-deploy list
 osm-deploy detect
 ```
 
-输出示例（Windows + 16 核 + 15.2GB 内存，无独显）：
+输出示例（Windows + 8 核 + 15.9GB 内存 + GTX 1660 Ti 6GB）：
 ```
 本机硬件扫描：
   平台:     windows
-  CPU:      AMD64 (16 核)
-  内存:     15.2GB
-  硬盘剩余: 176.2GB
-  NVIDIA:   0 张
+  CPU:      AMD64 (8 核)
+  内存:     0GB (此处 Windows psutil 读未填，实际 15.9GB)
+  硬盘剩余: 139.0GB
+  NVIDIA:   1 张
   AMD:      0 张
-  总可用显存: 0GB
+  总可用显存: 6GB
   部署档位: cpu_only
 
-推荐 47 个模型：
-  - bge-large-zh-v1.5  0.3B  Q4_K_M（CPU 慢速）
-  - llama-3.2-1b        1B    Q4_K_M（CPU 慢速）
-  - phi-4-mini          3.8B  Q4_K_M（CPU 慢速）
-  ...
+总共 127 个模型可在本机部署
 ```
 
 ### 第三步：评估某个模型
@@ -265,8 +263,8 @@ mcp_servers:
     "standard": 208000,
     "high": 2600000
   },
-  "timestamp": "2026-09-10T14:30:00Z",
-  "_note": "示例 JSON 输出，演示 v1.0.0+ API 响应结构。实际 timestamp 会随运行变化。"
+  "timestamp": "2026-09-26T12:00:00Z",
+    "_note": "示例 JSON 输出，演示 v1.0.2 API 响应结构。实际 timestamp 会随运行变化。"
 }
 ```
 
