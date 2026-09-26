@@ -98,7 +98,7 @@ osm-deploy deploy qwen3-32b
 | reranker | 1 | bge-reranker-v2-m3 |
 | **总计** | **47** | **8 大类全覆盖** |
 
-![47 模型分类](docs/screenshots/07-实测截图-47模型分类.png)
+![47 模型分类（v1.0.0 历史快照 · 当时 47 个）](docs/screenshots/07-实测截图-47模型分类.png)
 
 #### 实测 3：本地部署推荐（GTX 1660 Ti 6GB）
 
@@ -143,6 +143,64 @@ Memory-Usage  43MiB / 6144MiB
 ---
 
 **结论**：v1.0.1 在真实硬件（GTX 1660 Ti 6GB）上跑通全套工具链路——94 模型清单完整 ✓、硬件扫描准确 ✓、推荐结果按档位分组 ✓、GitHub Actions 工作流每周自动刷新 ✓。
+
+---
+
+### v1.0.2 实测（2026-09-26）— 127 模型 + `auto_fetch` 自动拉取（**新增**）
+
+> 🆕 **新于 v1.0.2**：模型库扩张 94 → 127（+33%）+ 新增 `auto_fetch_models.py` 脚本 + 新增 `auto-fetch-models.yml` 周日自动开 PR 工作流。
+
+**环境**：同 v1.0.1（GTX 1660 Ti 6GB / Windows 11 / 15.9GB）
+**工具版本**：v1.0.2
+
+#### 实测 6：127 模型分类清单（v1.0.2 最新快照）
+
+| 分类 | 模型数 | 较 v1.0.1 增量 |
+|---|---:|---:|
+| **国内通用** | **39** | +6 |
+| **国内推理** | **10** | 0 |
+| **代码专用** | **8** | +2 |
+| **视觉多模态** | **17** | +7 |
+| **国际密集** | **9** | +2 |
+| **国际边缘** | **14** | +4 |
+| **Embedding** | **28** | +12 |
+| **Reranker** | **2** | 0 |
+| **总计** | **127** | **+33** |
+
+![127 模型分类](docs/screenshots/07-实测截图-127模型分类.png)
+
+#### 实测 7：`auto_fetch_models.py --mode=stats`
+
+```bash
+$ python scripts/auto_fetch_models.py --mode=stats
+```
+
+输出显示 HF API 拉取 4 个 pipeline tag 后过滤到约 **150+ 候选**（≥ 50k downloads · 权威 namespace · 非衍生版本），按 8 大类启发式分布。
+
+![auto_fetch stats](docs/screenshots/13-实测截图-auto-fetch-stats.png)
+
+#### 实测 8：`auto_fetch_models.py --mode=patch`
+
+```bash
+$ python scripts/auto_fetch_models.py --mode=patch --min-downloads 1000000
+```
+
+生成可直接粘到 `model_resolver.py` 的 `KNOWN_MODELS` dict 条目（每条含 `hf_repo` / `github` / `category` / `size_b` + 自动拉取的 downloads/likes 元数据）。
+
+![auto_fetch patch](docs/screenshots/14-实测截图-auto-fetch-patch.png)
+
+#### 实测 9：新增 `auto-fetch-models` workflow
+
+- 📍 文件：`.github/workflows/auto-fetch-models.yml`
+- ⏰ 触发：每周日 UTC 15:30（北京时间 23:30）+ 可手动 `workflow_dispatch`
+- 🔁 流程：`stats → patch → apply（去重 + 插入）→ commit 新分支 → 自动开 PR`
+- 🎯 PR body 包含审核清单：size_b 校验 · category 映射 · list/assess smoke test
+
+**首次手动触发**（2026-09-26）：run [#36242423838](https://github.com/KratosLee-6/open-source-model-deploy/actions/runs/36242423838)
+
+---
+
+**结论**：v1.0.2 在真实硬件（GTX 1660 Ti 6GB）上跑通全集工具链路——**127 模型清单完整 ✓**、`auto_fetch_models` 自动拉取脚本可独立使用 ✓、GitHub Actions 工作流新增每周自动补模型 PR ✓。
 
 ## 🎯 解决什么问题？
 
