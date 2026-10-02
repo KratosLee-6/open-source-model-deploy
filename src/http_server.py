@@ -13,6 +13,8 @@ HTTP API Server - 任何 Agent/工具通过 HTTP 调用
 import sys
 import json
 
+from . import __version__
+
 try:
     from fastapi import FastAPI, HTTPException
     from fastapi.responses import JSONResponse
@@ -31,7 +33,7 @@ def create_app():
     app = FastAPI(
         title="osm-deploy API",
         description="开源大模型部署可行性鉴别 HTTP API",
-        version="1.0.0",
+        version=__version__,
     )
 
     # 复用 mcp_server 的 _call_tool
@@ -41,7 +43,7 @@ def create_app():
     async def root():
         return {
             "service": "osm-deploy",
-            "version": "1.0.0",
+            "version": __version__,
             "endpoints": [
                 "POST /assess - 5 步鉴别模型",
                 "GET /list - 列出所有模型",
