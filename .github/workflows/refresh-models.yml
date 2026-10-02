@@ -43,9 +43,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
+      - name: Lint model catalog (挡住「总参/激活参」录入错误)
+        run: |
+          # 这类错误一旦进库就是错的采购建议，且很难被发现：
+          #   - size_b 误填成激活参（Llama-4-Scout-17B-16E 那类命名）
+          #   - size_b=0（新模型命名里没有 <数字>B）
+          #   - 标称 MoE 却没记 activated_b
+          # 详见 src/core/model_lint.py 模块文档。
+          echo "=== KNOWN_MODELS 数据体检 ==="
+          python scripts/lint_models.py
+          echo "=== 严格模式（WARN 也算失败）==="
+          python scripts/lint_models.py --strict --quiet
+
       - name: Refresh HF metadata (已自动扩展到当前 KNOWN_MODELS · v1.0.2 = 127 模型)
         run: |
-          echo "=== 拉取 KNOWN_MODELS 全部模型 ($(python -c 'from core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 的最新 HF 元数据 ==="
+          echo "=== 拉取 KNOWN_MODELS 全部模型 ($(python -c 'from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 的最新 HF 元数据 ==="
           python scripts/refresh_hf_metadata.py \
             --refresh-bare-repos \
             --ensure-existing-in-known \
@@ -65,22 +77,44 @@ jobs:
             --output=references/deployment-recommendations.md \
             || echo "auto_expand_models exit=$?"
 
+      - name: Export structured model knowledge base
+        run: |
+          echo "=== 导出结构化模型知识库（v1.0.3）==="
+          # data/models-knowledge.json 是 MCP Server / HTTP API / 第三方插件
+          # 复用模型数据的稳定契约，必须随 KNOWN_MODELS 变化自动同步。
+          python scripts/export_models_knowledge.py \
+            || echo "export_models_knowledge exit=$?"
+
       - name: Commit + push data snapshots
         run: |
+          # ── 分支守卫 ────────────────────────────────────────────────
+          # 修复：workflow_dispatch 可以在 tag / 其它分支 ref 上触发，此时
+          # checkout 出来是 detached HEAD，`git push origin main` 会直接失败
+          # （v1.0.2 tag 上的 run 36242701036 就是这么挂的，步骤「自动 commit
+          # 变更」红叉，而数据其实已经刷好了、artifact 也传上去了）。
+          # 策略：数据刷新照跑，artifact 照传，但不往 main 推不该推的东西。
+          HEAD_REF="$(git symbolic-ref --quiet --short HEAD || true)"
+          if [ "$HEAD_REF" != "main" ]; then
+            echo "⚠ HEAD 不在 main（当前: ${HEAD_REF:-detached HEAD @ $(git rev-parse --short HEAD)}）"
+            echo "⚠ 本次只刷新数据并上传 artifact，跳过 commit + push（数据不会丢）"
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main || true
+          git pull --rebase origin "$HEAD_REF"
           git add -A
           if ! git diff --cached --quiet; then
-            git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告
+            git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告 + 结构化知识库
 
             触发: schedule main
             时间: $(date -u '+%Y-%m-%d %H:%M UTC')
-            HF 元数据: KNOWN_MODELS 全部 ($(python -c 'from core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 自动拉
+            HF 元数据: KNOWN_MODELS 全部 ($(python -c 'from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 自动拉
             GPU 价格: 5 款 NVIDIA
+            知识库: data/models-knowledge.json + references/vram-requirements.md
 
             Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-            git push origin main
+            git push origin "$HEAD_REF"
             echo "✓ pushed"
           else
             echo "✓ 无变化，跳过 commit"

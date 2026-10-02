@@ -13,6 +13,8 @@ HTTP API Server - 任何 Agent/工具通过 HTTP 调用
 import sys
 import json
 
+from . import __version__
+
 try:
     from fastapi import FastAPI, HTTPException
     from fastapi.responses import JSONResponse
@@ -31,7 +33,7 @@ def create_app():
     app = FastAPI(
         title="osm-deploy API",
         description="开源大模型部署可行性鉴别 HTTP API",
-        version="1.0.0",
+        version=__version__,
     )
 
     # 复用 mcp_server 的 _call_tool
@@ -41,7 +43,7 @@ def create_app():
     async def root():
         return {
             "service": "osm-deploy",
-            "version": "1.0.0",
+            "version": __version__,
             "endpoints": [
                 "POST /assess - 5 步鉴别模型",
                 "GET /list - 列出所有模型",
@@ -58,8 +60,20 @@ def create_app():
         )
 
     @app.get("/list")
-    async def list_models(category: str = None):
-        args = {"category": category} if category else {}
+    async def list_models(
+        category: str = None,
+        max_vram_gb: float = None,
+        quant: str = None,
+        include_retired: bool = False,
+    ):
+        """列出模型；传 max_vram_gb 只返回该显存下放得下的（v1.0.3）"""
+        args = {"include_retired": include_retired}
+        if category:
+            args["category"] = category
+        if max_vram_gb is not None:
+            args["max_vram_gb"] = max_vram_gb
+        if quant:
+            args["quant"] = quant
         return JSONResponse(
             content=json.loads(_call_tool("list_models", args))
         )

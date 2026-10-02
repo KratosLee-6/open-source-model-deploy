@@ -2,18 +2,23 @@
 
 > 把"模型规格 / 硬件报价 / 部署方式"做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-**版本**：v1.0.2（2026-09-26）
-- **127 个**开源模型 + 8 大分类（自动 check，缺一即拒）
-- 🤖 **auto_fetch_models.py 自动拉取**：每周扫描 HF API，新模型自动出 patch
-- GitHub Actions 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议
+**版本**：v1.0.3（2026-10-03 · 开发中）
+- **136 个**开源模型 + 8 大分类（自动 check，缺一即拒）
+- 🧮 **结构化显存需求**：每个模型 × 6 档量化的显存数值 + 可行性判定，`list_models?max_vram_gb=24` 直接筛出消费级显卡跑得动的
+- 🤖 **auto_fetch_models.py 自动拉取**：每周扫描 HF API，新模型自动出 patch（总参从 HF safetensors 实测，不再靠正则猜模型名）
+- GitHub Actions 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议 + 模型库体检
 - 三种部署方式：CLI / MCP Server / HTTP API
 - 真实硬件实测：GTX 1660 Ti 6GB / 8 核 CPU / 15.9GB RAM（详见下文 🏆 实测案例）
 
-> 上一版 v1.0.1 发布于 2026-09-10（94 模型） → v1.0.0 发布于 2026-08-15（47 模型），详见 [Releases](https://github.com/KratosLee-6/open-source-model-deploy/releases)
+> ⚠️ **v1.0.3 修正了一个会导致错误采购建议的 bug**：MoE 模型的显存此前按**激活参数**计算，
+> 导致 Kimi-K2（1000B/32B）被算成 23GB，一台 24GB 显卡被判定"能跑"（实际需 720GB）。
+> 完整复盘见 **[docs/moe-vram-pitfall.md](docs/moe-vram-pitfall.md)**。
+>
+> 上一版 v1.0.2 发布于 2026-09-26（127 模型） → v1.0.1 发布于 2026-09-10（94 模型） → v1.0.0 发布于 2026-08-15（47 模型），详见 [Releases](https://github.com/KratosLee-6/open-source-model-deploy/releases)
 
 ## 🌟 核心亮点
 
-- **🧠 127 个开源模型覆盖**（v1.0.2 · 较 v1.0.1 +33）：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码 / 视觉 / Embedding / Reranker 专用模型
+- **🧠 136 个开源模型覆盖**（v1.0.3 · 较 v1.0.2 +9）：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + **MiMo-V2.6 全系 / GLM-5.3 / Kimi-K3 / Llama-4 / Qwen3-Coder-480B** + 代码 / 视觉 / Embedding / Reranker 专用模型
 - **🔌 三种部署方式**：CLI / MCP Server（Agent 原生协议）/ HTTP API（FastAPI）
 - **🖥️ 硬件自动检测**：跨平台识别 NVIDIA / AMD / Apple Silicon，自动推荐可部署模型
 - **🚀 一键部署脚本**：自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
@@ -41,11 +46,13 @@ osm-deploy deploy qwen3-32b
 ## 🏆 真实实测案例
 
 > 🆕 **本节已完整迁移到 v1.0.2（2026-09-26）**。下方 3 个实测段按时间倒序排列：
-> 1. **v1.0.2 实测 6-9**（最新版 · 127 模型 + auto_fetch + 周日 23:30 自动开 PR）
+> 1. **v1.0.2 实测 6-9**（含 127 模型分类截图 · 截图本身是 v1.0.2 时期的产物，故数字保持 127 不动）
 > 2. v1.0.1 实测 1-5（**历史快照** · 94 模型 + 每周一自动刷元数据 · 已被 v1.0.2 替代）
 > 3. v1.0.0 实测（**历史快照** · 真实模型推理 35.85 t/s · Llama-3.2-1B CPU 版）
 >
-> **当前最新实测段 = v1.0.2 实测 6-9（见本节末尾）**
+> 📌 v1.0.3（开发中）尚未重拍截图，模型库已 94 → 127 → 136。**v1.0.2 段内的数字一律保持 127**，
+> 因为截图里显示的就是 127。136 模型的完整清单见 [references/vram-requirements.md](references/vram-requirements.md)，
+> 其中的显存数值是自动生成的，始终与代码同步。
 
 ### v1.0.0 发布实测（2026-08-15）— 无独显笔记本跑 1B 模型（历史 47 模型清单快照）
 
@@ -155,14 +162,14 @@ Memory-Usage  43MiB / 6144MiB
 
 ---
 
-### v1.0.2 实测（2026-09-26）— 127 模型 + `auto_fetch` 自动拉取（**新增**）
+### v1.0.2 实测（2026-09-26）— 127 模型 + `auto_fetch` 自动拉取（**已归档为历史快照**）
 
 > 🆕 **新于 v1.0.2**：模型库扩张 94 → 127（+33%）+ 新增 `auto_fetch_models.py` 脚本 + 新增 `auto-fetch-models.yml` 周日自动开 PR 工作流。
 
 **环境**：同 v1.0.1（GTX 1660 Ti 6GB / Windows 11 / 15.9GB）
 **工具版本**：v1.0.2
 
-#### 实测 6：127 模型分类清单（v1.0.2 最新快照）
+#### 实测 6：127 模型分类清单（v1.0.2 时期快照 · 当前为 135，v1.0.3 尚未重拍）
 
 | 分类 | 模型数 | 较 v1.0.1 增量 |
 |---|---:|---:|
@@ -220,7 +227,7 @@ $ python scripts/auto_fetch_models.py --mode=patch --min-downloads 1000000
 - **量化版本涌现**：昨天还没有的 GGUF，今天突然有人发布
 - **手动调研累**：每个模型都要查 HF / GitHub / arXiv / 京东，时间成本极高
 
-**本工具 = 127 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
+**本工具 = 136 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
 
 ## 🏗️ 架构
 
@@ -280,19 +287,22 @@ curl -X POST http://localhost:8765/assess -d '{"model":"deepseek-v3"}'
 curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"vllm"}'
 ```
 
-## 📊 已覆盖的 127 个模型（分 8 类 · 2026-09-26 更新）
+## 📊 已覆盖的模型（分 8 类 · 2026-10-03 更新）
 
-| 分类 | 模型数 | 2026-09-26 新增代表 |
+> 完整逐模型清单 + 每档量化显存数值见 [references/vram-requirements.md](references/vram-requirements.md)（自动生成，与代码同步）。
+> 结构化版本见 `data/models-knowledge.json`（`model_count` = 135，另有 1 个已退役模型不计入）。
+
+| 分类 | 模型数 | 2026-10-03 新增代表 |
 |---|---:|---|
-| **国内通用** | 39 | Qwen3-30B-A3B MoE · Qwen2.5-0.5B/1.5B base · DeepSeek-V3-0324 · DeepSeek-V4-Flash |
-| **国内推理** | 10 | （v1.0.2 无新增） |
-| **代码专用** | 8 | Qwen2.5-Coder-14B-Instruct · DeepSeek-Coder-7B-Instruct-v1.5 |
-| **视觉多模态** | 17 | Qwen2.5-VL-3B/32B-Instruct · Qwen2-VL-7B-Instruct · Phi-3.5-Vision-Instruct · Florence-2-base · InternVL2-1B/2B |
-| **国际密集** | 9 | Llama-3.3-70B-Instruct · Gemma-2-9B-IT |
-| **国际边缘** | 14 | Llama-3.2-1B/3B-Instruct · Mistral-7B-Instruct-v0.2 · Gemma-3-1B-IT |
-| **Embedding** | 28 | sentence-transformers 全家桶（MiniLM-L12 / paraphrase / distilroberta / multi-qa / distilUSE）+ E5 large/base + GTE multilingual/large-en + EmbeddingGemma-300M |
-| **Reranker** | 2 | （v1.0.2 无新增） |
-| **总计** | **127** | |
+| **国内通用** | 45 | **MiMo-V2.6-Pro / Flash / Distill-Qwen-9B**（小米，开源权重第一）· **GLM-5.3 / 5.3-Flash** · **Kimi-K3** |
+| **国内推理** | 10 | （v1.0.3 无新增） |
+| **代码专用** | 9 | **Qwen3-Coder-480B-A35B**（Apache-2.0，480B MoE） |
+| **视觉多模态** | 17 | （v1.0.3 无新增） |
+| **国际密集** | 11 | **Llama-4-Scout-17B-16E / Maverick-17B-128E**（Meta 首部 Llama 4） |
+| **国际边缘** | 14 | （v1.0.3 无新增） |
+| **Embedding** | 28 | （v1.0.3 无新增） |
+| **Reranker** | 2 | （v1.0.3 无新增） |
+| **总计** | **135** | 较 v1.0.2 的 127 个 **+9**（另标注 1 个退役：DeepSeek-V4-Flash → V4.1-Flash） |
 
 | 分类 | 模型示例 |
 |------|---------|
@@ -309,7 +319,7 @@ curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"
 
 **场景 1：客户问"本地跑 AI 要多少钱"**
 ```
-Agent → detect_hardware() → 127 个推荐 → 客户决策
+Agent → detect_hardware() → 136 个推荐 → 客户决策
 ```
 
 **场景 2：技术选型对比 DeepSeek vs Qwen3**

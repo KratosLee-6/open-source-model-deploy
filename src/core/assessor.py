@@ -7,6 +7,7 @@
 from typing import Dict, Any, List
 
 from .model_resolver import resolve_model
+from . import vram_requirements as vram
 from ..data_sources import hardware_prices as hw
 
 
@@ -32,21 +33,36 @@ def full_assessment(model_name: str, force: bool = False) -> Dict[str, Any]:
     budget = {}
     if size_b > 0:
         budget = hw.estimate_3tier_budget(size_b)
-        # 估算激活参数后的显存（用于 MoE）
-        activated_b = resolved.get("activated_b", 0)
-        vram_note = ""
-        if activated_b:
-            vram_fp8 = activated_b * 1.0  # 激活参数 × 1 byte (FP8)
-            vram_bf16 = activated_b * 2.0  # 激活参数 × 2 bytes
-            vram_4bit = activated_b * 0.5  # 激活参数 × 0.5 bytes
-            vram_note = f"激活参数显存: FP8≈{vram_fp8:.0f}GB, BF16≈{vram_bf16:.0f}GB, 4bit≈{vram_4bit:.0f}GB"
+
+    # ── 结构化显存需求（v1.0.3）────────────────────────────────────
+    # 替换 v1.0.2 那句只给 MoE 看的自然语言 vram_note：现在所有模型都有
+    # 6 档量化的显存数值、可行性判定和部署卡数建议，且 JSON 可序列化。
+    vram_profile: Dict[str, Any] = {}
+    vram_note = ""
+    if size_b > 0:
+        # 用解析到的 size_b（含 HF 动态值）构造一个临时 info 参与计算
+        info = dict(resolved)
+        info["size_b"] = size_b
+        info["_name"] = model_name
+        vram_profile = vram.model_vram_profile(model_name, info)
+        min_v = vram_profile["min_vram"]
+        vram_note = (
+            f"最低显存 {min_v['vram_min_gb']} GB（{min_v['quant']}，"
+            f"{min_v['source']}）· Q4 部署建议：{vram_profile['plan_q4']['recommend']}"
+        )
 
     return {
         "model_name": model_name,
         "resolved": resolved,
         "estimated_params_b": size_b,
         "activated_params_b": resolved.get("activated_b"),
+        "is_moe": vram.is_moe(resolved),
+        # 状态提到顶层：消费方（Agent / 第三方工具）不该再去翻 resolved 才能知道
+        # 这个模型是不是已经退役了
+        "status": resolved.get("status", "active"),
+        "superseded_by": resolved.get("superseded_by"),
         "vram_note": vram_note,
+        "vram_requirements": vram_profile,
         "budget_estimates": budget,
         "category": resolved.get("category"),
         "note": resolved.get("note"),

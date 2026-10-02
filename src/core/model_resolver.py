@@ -318,6 +318,25 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "size_b": 32,
         "note": "智谱推理模型",
     },
+    # ===== GLM-5 系列（2026-09，HF 实测参数）=====
+    "glm-5.3": {
+        "hf_repo": "zai-org/GLM-5.3",
+        "github": "zai-org/GLM-5",
+        "category": "domestic-general",
+        "size_b": 753.3,        # HF safetensors.total = 753,329,940,480
+        "activated_b": 39,      # 据 config 推算（256 routed + 1 shared, 8/tok, 78 层）
+        "note": "智谱 GLM-5.3，DSA 架构 MoE（78 层 / 256 routed experts / 8 per token）。"
+                "2026 年 Code Arena 开源第一梯队。自定义协议（非 MIT），商用前需读 LICENSE。",
+    },
+    "glm-5.3-flash": {
+        "hf_repo": "zai-org/GLM-5.3-Flash",
+        "github": "zai-org/GLM-5",
+        "category": "domestic-general",
+        "size_b": 321.3,        # HF safetensors.total = 321,323,031,390
+        "activated_b": 14,      # 据 config 推算（288 routed + 1 shared, 8/tok, 45 层）
+        "note": "GLM-5.3 的轻量版，MIT 协议，多模态。比 Pro 版便宜一个量级，"
+                "是 GLM-5 系里更适合中小团队自建的档位。",
+    },
     # ===== Kimi（月之暗面）=====
     "kimi-k2": {
         "hf_repo": "moonshotai/Kimi-K2-Instruct",
@@ -326,6 +345,64 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "size_b": 1000,  # MoE 1T
         "activated_b": 32,  # 估计值
         "note": "MoE 1T 超大规模",
+    },
+    "kimi-k3": {
+        "hf_repo": "moonshotai/Kimi-K3",
+        "github": "MoonshotAI/Kimi-K3",
+        "category": "domestic-general",
+        "size_b": 2779.9,       # HF safetensors.total = 2,779,931,837,184
+        "activated_b": 119,     # 据 config 推算（896 experts, 16 per token, 93 层, hidden 7168）
+        "note": "月之暗面 Kimi K3，Kimi Linear 架构 MoE，2.78T 总参 / 约 119B 激活，"
+                "原生全模态。社区热度极高（11.5K likes，GGUF/NVFP4 量化齐全）。"
+                "自定义协议（非 MIT）。集群级部署，单机不可行。",
+    },
+    # ===== MiMo 系列（小米，2026-09-22 发布，当前开源权重榜首）=====
+    "mimo-v2.6-pro": {
+        "hf_repo": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
+        "github": "XiaomiMiMo/MiMo-V2.6",
+        "category": "domestic-general",
+        "size_b": 1024.2,       # HF safetensors.total = 1,024,216,603,392
+        "activated_b": 42,      # 官方公布（config 推算约 33B，官方口径更高）
+        "note": "小米 MiMo-V2.6-Pro，1.02T MoE / 42B 激活，原生全模态（文/图/视频/音频），"
+                "1M context，MIT 协议。Artificial Analysis 开源权重第一。"
+                "⚠️ 注意：这是万亿级 MoE，显存按总参算（Q4 约 740GB），别拿 42B 激活去估。",
+    },
+    "mimo-v2.6-flash": {
+        "hf_repo": "XiaomiMiMo/MiMo-V2.6-Flash-RL",
+        "github": "XiaomiMiMo/MiMo-V2.6",
+        "category": "domestic-general",
+        "size_b": 310.8,        # HF safetensors.total = 310,756,322,688
+        "activated_b": 15,      # 官方公布
+        "note": "MiMo-V2.6-Flash，310B MoE / 15B 激活，原生全模态，MIT 协议。"
+                "llama.cpp 官方已出 GGUF（约需 141GB 内存），仍属多卡/工作站级。",
+    },
+    "mimo-v2.6-distill-qwen-9b": {
+        "hf_repo": "XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+        "github": "XiaomiMiMo/MiMo-V2.6",
+        "category": "domestic-general",
+        "size_b": 9.41,         # HF safetensors.total = 9,409,813,744
+        "note": "MiMo-V2.6 蒸馏到 Qwen3.5-9B，密集模型，MIT 协议，多模态。"
+                "⭐ 消费级显卡友好：GGUF 约 12GB 显存可跑，是 MiMo 系里唯一单卡机型。",
+    },
+    # ===== Meta Llama 4（2025-05，多模态 MoE）=====
+    "llama-4-scout-17b": {
+        "hf_repo": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+        "github": "meta-llama/llama-models",
+        "category": "international-dense",
+        "size_b": 108.6,        # HF safetensors.total = 108,641,793,536
+        "activated_b": 17,      # 模型名 17B-16E：16 routed experts
+        "note": "Llama 4 Scout，17B 激活 / 108B 总参 MoE，10M context，原生多模态。"
+                "⚠️ HF gated（需接受 Meta 协议），无 token 时 resolve 会 401。"
+                "自定义 Llama 协议（非 MIT，>7 亿 MAU 需单独授权）。",
+    },
+    "llama-4-maverick-17b": {
+        "hf_repo": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+        "github": "meta-llama/llama-models",
+        "category": "international-dense",
+        "size_b": 401.6,        # HF safetensors.total = 401,583,781,376
+        "activated_b": 17,      # 模型名 17B-128E：128 routed experts
+        "note": "Llama 4 Maverick，17B 激活 / 402B 总参 MoE，Llama 4 旗舰，10M context。"
+                "⚠️ HF gated。显存按总参算，Q4 约 290GB，单机不可行。",
     },
     # ===== 国际开源：Meta Llama =====
     "llama-3.1-405b": {
@@ -486,6 +563,16 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "size_b": 30,
         "activated_b": 3,
         "note": "MoE 30B/3B，Qwen3 代码版",
+    },
+    "qwen3-coder-480b": {
+        "hf_repo": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+        "github": "QwenLM/Qwen3-Coder",
+        "category": "code",
+        "size_b": 480.2,        # HF safetensors.total = 480,154,875,392
+        "activated_b": 35,      # 模型名 480B-A35B
+        "note": "Qwen3-Coder 旗舰，480B MoE / 35B 激活，Apache-2.0（商用无忧），256K context。"
+                "SWE-bench 约 70 分，仓库级智能体编程。当前最强的 Apache-2.0 开源代码模型之一。"
+                "⚠️ 显存按总参算，Q4 约 346GB。个人自建请用 30B-A3B。",
     },
     "qwen2.5-coder-32b": {
         "hf_repo": "Qwen/Qwen2.5-Coder-32B-Instruct",
@@ -857,7 +944,10 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "category": "domestic-general",
         "size_b": 284,
         "activated_b": 13,
-        "note": "DeepSeek-V4 Flash（非 0731 版），1.3M DLs",
+        "status": "retired",
+        "superseded_by": "deepseek-v4.1-flash",
+        "note": "⚠️ 已于 2026-09-10 退役。官方已由 DeepSeek-V4.1-Flash 取代；旧名（含 "
+                "-vision-exp）仍可解析但实际由 V4.1-Flash 服务并按 Flash 价计费。新部署请用 deepseek-v4.1-flash。",
     },
     # ---- Embedding 工业标准补完（sentence-transformers 全家桶 + E5 + GTE） ----
     "all-minilm-l12-v2": {
@@ -990,6 +1080,15 @@ def resolve_model(model_name: str, force: bool = False) -> Dict[str, Any]:
     key = model_name.lower().strip()
     info = KNOWN_MODELS.get(key, {})
 
+    # 修复（v1.0.3）：KNOWN_MODELS 里有 3 个带大写字母的 key
+    # （all-MiniLM-L6-v2 等），而上面把输入统一 lower 了 → 这些模型永远查不到，
+    # 报 "Unknown model"。补一次忽略大小写的兜底查找（无 key 冲突）。
+    if not info:
+        for k, v in KNOWN_MODELS.items():
+            if k.lower() == key:
+                info = v
+                break
+
     # 如果不在内置表，尝试当作 HF repo 直接处理
     if not info and "/" in model_name:
         info = {
@@ -1014,6 +1113,8 @@ def resolve_model(model_name: str, force: bool = False) -> Dict[str, Any]:
         "category": info.get("category"),
         "size_b": info.get("size_b"),
         "activated_b": info.get("activated_b"),
+        "status": info.get("status", "active"),
+        "superseded_by": info.get("superseded_by"),
         "note": info.get("note"),
     }
 
