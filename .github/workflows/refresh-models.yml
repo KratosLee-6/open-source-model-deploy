@@ -45,7 +45,7 @@ jobs:
 
       - name: Refresh HF metadata (已自动扩展到当前 KNOWN_MODELS · v1.0.2 = 127 模型)
         run: |
-          echo "=== 拉取 KNOWN_MODELS 全部模型 ($(python -c 'from core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 的最新 HF 元数据 ==="
+          echo "=== 拉取 KNOWN_MODELS 全部模型 ($(python -c 'from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 的最新 HF 元数据 ==="
           python scripts/refresh_hf_metadata.py \
             --refresh-bare-repos \
             --ensure-existing-in-known \
@@ -64,6 +64,14 @@ jobs:
             --target=consumer-gpu \
             --output=references/deployment-recommendations.md \
             || echo "auto_expand_models exit=$?"
+
+      - name: Export structured model knowledge base
+        run: |
+          echo "=== 导出结构化模型知识库（v1.0.3）==="
+          # data/models-knowledge.json 是 MCP Server / HTTP API / 第三方插件
+          # 复用模型数据的稳定契约，必须随 KNOWN_MODELS 变化自动同步。
+          python scripts/export_models_knowledge.py \
+            || echo "export_models_knowledge exit=$?"
 
       - name: Commit + push data snapshots
         run: |
@@ -85,12 +93,13 @@ jobs:
           git pull --rebase origin "$HEAD_REF"
           git add -A
           if ! git diff --cached --quiet; then
-            git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告
+            git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告 + 结构化知识库
 
             触发: schedule main
             时间: $(date -u '+%Y-%m-%d %H:%M UTC')
-            HF 元数据: KNOWN_MODELS 全部 ($(python -c 'from core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 自动拉
+            HF 元数据: KNOWN_MODELS 全部 ($(python -c 'from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 自动拉
             GPU 价格: 5 款 NVIDIA
+            知识库: data/models-knowledge.json + references/vram-requirements.md
 
             Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
             git push origin "$HEAD_REF"
