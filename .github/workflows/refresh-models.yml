@@ -67,9 +67,22 @@ jobs:
 
       - name: Commit + push data snapshots
         run: |
+          # ── 分支守卫 ────────────────────────────────────────────────
+          # 修复：workflow_dispatch 可以在 tag / 其它分支 ref 上触发，此时
+          # checkout 出来是 detached HEAD，`git push origin main` 会直接失败
+          # （v1.0.2 tag 上的 run 36242701036 就是这么挂的，步骤「自动 commit
+          # 变更」红叉，而数据其实已经刷好了、artifact 也传上去了）。
+          # 策略：数据刷新照跑，artifact 照传，但不往 main 推不该推的东西。
+          HEAD_REF="$(git symbolic-ref --quiet --short HEAD || true)"
+          if [ "$HEAD_REF" != "main" ]; then
+            echo "⚠ HEAD 不在 main（当前: ${HEAD_REF:-detached HEAD @ $(git rev-parse --short HEAD)}）"
+            echo "⚠ 本次只刷新数据并上传 artifact，跳过 commit + push（数据不会丢）"
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main || true
+          git pull --rebase origin "$HEAD_REF"
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告
@@ -80,7 +93,7 @@ jobs:
             GPU 价格: 5 款 NVIDIA
 
             Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-            git push origin main
+            git push origin "$HEAD_REF"
             echo "✓ pushed"
           else
             echo "✓ 无变化，跳过 commit"

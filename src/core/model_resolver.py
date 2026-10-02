@@ -990,6 +990,15 @@ def resolve_model(model_name: str, force: bool = False) -> Dict[str, Any]:
     key = model_name.lower().strip()
     info = KNOWN_MODELS.get(key, {})
 
+    # 修复（v1.0.3）：KNOWN_MODELS 里有 3 个带大写字母的 key
+    # （all-MiniLM-L6-v2 等），而上面把输入统一 lower 了 → 这些模型永远查不到，
+    # 报 "Unknown model"。补一次忽略大小写的兜底查找（无 key 冲突）。
+    if not info:
+        for k, v in KNOWN_MODELS.items():
+            if k.lower() == key:
+                info = v
+                break
+
     # 如果不在内置表，尝试当作 HF repo 直接处理
     if not info and "/" in model_name:
         info = {

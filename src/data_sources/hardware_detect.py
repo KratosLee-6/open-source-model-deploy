@@ -16,6 +16,10 @@ import shutil
 import re
 from typing import Dict, List, Any, Optional
 
+# 显存估算统一走 core.vram_requirements（v1.0.3 新增）。
+# 该模块是纯计算、无 IO、不 import data_sources，故无循环依赖风险。
+from ..core import vram_requirements as vram
+
 
 # 常见 GPU 显存速查表（型号 → 显存 GB）
 KNOWN_GPU_VRAM = {
@@ -335,31 +339,30 @@ def recommend_models_for_hardware(hw_scan: Dict[str, Any], all_models: Dict[str,
 
     for name, info in all_models.items():
         size_b = info.get("size_b", 0)
-        activated_b = info.get("activated_b", 0)
-        if size_b == 0:
+        if not size_b:
             continue
 
-        # 估算各精度所需显存
-        vram_4bit = size_b * 0.6  # GGUF Q4
-        vram_8bit = size_b * 1.0
-        vram_fp16 = size_b * 2.0
+        # ── 显存估算统一走 core.vram_requirements（v1.0.3）──────────────
+        # 修复：原先此处用 activated_b × 0.6 算 MoE 显存，导致
+        #   DeepSeek-V3（671B 总参 / 37B 激活）算出 22GB → 24GB 卡被判定可跑。
+        # MoE 的 expert 权重全部常驻显存，显存按 **总参数** 算。
+        req_q4 = vram.vram_requirement(info, quant="Q4_K_M", gpu_count=1)
+        req_q8 = vram.vram_requirement(info, quant="Q8_0", gpu_count=1)
+        req_bf16 = vram.vram_requirement(info, quant="BF16", gpu_count=1)
 
-        # MoE 模型用激活参数算
-        if activated_b > 0:
-            vram_4bit = activated_b * 0.6
-            vram_8bit = activated_b * 1.0
-            vram_fp16 = activated_b * 2.0
+        vram_4bit = req_q4["vram_required_gb"]
+        vram_8bit = req_q8["vram_required_gb"]
+        vram_fp16 = req_bf16["vram_required_gb"]
 
         # 适配度评估（取最大可支持的精度）
         suitable_quant = None  # Q4_K_M
         suitable_fp = None     # Q8_0 或 FP16/BF16
-        for label, vram in [
+        for label, need in [
             ("Q4_K_M", vram_4bit),
             ("Q8_0", vram_8bit),
             ("FP16/BF16", vram_fp16),
         ]:
-            # 留 20% 余量（KV cache + 系统开销）
-            if vram * 1.2 <= total_vram:
+            if need <= total_vram:
                 if "Q4" in label:
                     suitable_quant = label
                 elif "Q8" in label:
@@ -377,9 +380,13 @@ def recommend_models_for_hardware(hw_scan: Dict[str, Any], all_models: Dict[str,
         # CPU 部署可用量化 + 大内存 swap（适合小模型或紧急测试）
         if not suitable_quant and not suitable_fp:
             # CPU 兜底：只要 4bit 量化小于内存的 80%，仍可推荐（慢但能用）
+            # 注意 vram_4bit 已含 1.2 运行时开销，此处不再重复放大
             cpu_memory_gb = hw_scan.get("memory", {}).get("total_gb", 0)
-            if cpu_memory_gb > 0 and vram_4bit * 1.2 <= cpu_memory_gb * 0.8:
-                suitable_quant = "Q4_K_M（CPU 慢速）"
+            if cpu_memory_gb > 0 and vram_4bit <= cpu_memory_gb * 0.8:
+                # 显存明确不够才走 CPU，标注出来避免被误读成「显卡能跑」
+                suitable_quant = (
+                    f"Q4_K_M（CPU 慢速·显存需 {vram_4bit:.0f}GB 不足）"
+                )
                 if not has_cuda and not has_rocm:
                     suitable_fp = None  # CPU 不推荐 FP16
 
@@ -405,9 +412,12 @@ def recommend_models_for_hardware(hw_scan: Dict[str, Any], all_models: Dict[str,
             "model": name,
             "category": info.get("category"),
             "size_b": size_b,
-            "activated_b": activated_b,
+            "activated_b": info.get("activated_b", 0),
+            "is_moe": vram.is_moe(info),
             "vram_estimate_4bit_gb": round(vram_4bit, 1),
+            "vram_estimate_8bit_gb": round(vram_8bit, 1),
             "vram_estimate_fp16_gb": round(vram_fp16, 1),
+            "fit": vram.fit_verdict(vram_4bit, total_vram),
             "deployable_quant": suitable_quant,
             "deployable_precision": suitable_fp,
             "frameworks": frameworks,

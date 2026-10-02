@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "open-source-model-deploy"
-version = "1.0.0"
+version = "1.0.2"
 description = "开源大模型部署可行性鉴别工具 - 动态拉取 HF/GitHub/arXiv/硬件报价，输出 5 步鉴别报告"
 readme = "README.md"
 requires-python = ">=3.8"
