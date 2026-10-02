@@ -55,6 +55,15 @@ jobs:
           echo "=== 严格模式（WARN 也算失败）==="
           python scripts/lint_models.py --strict --quiet
 
+      - name: Check README facts (文档数字必须与代码一致)
+        run: |
+          # README 里出现过「实测输出代码块写 135，实际输出 136」这类问题——
+          # 文档一旦和代码脱节就等于在骗读者。这里把 README 的关键断言
+          # （模型数、分类分布、显存数值、max_vram 筛选数、lint 输出、
+          #   链接可达、无重复截图、无乱码）全部变成可执行检查。
+          echo "=== README 一致性校验 ==="
+          python scripts/check_readme_facts.py
+
       - name: Refresh HF metadata (已自动扩展到当前 KNOWN_MODELS · v1.0.2 = 127 模型)
         run: |
           echo "=== 拉取 KNOWN_MODELS 全部模型 ($(python -c 'from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 的最新 HF 元数据 ==="
