@@ -43,6 +43,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
+      - name: Lint model catalog (挡住「总参/激活参」录入错误)
+        run: |
+          # 这类错误一旦进库就是错的采购建议，且很难被发现：
+          #   - size_b 误填成激活参（Llama-4-Scout-17B-16E 那类命名）
+          #   - size_b=0（新模型命名里没有 <数字>B）
+          #   - 标称 MoE 却没记 activated_b
+          # 详见 src/core/model_lint.py 模块文档。
+          echo "=== KNOWN_MODELS 数据体检 ==="
+          python scripts/lint_models.py
+          echo "=== 严格模式（WARN 也算失败）==="
+          python scripts/lint_models.py --strict --quiet
+
       - name: Refresh HF metadata (已自动扩展到当前 KNOWN_MODELS · v1.0.2 = 127 模型)
         run: |
           echo "=== 拉取 KNOWN_MODELS 全部模型 ($(python -c 'from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))') 个) 的最新 HF 元数据 ==="
