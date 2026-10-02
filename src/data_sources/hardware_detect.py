@@ -203,8 +203,55 @@ def detect_cpu() -> Dict[str, Any]:
     return info
 
 
+def _windows_memory_gb() -> tuple:
+    """Windows 内存读取（纯 ctypes，不依赖 wmic）
+
+    原实现调 `wmic OS get TotalVisibleMemorySize`，但 wmic 已在 Windows 11 24H2+
+    被移除，实测本机（i7-9700 / 15.9GB）读出 0GB。改用 kernel32 的
+    GlobalMemoryStatusEx，零外部命令、零依赖。
+    """
+    try:
+        import ctypes
+
+        class MEMORYSTATUSEX(ctypes.Structure):
+            _fields_ = [
+                ("dwLength", ctypes.c_ulong),
+                ("dwMemoryLoad", ctypes.c_ulong),
+                ("ullTotalPhys", ctypes.c_ulonglong),
+                ("ullAvailPhys", ctypes.c_ulonglong),
+                ("ullTotalPageFile", ctypes.c_ulonglong),
+                ("ullAvailPageFile", ctypes.c_ulonglong),
+                ("ullTotalVirtual", ctypes.c_ulonglong),
+                ("ullAvailVirtual", ctypes.c_ulonglong),
+                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+            ]
+
+        stat = MEMORYSTATUSEX()
+        stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+            total = round(stat.ullTotalPhys / 1024**3, 1)
+            avail = round(stat.ullAvailPhys / 1024**3, 1)
+            return total, avail
+    except Exception:
+        pass
+
+    # 兜底：wmic（老系统仍可用）
+    try:
+        out = subprocess.run(
+            ["wmic", "OS", "get", "TotalVisibleMemorySize", "/value"],
+            capture_output=True, text=True, timeout=5
+        )
+        if out.returncode == 0:
+            m = re.search(r"TotalVisibleMemorySize=(\d+)", out.stdout)
+            if m:
+                return round(int(m.group(1)) / 1024 / 1024, 1), 0.0
+    except Exception:
+        pass
+    return 0.0, 0.0
+
+
 def detect_memory() -> Dict[str, Any]:
-    """检测内存（统一方法：读 /proc/meminfo 或调用 wmic）"""
+    """检测内存（统一方法：读 /proc/meminfo / ctypes / wmic）"""
     info = {"total_gb": 0, "available_gb": 0, "type": "unknown"}
 
     if sys.platform.startswith("linux"):
@@ -227,17 +274,9 @@ def detect_memory() -> Dict[str, Any]:
         except Exception:
             pass
     elif sys.platform == "win32":
-        try:
-            out = subprocess.run(
-                ["wmic", "OS", "get", "TotalVisibleMemorySize", "/value"],
-                capture_output=True, text=True, timeout=5
-            )
-            if out.returncode == 0:
-                m = re.search(r"TotalVisibleMemorySize=(\d+)", out.stdout)
-                if m:
-                    info["total_gb"] = round(int(m.group(1)) / 1024 / 1024, 1)
-        except Exception:
-            pass
+        total, avail = _windows_memory_gb()
+        info["total_gb"] = total
+        info["available_gb"] = avail
 
     return info
 

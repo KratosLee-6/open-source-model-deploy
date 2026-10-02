@@ -19,7 +19,15 @@ def cmd_list(args):
     """list 子命令：列出所有支持的模型（可按 category 过滤）"""
     from .core.model_resolver import KNOWN_MODELS
     filter_cat = args.category  # domestic-general / domestic-reasoning / international-dense / international-edge
-    models = sorted(KNOWN_MODELS.items())
+    include_retired = getattr(args, "all", False)
+
+    # v1.0.3：退役模型默认不列出，与 list_models MCP 工具、知识库导出保持一致。
+    # 此前这里把 retired 也算进"总计"，导致 CLI 说 136 而别处都说 135。
+    retired = [(n, i) for n, i in KNOWN_MODELS.items() if i.get("status") == "retired"]
+    models = (
+        sorted(KNOWN_MODELS.items()) if include_retired
+        else sorted((n, i) for n, i in KNOWN_MODELS.items() if i.get("status") != "retired")
+    )
 
     # 按 category 分组显示
     cats = {}
@@ -49,9 +57,14 @@ def cmd_list(args):
             size_str = f"{size}B" if not activated else f"{size}B/{activated}B"
             hf_repo = info.get("hf_repo", "?")
             note = info.get("note", "")
-            print(f"  {name:<25} {size_str:<10} {hf_repo:<45} {note}")
+            flag = " [已退役]" if info.get("status") == "retired" else ""
+            print(f"  {name:<25} {size_str:<10} {hf_repo:<45} {note}{flag}")
 
     print(f"\n总计: {len(models)} 个模型")
+    if retired and not include_retired:
+        for n, i in retired:
+            print(f"⚠️ 另有 {len(retired)} 个已退役不计入："
+                  f"{n} → {i.get('superseded_by') or '?'}（用 --all 查看）")
     print("使用示例: osm-deploy assess qwen3-32b")
 
 
@@ -93,7 +106,21 @@ def cmd_detect(args):
         frameworks = " / ".join(r["frameworks"][:2])
         print(f"  {r['model']:<30} {r['size_b']:>5}B  {precision:<22} {frameworks}")
 
-    print(f"\n总共 {len(recs)} 个模型可在本机部署")
+    # 计数只算「真的能跑」的。v1.0.3 之前这里错用了 len(recs)——那是全库条数，
+    # 于是 6GB 显卡也会宣称「136 个模型可部署」，正是这次要消灭的那类误导。
+    # 退役模型与 list_models 保持一致：不计入分母，单独提示。
+    retired = [r for r in recs if r.get("status") == "retired"]
+    live = [r for r in recs if r.get("status") != "retired"]
+    runnable = [r for r in live if r.get("deployable_quant") or r.get("deployable_precision")]
+    cpu_only = [r for r in runnable if "CPU" in (r.get("deployable_quant") or "")]
+
+    line = f"\n可部署 {len(runnable)} / {len(live)} 个在架模型（其中 {len(cpu_only)} 个仅 CPU 慢速）"
+    if retired:
+        names = ", ".join(
+            f"{r['model']} → {r.get('superseded_by') or '?'}" for r in retired
+        )
+        line += f"\n⚠️ 另有 {len(retired)} 个已退役不计入：{names}"
+    print(line)
 
 
 def cmd_deploy(args):
@@ -197,6 +224,8 @@ def main():
     # list
     p_list = sub.add_parser("list", help="列出所有支持的模型")
     p_list.add_argument("--category", help="按分类过滤：domestic-general/domestic-reasoning/international-dense/international-edge/code/vision/embedding/reranker")
+    p_list.add_argument("--all", action="store_true",
+                        help="包含已退役模型（默认排除）")
     p_list.set_defaults(func=cmd_list)
 
     # detect

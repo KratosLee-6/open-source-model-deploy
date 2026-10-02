@@ -2,7 +2,7 @@
 slug: kratoslee-open-source-model-deploy
 displayName: 开源大模型部署鉴别器 · KratosLee
 name: open-source-model-deploy
-version: 1.0.2
+version: 1.0.3
 summary: 开源大模型本地部署可行性评估工具。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 127 个主流开源模型的部署方案、硬件需求估算和启动脚本生成，覆盖三大协议（CLI / MCP Server / HTTP API），并提供 auto_fetch_models 自动拉取工具。
 author: 汐构信息
 license: MIT

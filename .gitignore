@@ -40,3 +40,6 @@ dist/
 # Marketing / XHS 渲染素材（不进主仓库）
 .claude/
 xhs-render-v102/
+
+# 截图重拍时的本地备份（原始产物在 git 历史 / tag 里，不入库）
+docs/screenshots/_v102_backup/

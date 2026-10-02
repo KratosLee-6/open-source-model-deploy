@@ -3,7 +3,7 @@
 > 把"模型规格 / 硬件报价 / 部署方式"做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
 **版本**：v1.0.3（2026-10-03 · 开发中）
-- **136 个**开源模型 + 8 大分类（自动 check，缺一即拒）
+- **135 个在架模型** + 8 大分类（另 1 个已退役标注，共 136 条记录）
 - 🧮 **结构化显存需求**：每个模型 × 6 档量化的显存数值 + 可行性判定，`list_models?max_vram_gb=24` 直接筛出消费级显卡跑得动的
 - 🤖 **auto_fetch_models.py 自动拉取**：每周扫描 HF API，新模型自动出 patch（总参从 HF safetensors 实测，不再靠正则猜模型名）
 - GitHub Actions 每周自动刷新 HF 元数据 + GPU 价格 + 部署建议 + 模型库体检
@@ -18,7 +18,7 @@
 
 ## 🌟 核心亮点
 
-- **🧠 136 个开源模型覆盖**（v1.0.3 · 较 v1.0.2 +9）：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + **MiMo-V2.6 全系 / GLM-5.3 / Kimi-K3 / Llama-4 / Qwen3-Coder-480B** + 代码 / 视觉 / Embedding / Reranker 专用模型
+- **🧠 135 个在架模型覆盖**（v1.0.3 · 较 v1.0.2 +9）：DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + **MiMo-V2.6 全系 / GLM-5.3 / Kimi-K3 / Llama-4 / Qwen3-Coder-480B** + 代码 / 视觉 / Embedding / Reranker 专用模型
 - **🔌 三种部署方式**：CLI / MCP Server（Agent 原生协议）/ HTTP API（FastAPI）
 - **🖥️ 硬件自动检测**：跨平台识别 NVIDIA / AMD / Apple Silicon，自动推荐可部署模型
 - **🚀 一键部署脚本**：自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
@@ -45,14 +45,16 @@ osm-deploy deploy qwen3-32b
 
 ## 🏆 真实实测案例
 
-> 🆕 **本节已完整迁移到 v1.0.2（2026-09-26）**。下方 3 个实测段按时间倒序排列：
-> 1. **v1.0.2 实测 6-9**（含 127 模型分类截图 · 截图本身是 v1.0.2 时期的产物，故数字保持 127 不动）
-> 2. v1.0.1 实测 1-5（**历史快照** · 94 模型 + 每周一自动刷元数据 · 已被 v1.0.2 替代）
-> 3. v1.0.0 实测（**历史快照** · 真实模型推理 35.85 t/s · Llama-3.2-1B CPU 版）
+> 🆕 **当前最新实测 = v1.0.3（2026-10-03 · 实测 10-16）**，全部截图由脚本在本机真实运行生成。
+> 下方各段按时间倒序：
+> 1. **v1.0.3 实测 10-16**（最新版 · 135 模型 + 显存结构化 + 7 张重拍截图）
+> 2. v1.0.2 实测（**历史记录** · 127 模型 + `auto_fetch` 自动拉取）
+> 3. v1.0.1 实测 1-5（**历史快照** · 94 模型 + 每周一自动刷元数据）
+> 4. v1.0.0 实测（**历史快照** · 真实模型推理 35.85 t/s · Llama-3.2-1B CPU 版）
 >
-> 📌 v1.0.3（开发中）尚未重拍截图，模型库已 94 → 127 → 136。**v1.0.2 段内的数字一律保持 127**，
-> 因为截图里显示的就是 127。136 模型的完整清单见 [references/vram-requirements.md](references/vram-requirements.md)，
-> 其中的显存数值是自动生成的，始终与代码同步。
+> 📌 截图文件名在 v1.0.3 被复用重拍，所以同一张图只配一个版本说明；
+> v1.0.2 的原始截图可在 git 历史（tag `v1.0.2`）里翻到。
+> 135 模型的逐项显存数值见 [references/vram-requirements.md](references/vram-requirements.md)（自动生成，始终与代码同步）。
 
 ### v1.0.0 发布实测（2026-08-15）— 无独显笔记本跑 1B 模型（历史 47 模型清单快照）
 
@@ -114,7 +116,8 @@ osm-deploy deploy qwen3-32b
 | reranker | 1 | bge-reranker-v2-m3 |
 | **总计 (v1.0.0)** | **47** | **8 大类全覆盖（历史快照）** |
 
-![47 模型分类（v1.0.0 历史快照 · 当时 47 个）](docs/screenshots/07-实测截图-47模型分类.png)
+> 📌 当年的 47 模型分类截图已在 v1.0.3 重拍时移除（文件名与 135 模型那张冲突）。
+> 原始截图见 git 历史（tag `v1.0.0` / `v1.0.1`）；上表的分类数据保留作历史记录。
 
 #### 实测 3：本地部署推荐（GTX 1660 Ti 6GB）
 
@@ -162,61 +165,100 @@ Memory-Usage  43MiB / 6144MiB
 
 ---
 
-### v1.0.2 实测（2026-09-26）— 127 模型 + `auto_fetch` 自动拉取（**已归档为历史快照**）
+### v1.0.3 实测（2026-10-03）— 135 模型 + 显存结构化 + MoE 误判修复（**当前版本**）
 
-> 🆕 **新于 v1.0.2**：模型库扩张 94 → 127（+33%）+ 新增 `auto_fetch_models.py` 脚本 + 新增 `auto-fetch-models.yml` 周日自动开 PR 工作流。
+**环境**：Windows 11 / i7-9700 8 核 / **15.9GB 内存** / GTX 1660 Ti 6GB（driver 595.97）
+**工具版本**：v1.0.3
 
-**环境**：同 v1.0.1（GTX 1660 Ti 6GB / Windows 11 / 15.9GB）
-**工具版本**：v1.0.2
+> 本节全部截图由 `scripts/regen_screenshots.py` 在**本机真实运行**后生成，
+> 不是手工拼图。截图里的每个数字都能用 `pip install -e .` 后自己复现。
 
-#### 实测 6：127 模型分类清单（v1.0.2 时期快照 · 当前为 135，v1.0.3 尚未重拍）
+#### 实测 10：硬件扫描 + 可部署判定
 
-| 分类 | 模型数 | 较 v1.0.1 增量 |
-|---|---:|---:|
-| **国内通用** | **39** | +6 |
-| **国内推理** | **10** | 0 |
-| **代码专用** | **8** | +2 |
-| **视觉多模态** | **17** | +7 |
-| **国际密集** | **9** | +2 |
-| **国际边缘** | **14** | +4 |
-| **Embedding** | **28** | +12 |
-| **Reranker** | **2** | 0 |
-| **总计** | **127** | **+33** |
+![本机硬件扫描](docs/screenshots/06-实测截图-硬件扫描.png)
 
-![127 模型分类](docs/screenshots/07-实测截图-127模型分类.png)
+注意两个 v1.0.3 顺手修掉的真问题（都会让输出说谎）：
 
-#### 实测 7：`auto_fetch_models.py --mode=stats`
+| 问题 | 修复前 | 修复后 |
+|---|---|---|
+| `wmic` 已被 Win11 24H2+ 移除，内存读不出来 | `内存: 0GB` | `内存: 15.9GB`（改用 ctypes `GlobalMemoryStatusEx`） |
+| 「可部署数」用的是全库条数 | `总共 136 个模型可在本机部署` | `可部署 83 / 135 个在架模型（其中 11 个仅 CPU 慢速）` |
 
-```bash
-$ python scripts/auto_fetch_models.py --mode=stats
-```
+第二行尤其关键——6GB 显卡上宣称「136 个模型可部署」和 v1.0.3 修的 MoE 显存误判
+是同一类错误：**让用户以为自己的机器能跑它根本跑不动的模型**。
 
-输出显示 HF API 拉取 4 个 pipeline tag 后过滤到约 **150+ 候选**（≥ 50k downloads · 权威 namespace · 非衍生版本），按 8 大类启发式分布。
+#### 实测 11：135 模型分类清单（8 大类 · 每类前 3 条）
+
+![135 模型分类](docs/screenshots/07-实测截图-135模型分类.png)
+
+| 分类 | 模型数 | v1.0.3 新增代表 |
+|---|---:|---|
+| **代码专用** | 9 | Qwen3-Coder-480B-A35B（Apache-2.0，480B MoE / 35B 激活） |
+| **国内通用** | 45 | MiMo-V2.6-Pro / Flash / Distill-Qwen-9B · GLM-5.3 / 5.3-Flash · Kimi-K3 |
+| **国内推理** | 10 | （无新增） |
+| **Embedding** | 28 | （无新增） |
+| **国际密集** | 11 | Llama-4-Scout-17B-16E / Maverick-17B-128E |
+| **国际边缘** | 14 | （无新增） |
+| **Reranker** | 2 | （无新增） |
+| **视觉多模态** | 17 | （无新增） |
+| **总计** | **135** | 较 v1.0.2 的 127 **+9**（另 1 个已退役不计入） |
+
+`size_b` 全部取自 HuggingFace `safetensors.total` 实测值，不是估算。详见
+[references/vram-requirements.md](references/vram-requirements.md) 的逐模型 6 档量化显存表。
+
+#### 实测 12：GPU 当前状态
+
+![nvidia-smi](docs/screenshots/08-实测截图-nvidia-smi.png)
+
+#### 实测 13：按本机 6GB 显存的部署建议
+
+![可部署模型推荐](docs/screenshots/09-实测截图-推荐结果.png)
+
+#### 实测 14：`auto_fetch_models.py --mode=stats`
 
 ![auto_fetch stats](docs/screenshots/13-实测截图-auto-fetch-stats.png)
 
-#### 实测 8：`auto_fetch_models.py --mode=patch`
-
-```bash
-$ python scripts/auto_fetch_models.py --mode=patch --min-downloads 1000000
-```
-
-生成可直接粘到 `model_resolver.py` 的 `KNOWN_MODELS` dict 条目（每条含 `hf_repo` / `github` / `category` / `size_b` + 自动拉取的 downloads/likes 元数据）。
+#### 实测 15：`auto_fetch_models.py --mode=patch`（v1.0.3：总参实测 + lint 闸门）
 
 ![auto_fetch patch](docs/screenshots/14-实测截图-auto-fetch-patch.png)
 
-#### 实测 9：新增 `auto-fetch-models` workflow
+v1.0.3 变化：每条生成条目带 `param_source: hf-safetensors`（总参来自 HF API 实测，
+不再靠正则猜模型名），且 patch 输出前会先跑 `model_lint` 闸门，ERROR 的候选直接拦下。
 
-- 📍 文件：`.github/workflows/auto-fetch-models.yml`
-- ⏰ 触发：每周日 UTC 15:30（北京时间 23:30）+ 可手动 `workflow_dispatch`
-- 🔁 流程：`stats → patch → apply（去重 + 插入）→ commit 新分支 → 自动开 PR`
-- 🎯 PR body 包含审核清单：size_b 校验 · category 映射 · list/assess smoke test
+#### 实测 16：模型库体检（v1.0.3 新增，CI 第一个业务 step）
 
-**首次手动触发**（2026-09-26）：run [#36242423838](https://github.com/KratosLee-6/open-source-model-deploy/actions/runs/36242423838)
+```bash
+$ python scripts/lint_models.py --strict
+模型库体检：135 个模型 · ERROR 0 · WARN 0 · INFO 0
+✓ 全部通过
+```
 
 ---
 
-**结论**：v1.0.2 在真实硬件（GTX 1660 Ti 6GB）上跑通全集工具链路——**127 模型清单完整 ✓**、`auto_fetch_models` 自动拉取脚本可独立使用 ✓、GitHub Actions 工作流新增每周自动补模型 PR ✓。
+**结论**：v1.0.3 在真实硬件（GTX 1660 Ti 6GB / 15.9GB 内存）上跑通全集工具链路——
+**135 模型清单完整 ✓**、显存按总参正确计算 ✓、退役模型不再混入推荐 ✓、
+模型库体检进 CI ✓。
+
+---
+
+### v1.0.2 实测（2026-09-26）— 127 模型 + `auto_fetch` 自动拉取（**历史记录**）
+
+> ⚠️ 本段的截图文件名已被 v1.0.3 复用并**重拍为 v1.0.3 内容**（如
+> `06-实测截图-硬件扫描.png` 现在是 v1.0.3 的输出），故此处不再重复贴图，
+> 避免同一张图配两个版本说明。v1.0.2 的原始截图已存档于 git 历史
+> （tag `v1.0.2`）。
+
+v1.0.2 做的主要是：模型库 94 → 127、新增 `auto_fetch_models.py`、
+新增 `auto-fetch-models.yml` 周日自动开 PR 工作流。
+首次手动触发 run [#36242423838](https://github.com/KratosLee-6/open-source-model-deploy/actions/runs/36242423838)。
+
+---
+
+**v1.0.2 当时的结论**（历史快照 · 127 模型）：在真实硬件上跑通全集工具链路——
+`auto_fetch_models` 自动拉取脚本可独立使用 ✓、GitHub Actions 工作流新增每周自动补模型 PR ✓。
+
+> ⚠️ 当时的显存推荐逻辑对 MoE 是错的（按激活参算），v1.0.3 已修复，
+> 复盘见 [docs/moe-vram-pitfall.md](docs/moe-vram-pitfall.md)。
 
 ## 🎯 解决什么问题？
 
@@ -227,7 +269,7 @@ $ python scripts/auto_fetch_models.py --mode=patch --min-downloads 1000000
 - **量化版本涌现**：昨天还没有的 GGUF，今天突然有人发布
 - **手动调研累**：每个模型都要查 HF / GitHub / arXiv / 京东，时间成本极高
 
-**本工具 = 136 个模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
+**本工具 = 135 个在架模型的"实时专家顾问"**，每次调用都重新拉数据，给你当下最准确的部署决策。
 
 ## 🏗️ 架构
 
@@ -319,7 +361,7 @@ curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"
 
 **场景 1：客户问"本地跑 AI 要多少钱"**
 ```
-Agent → detect_hardware() → 136 个推荐 → 客户决策
+Agent → detect_hardware() → 135 个在架模型 → 客户决策
 ```
 
 **场景 2：技术选型对比 DeepSeek vs Qwen3**
