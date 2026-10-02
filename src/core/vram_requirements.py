@@ -281,6 +281,8 @@ def model_vram_profile(
         "size_b": model_info.get("size_b"),
         "activated_b": model_info.get("activated_b"),
         "is_moe": is_moe(info),
+        "status": model_info.get("status", "active"),
+        "superseded_by": model_info.get("superseded_by"),
         "hf_repo": model_info.get("hf_repo"),
         "vram_gb_by_quant": by_quant,
         "min_vram": min_vram_requirement(info),

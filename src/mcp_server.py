@@ -33,6 +33,7 @@ except ImportError:
 
 from .core.assessor import full_assessment
 from .core.model_resolver import KNOWN_MODELS
+from .core import vram_requirements
 from .core.deployment_generator import generate_deploy_script
 from .data_sources.hardware_detect import (
     full_hardware_scan,
@@ -64,13 +65,31 @@ TOOLS = [
     },
     {
         "name": "list_models",
-        "description": "列出所有支持的模型（45+ 个，分 8 类）。",
+        "description": (
+            "列出支持的模型（136 个，分 8 类），每条附结构化显存需求（6 档量化）。"
+            "传 max_vram_gb 可直接筛出「这台机器跑得动」的模型。"
+        ),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "category": {
                     "type": "string",
                     "description": "过滤分类（domestic-general / domestic-reasoning / international-dense / international-edge / code / vision / embedding / reranker）",
+                },
+                "max_vram_gb": {
+                    "type": "number",
+                    "description": "按可用显存筛选，只返回该显存下放得下的模型（如 8 / 12 / 16 / 24）",
+                },
+                "quant": {
+                    "type": "string",
+                    "description": "判定 fit 时使用的量化档位",
+                    "enum": list(vram_requirements.QUANT_LADDER),
+                    "default": "Q4_K_M",
+                },
+                "include_retired": {
+                    "type": "boolean",
+                    "description": "是否包含已退役模型（默认排除）",
+                    "default": False,
                 },
             },
         },
@@ -126,28 +145,74 @@ def _call_tool(name: str, arguments: dict) -> str:
 
     elif name == "list_models":
         cat = arguments.get("category")
+        # v1.0.3：支持按「我这台机器能跑什么」筛选，而不只是罗列
+        max_vram = arguments.get("max_vram_gb")
+        quant = arguments.get("quant", "Q4_K_M")
+        include_retired = arguments.get("include_retired", False)
+
         models = sorted(KNOWN_MODELS.items())
         if cat:
             models = [(n, i) for n, i in models if i.get("category") == cat]
-        return json.dumps([
-            {
+
+        out = []
+        for n, i in models:
+            status = i.get("status", "active")
+            if status == "retired" and not include_retired:
+                continue
+
+            entry = {
                 "name": n,
                 "category": i.get("category"),
                 "size_b": i.get("size_b"),
                 "activated_b": i.get("activated_b"),
+                "is_moe": vram_requirements.is_moe(i),
                 "hf_repo": i.get("hf_repo"),
+                "status": status,
                 "note": i.get("note"),
             }
-            for n, i in models
-        ], ensure_ascii=False)
+            if status == "retired":
+                entry["superseded_by"] = i.get("superseded_by")
+
+            # 附结构化显存数据（v1.0.3）——消费端一次拉全，不用逐个 assess
+            if i.get("size_b"):
+                prof = vram_requirements.model_vram_profile(n, i)
+                entry["vram_gb_by_quant"] = prof["vram_gb_by_quant"]
+                entry["min_vram"] = prof["min_vram"]
+                if max_vram:
+                    entry["fit"] = vram_requirements.fit_verdict(
+                        vram_requirements.vram_requirement(i, quant=quant)["vram_required_gb"],
+                        max_vram,
+                    )
+                    entry["quant_at_max_vram"] = vram_requirements.best_quant_for_vram(
+                        i, max_vram
+                    )
+            out.append(entry)
+
+        if max_vram:
+            # 只保留放得下的（fit != no），并按 Q4 显存从小到大排——先看到能跑的
+            out = [e for e in out if e.get("fit") != "no"]
+            out.sort(key=lambda e: e.get("min_vram", {}).get("vram_min_gb", 1e9))
+
+        return json.dumps(out, ensure_ascii=False)
 
     elif name == "detect_hardware":
         hw = full_hardware_scan()
         recs = recommend_models_for_hardware(hw, KNOWN_MODELS)
+        # 退役模型不该出现在采购建议里，但保留一个单独的清单供追溯
+        active = [r for r in recs if r.get("status") != "retired"]
+        retired = [r for r in recs if r.get("status") == "retired"]
+        runnable = [r for r in active if r.get("deployable_quant")]
         return json.dumps({
             "hardware": hw,
-            "recommendations_count": len(recs),
+            "total_vram_gb": hw.get("total_vram_gb"),
+            "deployable_tier": hw.get("deployable_tier"),
+            "recommendations_count": len(active),
+            "runnable_count": len(runnable),
             "top_recommendations": recs[:10],
+            "excluded_retired": [
+                {"model": r["model"], "superseded_by": r.get("superseded_by")}
+                for r in retired
+            ],
         }, ensure_ascii=False, default=str)
 
     elif name == "generate_deploy_script":

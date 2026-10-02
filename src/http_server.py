@@ -60,8 +60,20 @@ def create_app():
         )
 
     @app.get("/list")
-    async def list_models(category: str = None):
-        args = {"category": category} if category else {}
+    async def list_models(
+        category: str = None,
+        max_vram_gb: float = None,
+        quant: str = None,
+        include_retired: bool = False,
+    ):
+        """列出模型；传 max_vram_gb 只返回该显存下放得下的（v1.0.3）"""
+        args = {"include_retired": include_retired}
+        if category:
+            args["category"] = category
+        if max_vram_gb is not None:
+            args["max_vram_gb"] = max_vram_gb
+        if quant:
+            args["quant"] = quant
         return JSONResponse(
             content=json.loads(_call_tool("list_models", args))
         )

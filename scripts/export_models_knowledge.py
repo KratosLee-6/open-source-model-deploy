@@ -30,21 +30,24 @@ from src.core import vram_requirements as vram  # noqa: E402
 from src import __version__  # noqa: E402
 
 
-def build_knowledge(min_vram: float = 0.0) -> dict:
+def build_knowledge(min_vram: float = 0.0, include_retired: bool = False) -> dict:
     """构建知识库字典
 
     Args:
         min_vram: >0 时只保留 Q4 显存需求不超过该值的模型（消费级筛选）
+        include_retired: 是否包含已退役模型（默认排除）
     """
     models = {}
     for name, info in KNOWN_MODELS.items():
         profile = vram.model_vram_profile(name, info)
         if min_vram > 0 and profile["min_vram"]["vram_min_gb"] > min_vram:
             continue
+        if not include_retired and profile.get("status") == "retired":
+            continue
         models[name] = profile
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "generator": f"open-source-model-deploy v{__version__}",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "model_count": len(models),
@@ -55,6 +58,10 @@ def build_knowledge(min_vram: float = 0.0) -> dict:
             "all-experts-resident：MoE 的 expert 权重全部常驻显存，"
             "显存按 size_b（总参数）计算；activated_b 只影响计算量与 KV cache"
         ),
+        "status_values": {
+            "active": "正常可用",
+            "retired": "官方已退役，superseded_by 字段指向继任模型",
+        },
         "gpu_tiers": vram.GPU_TIERS,
         "models": models,
     }
@@ -80,12 +87,19 @@ def render_markdown(knowledge: dict) -> str:
     for name, p in knowledge["models"].items():
         by = p["vram_gb_by_quant"]
         official = p["min_vram"]["source"] == "official"
+        retired = p.get("status") == "retired"
         # 官方口径优先：Q4 列展示官方 vram_min，避免与估算值混淆
         q4_display = f"**{p['min_vram']['vram_min_gb']}**" if official else by["Q4_K_M"]
+        flag = " ⚠️已退役" if retired else ""
+        sup = (
+            f" → 改用 `{p['superseded_by']}`"
+            if retired and p.get("superseded_by")
+            else ""
+        )
         lines.append(
-            f"| `{name}` | {p['size_b']} | {'是' if p['is_moe'] else ''} | "
+            f"| `{name}`{flag} | {p['size_b']} | {'是' if p['is_moe'] else ''} | "
             f"{q4_display} | {by['Q8_0']} | {by['FP8']} | {by['BF16']} | "
-            f"{p['min_vram']['vram_min_gb']} | {'官方' if official else '估算'} |"
+            f"{p['min_vram']['vram_min_gb']} | {'官方' if official else '估算'}{sup} |"
         )
     return "\n".join(lines) + "\n"
 
@@ -109,11 +123,16 @@ def main() -> int:
         help="只导出 Q4 显存需求 ≤ 该值的模型（如 24 = 消费级显卡）",
     )
     ap.add_argument(
+        "--include-retired",
+        action="store_true",
+        help="包含已退役模型（默认排除）",
+    )
+    ap.add_argument(
         "--stdout", action="store_true", help="打到 stdout 而不写文件"
     )
     args = ap.parse_args()
 
-    knowledge = build_knowledge(args.min_vram)
+    knowledge = build_knowledge(args.min_vram, args.include_retired)
 
     if args.stdout:
         print(json.dumps(knowledge, ensure_ascii=False, indent=2))

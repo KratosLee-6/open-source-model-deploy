@@ -57,6 +57,10 @@ def full_assessment(model_name: str, force: bool = False) -> Dict[str, Any]:
         "estimated_params_b": size_b,
         "activated_params_b": resolved.get("activated_b"),
         "is_moe": vram.is_moe(resolved),
+        # 状态提到顶层：消费方（Agent / 第三方工具）不该再去翻 resolved 才能知道
+        # 这个模型是不是已经退役了
+        "status": resolved.get("status", "active"),
+        "superseded_by": resolved.get("superseded_by"),
         "vram_note": vram_note,
         "vram_requirements": vram_profile,
         "budget_estimates": budget,
