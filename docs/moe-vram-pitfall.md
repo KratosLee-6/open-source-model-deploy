@@ -162,6 +162,6 @@ python scripts/lint_models.py --strict   # WARN 也返回非 0（CI 用）
 | `src/core/model_lint.py` | 模型数据体检判据 |
 | `scripts/lint_models.py` | 体检 CLI |
 | `data/models-knowledge.json` | 导出契约（MCP / HTTP / 第三方插件消费） |
-| `references/vram-requirements.md` | 136 个模型的显存对照表（自动生成） |
+| `references/vram-requirements.md` | 138 个模型的显存对照表（自动生成） |
 | `tests/test_vram_requirements.py` | 20 项，含 MoE 误判回归 |
 | `tests/test_model_lint.py` | 22 项，含 4 个真实坏数据回归 |

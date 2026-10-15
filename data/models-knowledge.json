@@ -1,8 +1,8 @@
 {
   "schema_version": "1.1",
-  "generator": "open-source-model-deploy v1.0.3",
-  "generated_at": "2026-10-02T18:58:58Z",
-  "model_count": 135,
+  "generator": "open-source-model-deploy v1.1.0",
+  "generated_at": "2026-10-15T09:14:25Z",
+  "model_count": 137,
   "quant_ladder": [
     "Q4_K_M",
     "Q5_K_M",
@@ -3703,6 +3703,39 @@
       },
       "note": "Gemma 3 1B Instruct，3.3M DLs，edge inference"
     },
+    "strands-decider-2b": {
+      "model": "strands-decider-2b",
+      "category": "international-edge",
+      "size_b": 1.9,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "StrandsAgents/strands-decider-2B-hobson-v19",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 1.4,
+        "Q5_K_M": 1.6,
+        "Q6_K": 1.8,
+        "Q8_0": 2.3,
+        "FP8": 2.3,
+        "BF16": 4.6
+      },
+      "min_vram": {
+        "vram_min_gb": 1.4,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 1.4,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "AWS Strands Decider 2B（2026-10-01，Apache-2.0）：System One 决策模型，不生成文本——输入状态 + 类型化问题，一次前向返回 noul(是/否概率)/choice/score，每个答案自带校准置信度。基于 Qwen/Qwen3.5-2B-Base 的 LoRA + 读出头，1.9B，RTX 3090 中位 115ms，可 CPU / Apple Silicon。这是 TypeSafe Jev（闭源 SaaS，API-only）的开源可本地部署对应物。⚠️ HF 仓库只含 91.5MB LoRA adapter，部署需另配 base 模型。"
+    },
     "phi-3.5-vision-instruct": {
       "model": "phi-3.5-vision-instruct",
       "category": "vision",
@@ -4463,6 +4496,39 @@
         "source": "heuristic"
       },
       "note": "Google EmbeddingGemma 300M，2.88M DLs，edge embedding"
+    },
+    "embeddinggemma-2": {
+      "model": "embeddinggemma-2",
+      "category": "embedding",
+      "size_b": 0.744,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "google/embeddinggemma-2",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.5,
+        "Q5_K_M": 0.6,
+        "Q6_K": 0.7,
+        "Q8_0": 0.9,
+        "FP8": 0.9,
+        "BF16": 1.8
+      },
+      "min_vram": {
+        "vram_min_gb": 0.5,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.5,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Google EmbeddingGemma 2（2026-10-06，Apache-2.0）：740M 原生多模态 embedding，270M 文本骨干 + 170M 视觉 + 300M 音频编码器，四模态统一 768 维空间（MRL 可截断 128/256/512），8K context，100+ 语言。代码任务较一代 +14%（MTEB code 68.76→78.68）。视觉/音频编码器可按需加载，纯文本场景只吃 270M。"
     },
     "florence-2-base": {
       "model": "florence-2-base",

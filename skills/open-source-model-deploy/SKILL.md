@@ -2,14 +2,14 @@
 slug: kratoslee-open-source-model-deploy
 displayName: 开源大模型部署鉴别器 · KratosLee
 name: open-source-model-deploy
-description: 开源大模型部署可行性鉴别器。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 127 个主流开源模型（DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码/视觉/Embedding/Reranker）的部署方案、硬件需求估算和启动脚本生成（vLLM / SGLang / Ollama / llama.cpp），覆盖 CLI / MCP Server / HTTP API 三协议。含 auto_fetch_models.py 自动拉取工具，每周从 HF API 补模型。当客户咨询"本地部署 AI / 私有化部署大模型 / 开源模型鉴别 / GPT-OSS / DeepSeek-V4-Flash"时使用。
-version: 1.0.2
-updated: 2026-09-26
-summary: 开源大模型本地部署可行性评估工具。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 127 个主流开源模型的部署方案、硬件需求估算和启动脚本生成，覆盖三大协议（CLI / MCP Server / HTTP API），并提供 auto_fetch_models 自动拉取工具。
+description: 开源大模型部署可行性鉴别器。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 137 个主流开源模型（DeepSeek / Qwen3 / GLM / Kimi / Llama / Mistral / Gemma / Phi 全系 + 代码/视觉/Embedding/Reranker + EmbeddingGemma 2 多模态 + Strands Decider 决策模型）的部署方案、硬件需求估算和启动脚本生成（vLLM / SGLang / Ollama / llama.cpp），覆盖 CLI / MCP Server / HTTP API 三协议。含 auto_fetch_models.py 自动拉取工具，每周从 HF API 补模型。当客户咨询"本地部署 AI / 私有化部署大模型 / 开源模型鉴别 / EmbeddingGemma / Jev 能不能本地跑"时使用。
+version: 1.1.0
+updated: 2026-10-15
+summary: 开源大模型本地部署可行性评估工具。集成 HuggingFace / GitHub / arXiv 三个公开数据源，提供 137 个主流开源模型的部署方案、硬件需求估算和启动脚本生成，覆盖三大协议（CLI / MCP Server / HTTP API），并提供 auto_fetch_models 自动拉取工具。
 type: project-skill
 project: 汐构信息-开源模型部署检测小工具（开源项目）
 license: MIT
-covers: 127 个模型 / 8 分类 / CLI+MCP+HTTP 三协议 / 自动每周边补
+covers: 137 个模型 / 8 分类 / CLI+MCP+HTTP 三协议 / 6 档量化显存 / 自动每周边补
 keywords:
   - llm
   - deployment
@@ -18,33 +18,42 @@ keywords:
   - mcp
   - vllm
   - ollama
+  - embedding
 homepage: https://github.com/KratosLee-6/open-source-model-deploy
 repository: https://github.com/KratosLee-6/open-source-model-deploy
 ---
 
-# 开源大模型部署可行性鉴别工具（v1.0.2）
+# 开源大模型部署可行性鉴别工具（v1.1.0）
 
-## v1.0.2 增量
+## v1.1.0 增量
 
-v1.0 首发之上新增强项：
+- **模型库 135 → 137**：
+  - **EmbeddingGemma 2**（Google DeepMind，2026-10-06，Apache-2.0）—— 740M 原生多模态 embedding，
+    文本/图像/视频/音频统一 768 维空间，MRL 可截断 128/256/512，8K context。
+    纯文本场景只加载 270M 文本骨干（视觉 170M / 音频 300M 按需加载）
+  - **Strands Decider 2B**（AWS Strands Labs，2026-10-01，Apache-2.0）—— System One 决策模型，
+    不生成文本，返回 `noul`/`choice`/`score` 与校准置信度；1.9B，RTX 3090 中位 115ms
+- **新增「闭源模型」鉴别范式**：Jev（TypeSafe AI）权重未公开、API-only，
+  **不进 `KNOWN_MODELS`**（否则 `list`/`detect` 会告诉客户"能下载下来跑"）。
+  详见 `references/jev-integration.md`；模型库里放能真跑的开源对应物 Strands Decider 2B
+- **修掉三处「截图会说谎」**：不再编造 nvidia-smi 输出 / 不再调到别的环境安装的旧版 CLI /
+  联网失败时保留原图而不是覆盖成空图
+- **README 事实校验扩到「截图不能是空图」**（`check_readme_facts.py` 新增高度阈值断言）
 
-- **模型库扩容**：47 → 127（+33% · sentence-transformers 全家桶 + E5 + GTE + Llama 3.2/3.3 + Mistral-7B-v0.2 + Phi-3.5-Vision + Qwen3-30B-A3B MoE）
-- **scripts/auto_fetch_models.py** 自动拉取工具（3 个 mode：stats / diff / patch）
-- **.github/workflows/auto-fetch-models.yml** 周日北京时间 23:30 自动开 PR（不动模型 → 自动建议模型）
-- **GH Actions 修复**：Node 20 弃用 → 全部显式 pin Node 24（setup-node@v4 / setup-python@v5）
-- **README/INSTALL/GITHUB-ACTIONS.md** 全仓文字同步 v1.0.2（GitHub project description 改 127 + topics：ci-cd / huggingface / llm / model-deployment）
+详细见主仓 README.md 与 `docs/releases/v1.1.0.md`。
 
-详细见主仓 README.md 与 `docs/releases/v1.0.2.md`。
+## 版本沿革
 
-首个稳定版本（v1.0 / 2026-08-15），38→47→94→127 沿革：
-- v1.0 (2026-08-15)：47 个开源模型（分 8 类）— 历史快照
-- v1.0.1 (2026-09-10)：94 个开源模型
-- v1.0.2 (2026-09-26)：127 个开源模型（当前最新版）
-- 三种部署方式（CLI / MCP Server / HTTP API）
-- 硬件自动检测 + 智能推荐
-- 一键部署脚本生成（vLLM / SGLang / Ollama / llama.cpp）
-- 智能 24h 缓存 + 国内镜像 fallback
-- v1.0.2 新增：auto_fetch_models.py 自动拉取 + GH Actions 周日自动开 PR
+| 版本 | 日期 | 模型数 | 重点 |
+| --- | --- | ---: | --- |
+| **v1.1.0** | 2026-10-15 | **137** | EmbeddingGemma 2 · Strands Decider 2B · JEV 闭源鉴别 · 截图不再说谎 |
+| v1.0.3 | 2026-10-03 | 135 | 修正 MoE 显存误判（按总参算）· 显存结构化 · 模型库体检 CI 卡口 |
+| v1.0.2 | 2026-09-26 | 127 | auto_fetch_models.py · GH Actions 周日自动开 PR |
+| v1.0.1 | 2026-09-10 | 94 | 每周自动刷新元数据 + GPU 价格 |
+| v1.0.0 | 2026-08-15 | 47 | 首个版本 · 真实硬件推理实测 |
+
+三种部署方式（CLI / MCP Server / HTTP API）+ 硬件自动检测 + 一键部署脚本生成
+（vLLM / SGLang / Ollama / llama.cpp）+ 智能 24h 缓存 + 国内镜像 fallback。
 
 ## 何时使用
 
@@ -54,6 +63,7 @@ v1.0 首发之上新增强项：
 - "这模型值不值得部署"
 - "我的电脑能跑什么模型"
 - "怎么部署 DeepSeek/Qwen/Llama"
+- "Jev / 某热榜模型能不能本地部署"（→ 先查是否闭源）
 - 任何"开源模型 + 部署"相关的鉴别需求
 
 ## 三种部署方式（用户零安装）
@@ -65,7 +75,7 @@ v1.0 首发之上新增强项：
 pip install open-source-model-deploy
 osm-mcp  # 启动 MCP stdio server
 
-# 客户端配置（Claude Desktop / Codex 等）
+# 客户端配置（Claude Desktop / Codex / Hermes）
 {
   "mcpServers": {
     "osm-deploy": {
@@ -77,7 +87,7 @@ osm-mcp  # 启动 MCP stdio server
 
 Agent 调用 5 个工具：
 - `assess_model(model)` - 5 步鉴别
-- `list_models(category?)` - 列出所有模型
+- `list_models(category?, max_vram_gb?)` - 列出所有模型 / 按显存反查
 - `detect_hardware()` - **自动检测本机硬件 + 推荐**
 - `generate_deploy_script(model, framework?)` - **一键部署脚本**
 - `clear_cache(key?)` - 清缓存
@@ -89,8 +99,9 @@ osm-http  # 启动 HTTP server，默认 8765
 
 # 调用
 curl http://localhost:8765/detect
-curl http://localhost:8765/list?category=code
-curl -X POST http://localhost:8765/assess -d '{"model":"deepseek-v3"}'
+curl http://localhost:8765/list?category=embedding
+curl "http://localhost:8765/list?max_vram_gb=24"
+curl -X POST http://localhost:8765/assess -d '{"model":"embeddinggemma-2"}'
 curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"vllm"}'
 ```
 
@@ -98,7 +109,7 @@ curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"
 
 ```bash
 osm-deploy list
-osm-deploy assess deepseek-v3
+osm-deploy assess strands-decider-2b
 osm-deploy detect
 osm-deploy deploy qwen3-32b --framework vllm
 ```
@@ -138,29 +149,28 @@ osm-deploy deploy qwen3-32b --framework vllm
 - **GPU**：NVIDIA（nvidia-smi）/ AMD（rocm-smi）/ Apple Silicon（统一内存）
 - **CPU**：型号 / 核数
 - **内存 / 硬盘**：总量 + 可用
-- **自动推荐**：`KNOWN_MODELS` 全部（v1.0.2 = 127 个）按本机适配度排序
+- **自动推荐**：`KNOWN_MODELS` 全部（v1.1.0 = 137 个）按本机适配度排序
 
-实测示例（本机 Windows + 8 核 + 15.9GB 内存 + GTX 1660 Ti 6GB）：
+实测示例（本机：Windows 11 · AMD Ryzen 7 7840HS 16 核 · Radeon 780M 集显 · 15.2GB 内存）：
 ```
 档位：cpu_only
-总共 127 个模型可在本机部署
-前 4 个推荐（GTX 1660 Ti 6GB）：
-  - qwen3-8b Q4_K_M（4GB · GPU 全速）
-  - deepseek-r1-distill-qwen-7b（3.5GB · 强 CoT）
-  - qwen2.5-vl-7b（3.5GB · 视觉）
-  - llama-3.2-3b（1.5GB · CPU/GPU 都行）
+本机可部署 85 / 137 个在架模型
+每行标注「Q4_K_M（CPU 慢速·显存需 X GB 不足）」
 ```
 
-## 当前支持的模型池（v1.0.2 = 127 个，分 8 类）
+> ⚠️ 无独显时工具会如实给出 `cpu_only` 档位，并把「能跑但只能 CPU 慢速」
+> 和「显存不够跑不了」分开说清楚，不会宣称"137 个全能跑"。
 
-**国内通用 39 个**：DeepSeek-V3/V2.5/V3.2、GLM-4.5/4-32B、Kimi-K2、Qwen3-235B/32B/14B/8B 全系 + Qwen3.5/3.6/3.8 + Qwen3-30B-A3B MoE + DeepSeek-V3-0324/V4-Flash 全系 + Qwen2.5 全系 + Qwen2.5-Coder-14B
+## 当前支持的模型池（v1.1.0 = 137 个，分 8 类）
+
+**国内通用 44 个**：DeepSeek-V3 / V2.5 / V3-0324 / V4-Flash-0731 / V4.1-Flash、GLM-4.5 / 4-32B / GLM-5.3 / 5.3-Flash、Kimi-K2 / K3、MiMo-V2.6 全系、Qwen3-235B/32B/14B/8B、Qwen2.5 全系
 **国内推理 10 个**：DeepSeek-R1、GLM-Z1-32B、QwQ-32B、DeepSeek-R1-Distill 全系（70B/32B/14B/8B/7B/1.5B）
-**代码专用 6 个**：DeepSeek-Coder-V2/V2-Lite、Qwen3-Coder-30B、Qwen2.5-Coder-32B/7B、Codestral-22B
-**视觉多模态 5 个**：Qwen2.5-VL-72B/7B、InternVL3-78B/8B、LLaVA-OneVision-Qwen2-7B
-**国际密集 5 个**：Llama-3.1-405B/70B、Mistral-Large-2/Small-3、Gemma-3-27B
-**国际边缘 7 个**：Llama-3.2-1B/3B、Gemma-3-9B/4B、Phi-4/mini/3.5-mini
-**Embedding 4 个**：BGE-m3、bge-large-zh-v1.5、Qwen3-Embedding-8B、GTE-Qwen2-7B
-**Reranker 1 个**：BGE-Reranker-v2-m3
+**代码专用 9 个**：DeepSeek-Coder-V2 / V2-Lite、Qwen3-Coder-480B-A35B / 30B、Qwen2.5-Coder-32B/14B/7B、Codestral-22B
+**视觉多模态 17 个**：Qwen2.5-VL-72B/7B、Qwen3-VL-32B、InternVL3-78B/8B、LLaVA-OneVision、Florence-2-base
+**国际密集 11 个**：Llama-4-Maverick / Scout、Llama-3.3-70B、Mistral-Large-2、Gemma-4-31B
+**国际边缘 15 个**：Llama-3.2-1B/3B、Gemma-3-9B/4B、Phi-4 / mini、Mistral-7B、**Strands Decider 2B**
+**Embedding 29 个**：BGE 全家桶、E5 全家桶、GTE 系列、Nomic、**EmbeddingGemma 2 / 300M**
+**Reranker 2 个**：BGE-Reranker-large / v2-m3
 
 ```bash
 osm-deploy list                # 列出所有
@@ -175,6 +185,7 @@ osm-deploy list --category X   # 按分类过滤
 4. **数据永远新鲜**：每次调用都拉取当下最新（缓存 TTL=24h）
 5. **镜像 fallback**：自动尝试 hf-mirror.com，国内可用
 6. **零依赖核心**：纯标准库，可选 fastapi/mcp
+7. **数据可信度有卡口**：模型库体检 + README 事实校验（含「截图不能是空图」）
 
 ## 工作区位置
 
@@ -199,7 +210,14 @@ A: 用 HTTP API 模式部署在服务器，Agent 通过 HTTP 调；或用 MCP �
 A: 缓存 24h 过期。可调 `clear_cache` 强制刷新
 
 **Q: 国内访问 HF 超时？**
-A: 代码已自动 fallback 到 `hf-mirror.com` 镜像
+A: 代码已自动 fallback 到 `hf-mirror.com` 镜像；若脚本仍超时，可给进程加
+`HTTPS_PROXY` 环境变量走本地代理
+
+**Q: 某个热榜模型能不能本地部署？**
+A: 先查它有没有公开权重。API-only 的闭源模型（如 TypeSafe 的 Jev）进不了模型库，
+会在 `assess` 时查不到——这不是 bug，是刻意的：把闭源模型列进"可部署清单"会让客户买错硬件。
+参见 `references/jev-integration.md`
 
 **Q: 如何添加新模型？**
-A: 编辑 `src/core/model_resolver.py` 的 `KNOWN_MODELS` 字典
+A: 编辑 `src/core/model_resolver.py` 的 `KNOWN_MODELS` 字典，`size_b` 取 HF
+`safetensors.total` 实测值；完成后跑 `lint_models.py` + `check_readme_facts.py`

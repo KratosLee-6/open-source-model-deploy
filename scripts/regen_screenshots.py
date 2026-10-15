@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
 """
 regen_screenshots.py
-按当前 osm-deploy 真实输出，重新生成 README 引用的 5 张截图（PNG）
+按当前 osm-deploy 真实输出，重新生成 README 引用的截图（PNG）。
 
 输出（覆盖原文件）：
   docs/screenshots/06-实测截图-硬件扫描.png
-  docs/screenshots/07-实测截图-127模型分类.png    (旧名 47 → 改 127)
+  docs/screenshots/07-实测截图-<N>模型分类.png
   docs/screenshots/08-实测截图-nvidia-smi.png
   docs/screenshots/09-实测截图-推荐结果.png
-  docs/screenshots/13-实测截图-auto-fetch-stats.png   (新增)
-  docs/screenshots/14-实测截图-auto-fetch-patch.png   (新增)
+  docs/screenshots/13-实测截图-auto-fetch-stats.png
+  docs/screenshots/14-实测截图-auto-fetch-patch.png
+  docs/screenshots/15-实测截图-EmbeddingGemma2.png     (v1.1.0 新增)
+  docs/screenshots/16-实测截图-strands-decider.png     (v1.1.0 新增)
+  docs/screenshots/17-实测截图-模型库统计.png           (v1.1.0 新增)
 
 实现：PIL ImageDraw 直接画终端风格（黑底 + 浅色等宽字体）
-无外部依赖：仅 pillow + 系统 Consolas/Liberation Mono；找不到回退到默认
+无外部依赖：pillow + 系统字体（中文优先，避免豆腐块）
+
+v1.1.0 修的两处「截图会说谎」：
+  1. 第 3 步：原先 nvidia-smi 不存在时会**硬编码编造**一张 GTX 1660 Ti 的
+     nvidia-smi 输出。截图里出现一张本机根本没有的显卡，是彻底的谎报。
+     现在改为如实读本机 GPU 信息；没有 NVIDIA 卡就写「本机无 NVIDIA GPU」。
+  2. 命令调用改为 _cli_cmd()：osm-deploy 未安装（源码直接运行）时退回
+     `python -m src.cli`，脚本不再依赖安装状态。
 """
+import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -69,7 +81,7 @@ def find_mono_font(size: int = 14):
     return ImageFont.load_default()
 
 
-def render_terminal(text: str, out: Path, title: str = "", max_width: int = 1100):
+def render_terminal(text: str, out: Path, title: str = "", max_width: int = 1400):
     """渲染一段文本为黑底等宽图（终端风格）"""
     # 解析 ANSI 色码（极简版：只处理 bold/red/green/yellow/cyan）
     text = re.sub(r"\x1b\[0m", "", text)  # 重置
@@ -83,7 +95,7 @@ def render_terminal(text: str, out: Path, title: str = "", max_width: int = 1100
     line_h = (bbox[3] - bbox[1]) + 4
     char_w = font.getbbox("M")[2] - font.getbbox("M")[0]
     img_w = min(max_width, max(20, max((len(l) for l in lines_raw), default=20)) * char_w + 40)
-    img_h = min(2200, len(lines_raw) * line_h + 40)
+    img_h = min(2600, len(lines_raw) * line_h + 40)
 
     img = Image.new("RGB", (img_w, img_h), (12, 12, 16))  # 终端黑
     draw = ImageDraw.Draw(img)
@@ -100,6 +112,8 @@ def render_terminal(text: str, out: Path, title: str = "", max_width: int = 1100
             color = (240, 120, 120)  # 红
         elif "❗" in ln or "⚠" in ln:
             color = (240, 200, 80)
+        elif ln.startswith("$") or ln.startswith("  $"):
+            color = (140, 200, 255)
         elif ln.startswith("="):
             color = (100, 100, 130)
         else:
@@ -112,7 +126,40 @@ def render_terminal(text: str, out: Path, title: str = "", max_width: int = 1100
     print(f"  → {out.name}  ({out.stat().st_size} bytes, {img.size[0]}x{img.size[1]})")
 
 
-def run(cmd: list[str], timeout: int = 30) -> str:
+def render_if_content(text: str, out: Path, title: str = "", min_lines: int = 3) -> bool:
+    """内容够多才渲染并覆盖；否则保留原有截图。
+
+    v1.1.0：auto_fetch_models 那两张图依赖联网。网络受限时命令会卡到超时、
+    只吐出几行 warn——照渲染就会把一张好图覆盖成几乎空白的图，
+    比不生成更糟（README 还在引用它）。
+    """
+    body = [l for l in (text or "").splitlines() if l.strip()]
+    if len(body) < min_lines:
+        keep = "保留原图" if out.exists() else "跳过（无原图）"
+        print(f"  [skip] {out.name} — 有效内容仅 {len(body)} 行，{keep}", file=sys.stderr)
+        return False
+    render_terminal(text, out, title=title)
+    return True
+
+
+def _cli_cmd(*args: str) -> list:
+    """本工具的调用 argv。
+
+    v1.1.0：**源码优先**。仓库内运行时一律走 `python -m src.cli`，因为
+    shutil.which("osm-deploy") 可能命中**别的环境里安装的旧版**（实测本机
+    Hermes venv 里就装着一个），那样截图会画出旧代码的输出——文件在仓库里、
+    内容却不是这份源码，等于用真截图为错误内容背书。
+    只有在不在仓库根（src/ 不存在）时才退回 PATH 上的 osm-deploy。
+    """
+    if (ROOT / "src" / "cli.py").exists():
+        return [sys.executable, "-m", "src.cli", *args]
+    exe = shutil.which("osm-deploy")
+    if exe:
+        return [exe, *args]
+    return [sys.executable, "-m", "src.cli", *args]
+
+
+def run(cmd: list, timeout: int = 30) -> str:
     """执行命令并取 stdout
 
     修（v1.0.3）：原实现用 text=True 却没指定 encoding，在中文 Windows 上
@@ -125,15 +172,27 @@ def run(cmd: list[str], timeout: int = 30) -> str:
     """
     env = dict(os.environ)
     env["PYTHONIOENCODING"] = "utf-8"
-    r = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        timeout=timeout,
-        env=env,
-    )
+    try:
+        r = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=timeout,
+            env=env,
+        )
+    except FileNotFoundError:
+        return ""
+    except subprocess.TimeoutExpired as exc:
+        # v1.1.0：网络受限时首次拉元数据可能很慢。以前超时会抛异常直接终止整个
+        # 脚本，导致后面的截图一张都生成不出来；现在返回已捕获的部分输出，
+        # 宁可这张图少几行，也不让整批失败。
+        print(f"  [warn] 命令超时({timeout}s): {' '.join(str(c) for c in cmd)}", file=sys.stderr)
+        out = exc.stdout or ""
+        if isinstance(out, bytes):
+            out = out.decode("utf-8", "replace")
+        return out
     return r.stdout or ""
 
 
@@ -160,6 +219,147 @@ def _version() -> str:
         return "?"
 
 
+def _real_gpu_text() -> str:
+    """如实反映本机 GPU（v1.1.0 修：不再编造 nvidia-smi 输出）
+
+    原实现在 nvidia-smi 不存在时返回一段硬编码的
+    "NVIDIA GeForce GTX 1660 Ti / 6144MiB / driver 595.97"，
+    等于在截图里凭空造出一张机器上没有的显卡。
+    """
+    lines = []
+    smi = run(["nvidia-smi"], timeout=10)
+    if smi.strip():
+        lines.append(smi.rstrip())
+        lines.append("")
+        lines.append("（以上为本机 nvidia-smi 真实输出）")
+        return "\n".join(lines)
+
+    lines.append("$ nvidia-smi")
+    lines.append("nvidia-smi: command not found —— 本机无 NVIDIA GPU")
+    lines.append("")
+    lines.append("本机 GPU 实测：")
+    try:
+        env = dict(os.environ, PYTHONIOENCODING="utf-8")
+        r = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-Command",
+             "(Get-CimInstance Win32_VideoController) | ForEach-Object { $_.Name + ' | ' + "
+             "[math]::Round($_.AdapterRAM/1GB,1) + ' GB' }"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=20, env=env,
+        )
+        for ln in (r.stdout or "").splitlines():
+            if ln.strip():
+                lines.append("  " + ln.strip())
+    except Exception as exc:
+        lines.append(f"  (读取失败: {exc})")
+    lines.append("")
+    lines.append("→ 无独显时 osm-deploy 仍会给出 CPU / 集显可跑的模型档位，")
+    lines.append("  这正是 detect 的档位表要解决的问题。")
+    return "\n".join(lines)
+
+
+def _assess_summary(model_key: str, timeout: int = 120) -> str:
+    """把 assess 的长 JSON 压成一屏可读的关键字段（v1.1.0 新增）"""
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    try:
+        r = subprocess.run(
+            _cli_cmd("assess", model_key),
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=timeout, env=env,
+        )
+    except subprocess.TimeoutExpired:
+        return f"$ osm-deploy assess {model_key}\n\n  [timeout] 拉取元数据超时（网络受限时属预期）"
+    raw = (r.stdout or "").strip()
+    try:
+        d = json.loads(raw)
+    except Exception:
+        return f"$ osm-deploy assess {model_key}\n\n  [err] 输出无法解析\n{raw[:400]}"
+
+    res = d.get("resolved") or {}
+    md = res.get("hf_metadata") or {}
+    st = md.get("safetensors") or {}
+    vr = d.get("vram_requirements") or {}
+    q = vr.get("vram_gb_by_quant") or {}
+
+    lines = [
+        f"$ osm-deploy assess {model_key}",
+        "",
+        f"  hf_repo             {res.get('hf_repo')}",
+        f"  category            {d.get('category')}",
+        f"  size_b              {d.get('estimated_params_b')} B",
+        f"  is_moe              {d.get('is_moe')}",
+        f"  status              {d.get('status')}",
+        f"  license             {(md.get('cardData') or {}).get('license')}",
+        f"  pipeline_tag        {md.get('pipeline_tag')}",
+        f"  HF safetensors.total {st.get('total')}",
+        f"  HF downloads / likes {md.get('downloads')} / {md.get('likes')}",
+        f"  lastModified        {md.get('lastModified')}",
+        "",
+        "  显存需求（6 档量化）：",
+    ]
+    for k in ["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "FP8", "BF16"]:
+        if k in q:
+            lines.append(f"    {k:<8} {q[k]} GB")
+    lines += [
+        "",
+        f"  vram_note           {d.get('vram_note')}",
+    ]
+    note = (d.get("note") or "").strip()
+    if note:
+        lines += ["", "  定位："]
+        # 折行，避免截图过宽
+        cur = "    "
+        for piece in note.split("："):
+            if len(cur) + len(piece) > 96:
+                lines.append(cur)
+                cur = "    "
+            cur += piece + ("：" if not piece.endswith("：") else "")
+        if cur.strip():
+            lines.append(cur.rstrip("："))
+    return "\n".join(lines)
+
+
+def _lib_stats() -> str:
+    """模型库统计（v1.1.0 新增）：在架数 / 分类分布 / 体检结论"""
+    sys.path.insert(0, str(ROOT))
+    out = []
+    try:
+        from collections import Counter
+        from src.core.model_resolver import KNOWN_MODELS
+        from src import __version__
+    except Exception as exc:
+        return f"[err] 无法导入模型库: {exc}"
+
+    live = {k: v for k, v in KNOWN_MODELS.items() if v.get("status") != "retired"}
+    retired = len(KNOWN_MODELS) - len(live)
+    out += [
+        f"$ python -c \"from src.core.model_resolver import KNOWN_MODELS; print(len(KNOWN_MODELS))\"",
+        "",
+        f"  版本          v{__version__}",
+        f"  库内总记录    {len(KNOWN_MODELS)}",
+        f"  在架模型      {len(live)}",
+        f"  已退役标注    {retired}",
+        "",
+        "  分类分布：",
+    ]
+    c = Counter(v.get("category") for v in live.values())
+    cn = {
+        "domestic-general": "国内通用", "domestic-reasoning": "国内推理",
+        "international-dense": "国际密集", "international-edge": "国际边缘",
+        "code": "代码专用", "vision": "视觉多模态",
+        "embedding": "Embedding", "reranker": "Reranker",
+    }
+    for k, n in c.most_common():
+        out.append(f"    {cn.get(k, k):<10} {n:>3}")
+
+    out += ["", "$ python scripts/lint_models.py --strict"]
+    lint = run([sys.executable, "scripts/lint_models.py", "--strict"], timeout=90)
+    for ln in (lint or "").splitlines():
+        if ln.strip():
+            out.append("  " + ln.strip())
+    return "\n".join(out)
+
+
 def main():
     os.chdir(ROOT)
     n_models = _live_model_count()
@@ -168,14 +368,13 @@ def main():
 
     # 1. 硬件扫描（detect）
     print("=== 1. 硬件扫描 ===")
-    out = run(["osm-deploy", "detect"], timeout=30)
-    # 截前 30 行
+    out = run(_cli_cmd("detect"), timeout=60)
     render_terminal("\n".join(out.splitlines()[:35]), SHOTS / "06-实测截图-硬件扫描.png",
                     title=f"osm-deploy detect · 本机硬件扫描 (v{ver})")
 
     # 2. 模型分类（list · 取首屏）
     print(f"=== 2. {n_models} 模型分类 ===")
-    out = run(["osm-deploy", "list"], timeout=30)
+    out = run(_cli_cmd("list"), timeout=60)
     lines = out.splitlines()
     # 找 8 大类各取前 2 条（避免图过高）
     # 修（v1.0.3）：原来的选择循环遇到分类标题下的 "----" 分隔线就置
@@ -205,23 +404,14 @@ def main():
     render_terminal("\n".join(selected), shot07,
                     title=f"osm-deploy list · {n_models} 个模型分类（前 3 条/类 · v{ver}）")
 
-    # 3. nvidia-smi
-    print("=== 3. nvidia-smi ===")
-    nsmi = ""
-    try:
-        nsmi = run(["nvidia-smi"], timeout=10)
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        # 没有 nvidia-smi 时，模拟一个
-        nsmi = ("GPU  0  NVIDIA GeForce GTX 1660 Ti   WDDM\n"
-                "Fan  30%   38C    P8  12W / 120W\n"
-                "Memory-Usage  43MiB / 6144MiB\n"
-                "Driver Version: 595.97   CUDA Version: 13.2\n")
-    render_terminal(nsmi, SHOTS / "08-实测截图-nvidia-smi.png",
-                    title="nvidia-smi · 1650 Ti 6GB 当前状态")
+    # 3. GPU 状态（v1.1.0：如实反映本机，不再编造 nvidia-smi）
+    print("=== 3. GPU 状态（如实）===")
+    render_terminal(_real_gpu_text(), SHOTS / "08-实测截图-nvidia-smi.png",
+                    title=f"本机 GPU 实测（v{ver}）")
 
     # 4. 推荐结果（detect 前 20 条）
     print("=== 4. 推荐结果 ===")
-    out = run(["osm-deploy", "detect"], timeout=30)
+    out = run(_cli_cmd("detect"), timeout=60)
     lines = out.splitlines()
     start = 0
     for i, ln in enumerate(lines):
@@ -230,22 +420,39 @@ def main():
             break
     render_terminal("\n".join(lines[start: start + 25]),
                     SHOTS / "09-实测截图-推荐结果.png",
-                    title=f"osm-deploy detect · 可部署模型推荐（GTX 1660 Ti 6GB / v{ver}）")
+                    title=f"osm-deploy detect · 可部署模型推荐（v{ver}）")
 
-    # 5. auto_fetch_models --mode=stats 输出
-    print("=== 5. auto_fetch_models stats ===")
-    out = run(["python", "scripts/auto_fetch_models.py", "--mode=stats"],
-              timeout=60)
-    # 取首 30 行
-    render_terminal("\n".join(out.splitlines()[:30]),
-                    SHOTS / "13-实测截图-auto-fetch-stats.png",
-                    title="scripts/auto_fetch_models.py --mode=stats · v1.0.2 新")
+    # 5. EmbeddingGemma 2 实测（v1.1.0 新增）
+    print("=== 5. EmbeddingGemma 2 assess ===")
+    render_if_content(_assess_summary("embeddinggemma-2"),
+                      SHOTS / "15-实测截图-EmbeddingGemma2.png",
+                      title=f"osm-deploy assess embeddinggemma-2 · 多模态 embedding（v{ver}）")
 
-    # 6. auto_fetch_models --mode=patch 输出（前 6 条）
-    print("=== 6. auto_fetch_models patch ===")
-    out = run(["python", "scripts/auto_fetch_models.py",
+    # 6. Strands Decider 2B 实测（JEV 开源对应物，v1.1.0 新增）
+    print("=== 6. Strands Decider 2B assess ===")
+    render_if_content(_assess_summary("strands-decider-2b"),
+                      SHOTS / "16-实测截图-strands-decider.png",
+                      title=f"osm-deploy assess strands-decider-2b · System One 决策模型（v{ver}）")
+
+    # 7. 模型库统计（v1.1.0 新增）
+    print("=== 7. 模型库统计 ===")
+    render_if_content(_lib_stats(),
+                      SHOTS / "17-实测截图-模型库统计.png",
+                      title=f"模型库统计 + 体检（v{ver}）", min_lines=5)
+
+    # 8. auto_fetch_models --mode=stats（依赖联网；受限时保留原图）
+    print("=== 8. auto_fetch_models stats（联网，失败则保留原图）===")
+    out = run([sys.executable, "scripts/auto_fetch_models.py", "--mode=stats"],
+              timeout=90)
+    render_if_content("\n".join(out.splitlines()[:30]),
+                      SHOTS / "13-实测截图-auto-fetch-stats.png",
+                      title="scripts/auto_fetch_models.py --mode=stats", min_lines=5)
+
+    # 9. auto_fetch_models --mode=patch（同上）
+    print("=== 9. auto_fetch_models patch（联网，失败则保留原图）===")
+    out = run([sys.executable, "scripts/auto_fetch_models.py",
                "--mode=patch", "--min-downloads", "1000000"],
-              timeout=60)
+              timeout=90)
     lines_raw = out.splitlines()
     head = []
     for i, ln in enumerate(lines_raw):
@@ -253,11 +460,11 @@ def main():
         if ln.startswith("    \"") and len(head) >= 5:
             break
         head.append(ln)
-    render_terminal("\n".join(head),
-                    SHOTS / "14-实测截图-auto-fetch-patch.png",
-                    title="auto_fetch_models.py --mode=patch · 候选 patch（前 5 条 · v1.0.2 新）")
+    render_if_content("\n".join(head),
+                      SHOTS / "14-实测截图-auto-fetch-patch.png",
+                      title="auto_fetch_models.py --mode=patch · 候选 patch（前 5 条）", min_lines=3)
 
-    print("\n✅ 6 张截图全部生成（覆盖式）")
+    print("\n✅ 截图生成流程结束（联网项失败时保留原图）")
 
 
 if __name__ == "__main__":

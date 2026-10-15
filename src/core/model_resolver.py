@@ -858,6 +858,13 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "size_b": 1,
         "note": "Gemma 3 1B Instruct，3.3M DLs，edge inference",
     },
+    "strands-decider-2b": {
+        "hf_repo": "StrandsAgents/strands-decider-2B-hobson-v19",
+        "github": "strands-labs/strands-decider",
+        "category": "international-edge",
+        "size_b": 1.9,  # Qwen3.5-2B base + LoRA adapter；HF 仓库本身只存 91.5MB adapter
+        "note": "AWS Strands Decider 2B（2026-10-01，Apache-2.0）：System One 决策模型，不生成文本——输入状态 + 类型化问题，一次前向返回 noul(是/否概率)/choice/score，每个答案自带校准置信度。基于 Qwen/Qwen3.5-2B-Base 的 LoRA + 读出头，1.9B，RTX 3090 中位 115ms，可 CPU / Apple Silicon。这是 TypeSafe Jev（闭源 SaaS，API-only）的开源可本地部署对应物。⚠️ HF 仓库只含 91.5MB LoRA adapter，部署需另配 base 模型。",
+    },
     "phi-3.5-vision-instruct": {
         "hf_repo": "microsoft/Phi-3.5-vision-instruct",
         "github": "microsoft/Phi-3CookBook",
@@ -1033,6 +1040,13 @@ KNOWN_MODELS: Dict[str, Dict[str, str]] = {
         "category": "embedding",
         "size_b": 0.3,
         "note": "Google EmbeddingGemma 300M，2.88M DLs，edge embedding",
+    },
+    "embeddinggemma-2": {
+        "hf_repo": "google/embeddinggemma-2",
+        "github": "google-deepmind/gemma",
+        "category": "embedding",
+        "size_b": 0.744,  # 744.37M，HF safetensors 实测
+        "note": "Google EmbeddingGemma 2（2026-10-06，Apache-2.0）：740M 原生多模态 embedding，270M 文本骨干 + 170M 视觉 + 300M 音频编码器，四模态统一 768 维空间（MRL 可截断 128/256/512），8K context，100+ 语言。代码任务较一代 +14%（MTEB code 68.76→78.68）。视觉/音频编码器可按需加载，纯文本场景只吃 270M。",
     },
     # ---- Vision 补完 ----
     "florence-2-base": {

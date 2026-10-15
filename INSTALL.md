@@ -2,7 +2,9 @@
 
 > 零基础也能上手的完整教程
 
-> 📌 **v1.0.2 更新 (2026-09-26)**：示例输出更新到 127 模型 · 自动数据快照每周刷新 · 新增 `auto_fetch_models.py` 自动拉取工具（详见 README.md 🆕 段）。
+> 📌 **v1.1.0 更新 (2026-10-15)**：**137 个在架模型**（新增 EmbeddingGemma 2 多模态 embedding · Strands Decider 2B 决策模型）· 截图脚本不再编造 nvidia-smi · README 事实校验扩到「截图不能是空图」。
+
+> 📌 **v1.0.2 更新 (2026-09-26)**：自动数据快照每周刷新 · 新增 `auto_fetch_models.py` 自动拉取工具（详见 README.md 🆕 段）。
 
 ## 目录
 
@@ -45,7 +47,7 @@ pip install -e .[all]
 osm-deploy list
 ```
 
-你应该看到 **127 个模型**，分 8 大类（含国内通用 / 国内推理 / 代码专用 / 视觉多模态 / 国际密集 / 国际边缘 / Embedding / Reranker）。
+你应该看到 **137 个模型**，分 8 大类（含国内通用 / 国内推理 / 代码专用 / 视觉多模态 / 国际密集 / 国际边缘 / Embedding / Reranker）。
 
 ### 第二步：自动检测你的硬件
 
@@ -53,19 +55,19 @@ osm-deploy list
 osm-deploy detect
 ```
 
-输出示例（Windows + 8 核 + 15.9GB 内存 + GTX 1660 Ti 6GB）：
+输出示例（本机实测：Windows 11 · AMD Ryzen 7 7840HS 16 核 · Radeon 780M 集显 · 15.2GB 内存）：
 ```
 本机硬件扫描：
   平台:     windows
-  CPU:      AMD64 (8 核)
-  内存:     0GB (此处 Windows psutil 读未填，实际 15.9GB)
-  硬盘剩余: 139.0GB
-  NVIDIA:   1 张
+  CPU:      AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD (16 核)
+  内存:     15.2GB
+  硬盘剩余: 13.5GB
+  NVIDIA:   0 张
   AMD:      0 张
-  总可用显存: 6GB
+  总可用显存: 0GB
   部署档位: cpu_only
 
-总共 127 个模型可在本机部署
+本机可部署 85 / 137 个在架模型
 ```
 
 ### 第三步：评估某个模型
