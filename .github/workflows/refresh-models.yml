@@ -129,7 +129,7 @@ jobs:
             echo "✓ 无变化，跳过 commit"
           fi
 
-      - name: Upload artifacts (v4 · Node 24 兼容)
+      - name: Upload artifacts (v6 · node24)
         uses: actions/upload-artifact@v6
         with:
           name: refresh-data-${{ github.run_id }}
