@@ -22,17 +22,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PY_VERSION }}
 
       - name: Setup Node (显式 24 · 防 GH 弃用通知)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -130,7 +130,7 @@ jobs:
           fi
 
       - name: Upload artifacts (v4 · Node 24 兼容)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: refresh-data-${{ github.run_id }}
           path: |
