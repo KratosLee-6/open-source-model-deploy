@@ -111,7 +111,9 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin "$HEAD_REF"
+          # 数据刷新步已经改脏了工作区，直接 rebase 会被 git 拒绝（cannot pull with rebase: You have unstaged changes）
+          # --autostash：先把本地改动收起，rebase 完自动放回，下面 git add -A 再统一提交
+          git pull --rebase --autostash origin "$HEAD_REF"
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "chore(data): 自动刷新 HF 元数据 + GPU 价格 + 部署建议报告 + 结构化知识库
