@@ -27,6 +27,10 @@ osm-deploy = "src.cli:main"
 osm-mcp = "src.mcp_server:run_mcp_server"
 osm-http = "src.http_server:main"
 
+[project.optional-dependencies]
+# check_readme_facts.py 用 PIL 校验截图非空（CI 需要）
+dev = ["pillow>=10"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
