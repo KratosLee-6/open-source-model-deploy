@@ -24,14 +24,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}    # 显式 pin 24 (上 GH 日志警告)
           fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PY_VERSION }}
-          node-version: ${{ env.NODE_VERSION }}    # setup-python v5 接受 node-version
 
       - name: Setup Node (显式 24 · 防 GH 弃用通知)
         uses: actions/setup-node@v4
