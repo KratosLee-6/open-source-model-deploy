@@ -44,6 +44,7 @@ def cmd_list(args):
         "vision": "【视觉多模态】",
         "embedding": "【Embedding】",
         "reranker": "【Reranker】",
+        "decision": "【决策模型 / System One】",
     }
 
     for cat, items in sorted(cats.items()):
@@ -223,7 +224,7 @@ def main():
 
     # list
     p_list = sub.add_parser("list", help="列出所有支持的模型")
-    p_list.add_argument("--category", help="按分类过滤：domestic-general/domestic-reasoning/international-dense/international-edge/code/vision/embedding/reranker")
+    p_list.add_argument("--category", help="按分类过滤：domestic-general/domestic-reasoning/international-dense/international-edge/code/vision/embedding/reranker/decision")
     p_list.add_argument("--all", action="store_true",
                         help="包含已退役模型（默认排除）")
     p_list.set_defaults(func=cmd_list)

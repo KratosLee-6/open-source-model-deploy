@@ -1,8 +1,8 @@
 {
   "schema_version": "1.1",
   "generator": "open-source-model-deploy v1.1.0",
-  "generated_at": "2026-10-26T03:29:45Z",
-  "model_count": 137,
+  "generated_at": "2026-10-29T12:48:12Z",
+  "model_count": 168,
   "quant_ladder": [
     "Q4_K_M",
     "Q5_K_M",
@@ -3705,7 +3705,7 @@
     },
     "strands-decider-2b": {
       "model": "strands-decider-2b",
-      "category": "international-edge",
+      "category": "decision",
       "size_b": 1.9,
       "activated_b": null,
       "is_moe": false,
@@ -4628,6 +4628,1041 @@
         "source": "heuristic"
       },
       "note": "InternVL2 2B，0.70M DLs"
+    },
+    "deepseek-v3.2": {
+      "model": "deepseek-v3.2",
+      "category": "domestic-general",
+      "size_b": 685.36,
+      "activated_b": 37,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "deepseek-ai/DeepSeek-V3.2",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 493.5,
+        "Q5_K_M": 575.7,
+        "Q6_K": 657.9,
+        "Q8_0": 822.4,
+        "FP8": 822.4,
+        "BF16": 1644.9
+      },
+      "min_vram": {
+        "vram_min_gb": 493.5,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "multi-gpu",
+        "recommend": "多卡集群：7×80GB 或 21×24GB（Q4_K_M）",
+        "min_gpus_80gb": 7,
+        "min_gpus_24gb": 21,
+        "quant": "Q4_K_M",
+        "vram_required_gb": 493.5,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "DeepSeek V3.2 正式版，HF 610 万下载，MoE 685B/37B 激活，对标前沿闭源（HF 6.1M DLs · 2025-12）"
+    },
+    "qwen3.8-flash-next": {
+      "model": "qwen3.8-flash-next",
+      "category": "domestic-general",
+      "size_b": 180.0,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Qwen/Qwen3.8-Flash-Next",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 129.6,
+        "Q5_K_M": 151.2,
+        "Q6_K": 172.8,
+        "Q8_0": 216.0,
+        "FP8": 216.0,
+        "BF16": 432.0
+      },
+      "min_vram": {
+        "vram_min_gb": 129.6,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "multi-gpu",
+        "recommend": "多卡集群：2×80GB 或 6×24GB（Q4_K_M）",
+        "min_gpus_80gb": 2,
+        "min_gpus_24gb": 6,
+        "quant": "Q4_K_M",
+        "vram_required_gb": 129.6,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Qwen3.8 Flash Next 新旗舰，HF 385 万下载，多模态 Flash 家族（HF 3.9M DLs · 2026-08）"
+    },
+    "nemotron-3.5-lightning-30b-a3b": {
+      "model": "nemotron-3.5-lightning-30b-a3b",
+      "category": "domestic-general",
+      "size_b": 31.58,
+      "activated_b": 3,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 22.7,
+        "Q5_K_M": 26.5,
+        "Q6_K": 30.3,
+        "Q8_0": 37.9,
+        "FP8": 37.9,
+        "BF16": 75.8
+      },
+      "min_vram": {
+        "vram_min_gb": 22.7,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 22.7,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "NVIDIA Nemotron 3.5 Lightning 30B MoE / 3B 激活（HF 1.1M DLs · 2026-08）"
+    },
+    "nemotron-3-nano-30b-a3b": {
+      "model": "nemotron-3-nano-30b-a3b",
+      "category": "international-edge",
+      "size_b": 31.58,
+      "activated_b": 3,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 22.7,
+        "Q5_K_M": 26.5,
+        "Q6_K": 30.3,
+        "Q8_0": 37.9,
+        "FP8": 37.9,
+        "BF16": 75.8
+      },
+      "min_vram": {
+        "vram_min_gb": 22.7,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 22.7,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "NVIDIA Nemotron 3 Nano 30B MoE / 3B 激活，边缘友好（HF 1.7M DLs · 2025-12）"
+    },
+    "nemotron-3-ultra-550b": {
+      "model": "nemotron-3-ultra-550b",
+      "category": "international-dense",
+      "size_b": 560.52,
+      "activated_b": 55,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 403.6,
+        "Q5_K_M": 470.8,
+        "Q6_K": 538.1,
+        "Q8_0": 672.6,
+        "FP8": 672.6,
+        "BF16": 1345.2
+      },
+      "min_vram": {
+        "vram_min_gb": 403.6,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "multi-gpu",
+        "recommend": "多卡集群：6×80GB 或 17×24GB（Q4_K_M）",
+        "min_gpus_80gb": 6,
+        "min_gpus_24gb": 17,
+        "quant": "Q4_K_M",
+        "vram_required_gb": 403.6,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "NVIDIA Nemotron 3 Ultra 550B MoE / 55B 激活（HF 1.4M DLs · 2026-06）"
+    },
+    "nemotron-3-super-120b": {
+      "model": "nemotron-3-super-120b",
+      "category": "international-dense",
+      "size_b": 123.61,
+      "activated_b": 12,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 89.0,
+        "Q5_K_M": 103.8,
+        "Q6_K": 118.7,
+        "Q8_0": 148.3,
+        "FP8": 148.3,
+        "BF16": 296.7
+      },
+      "min_vram": {
+        "vram_min_gb": 89.0,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "multi-gpu",
+        "recommend": "多卡集群：2×80GB 或 4×24GB（Q4_K_M）",
+        "min_gpus_80gb": 2,
+        "min_gpus_24gb": 4,
+        "quant": "Q4_K_M",
+        "vram_required_gb": 89.0,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "NVIDIA Nemotron 3 Super 120B MoE / 12B 激活（HF 1.2M DLs · 2026-03）"
+    },
+    "minicpm-v-4.7-35b-a3b": {
+      "model": "minicpm-v-4.7-35b-a3b",
+      "category": "vision",
+      "size_b": 35.21,
+      "activated_b": 3,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "openbmb/MiniCPM-V-4.7-35B-A3B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 25.4,
+        "Q5_K_M": 29.6,
+        "Q6_K": 33.8,
+        "Q8_0": 42.3,
+        "FP8": 42.3,
+        "BF16": 84.5
+      },
+      "min_vram": {
+        "vram_min_gb": 25.4,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-datacenter",
+        "recommend": "单张 A100 80G / H100（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 25.4,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "MiniCPM-V 4.7 35B MoE 多模态，国产视觉旗舰（HF 0.3M DLs · 2026-10）"
+    },
+    "minicpm-v-4.7-1b": {
+      "model": "minicpm-v-4.7-1b",
+      "category": "vision",
+      "size_b": 1.55,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "openbmb/MiniCPM-V-4.7-1B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 1.1,
+        "Q5_K_M": 1.3,
+        "Q6_K": 1.5,
+        "Q8_0": 1.9,
+        "FP8": 1.9,
+        "BF16": 3.7
+      },
+      "min_vram": {
+        "vram_min_gb": 1.1,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 1.1,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "MiniCPM-V 4.7 1B 轻量多模态，6GB 卡可跑（HF 0.2M DLs · 2026-10）"
+    },
+    "qwen3-vl-embedding-8b": {
+      "model": "qwen3-vl-embedding-8b",
+      "category": "embedding",
+      "size_b": 8.14,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Qwen/Qwen3-VL-Embedding-8B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 5.9,
+        "Q5_K_M": 6.8,
+        "Q6_K": 7.8,
+        "Q8_0": 9.8,
+        "FP8": 9.8,
+        "BF16": 19.5
+      },
+      "min_vram": {
+        "vram_min_gb": 5.9,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 5.9,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Qwen3-VL Embedding 8B，多模态向量化新形态（HF 1.2M DLs · 2026-01）"
+    },
+    "qwen3-vl-embedding-2b": {
+      "model": "qwen3-vl-embedding-2b",
+      "category": "embedding",
+      "size_b": 2.13,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Qwen/Qwen3-VL-Embedding-2B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 1.5,
+        "Q5_K_M": 1.8,
+        "Q6_K": 2.0,
+        "Q8_0": 2.6,
+        "FP8": 2.6,
+        "BF16": 5.1
+      },
+      "min_vram": {
+        "vram_min_gb": 1.5,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 1.5,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Qwen3-VL Embedding 2B，多模态向量化轻量版（HF 0.6M DLs · 2026-01）"
+    },
+    "deepseek-ocr": {
+      "model": "deepseek-ocr",
+      "category": "vision",
+      "size_b": 3.34,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "deepseek-ai/DeepSeek-OCR",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 2.4,
+        "Q5_K_M": 2.8,
+        "Q6_K": 3.2,
+        "Q8_0": 4.0,
+        "FP8": 4.0,
+        "BF16": 8.0
+      },
+      "min_vram": {
+        "vram_min_gb": 2.4,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 2.4,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "DeepSeek-OCR 文档解析，HF 208 万下载（HF 2.1M DLs · 2025-10）"
+    },
+    "hunyuan-ocr": {
+      "model": "hunyuan-ocr",
+      "category": "vision",
+      "size_b": 1.12,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "tencent/HunyuanOCR",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.8,
+        "Q5_K_M": 0.9,
+        "Q6_K": 1.1,
+        "Q8_0": 1.3,
+        "FP8": 1.3,
+        "BF16": 2.7
+      },
+      "min_vram": {
+        "vram_min_gb": 0.8,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.8,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "腾讯混元 OCR，文档版面解析（HF 0.8M DLs · 2025-11）"
+    },
+    "diffusiongemma-26b-a4b": {
+      "model": "diffusiongemma-26b-a4b",
+      "category": "vision",
+      "size_b": 25.82,
+      "activated_b": 4,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "google/diffusiongemma-26B-A4B-it",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 18.6,
+        "Q5_K_M": 21.7,
+        "Q6_K": 24.8,
+        "Q8_0": 31.0,
+        "FP8": 31.0,
+        "BF16": 62.0
+      },
+      "min_vram": {
+        "vram_min_gb": 18.6,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 18.6,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "Google DiffusionGemma 26B MoE / 4B 激活，扩散式多模态（HF 0.6M DLs · 2026-06）"
+    },
+    "cosmos-reason2-2b": {
+      "model": "cosmos-reason2-2b",
+      "category": "vision",
+      "size_b": 2.44,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "nvidia/Cosmos-Reason2-2B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 1.8,
+        "Q5_K_M": 2.0,
+        "Q6_K": 2.3,
+        "Q8_0": 2.9,
+        "FP8": 2.9,
+        "BF16": 5.9
+      },
+      "min_vram": {
+        "vram_min_gb": 1.8,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 1.8,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "NVIDIA Cosmos Reason2 2B，物理世界推理小模型（HF 0.6M DLs · 2025-12）"
+    },
+    "labse": {
+      "model": "labse",
+      "category": "embedding",
+      "size_b": 0.47,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "sentence-transformers/LaBSE",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.3,
+        "Q5_K_M": 0.4,
+        "Q6_K": 0.5,
+        "Q8_0": 0.6,
+        "FP8": 0.6,
+        "BF16": 1.1
+      },
+      "min_vram": {
+        "vram_min_gb": 0.3,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.3,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "LaBSE 跨语言句子对齐，82 语种，检索基础设施（HF 0.7M DLs · 2022-03）"
+    },
+    "distiluse-base-multilingual-cased-v1": {
+      "model": "distiluse-base-multilingual-cased-v1",
+      "category": "embedding",
+      "size_b": 0.13,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "sentence-transformers/distiluse-base-multilingual-cased-v1",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.1,
+        "Q5_K_M": 0.1,
+        "Q6_K": 0.1,
+        "Q8_0": 0.2,
+        "FP8": 0.2,
+        "BF16": 0.3
+      },
+      "min_vram": {
+        "vram_min_gb": 0.1,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.1,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "distilUSE 多语言 cased v1，15 语种基线（HF 1.5M DLs · 2022-03）"
+    },
+    "qwen3-30b-a3b-instruct-2507": {
+      "model": "qwen3-30b-a3b-instruct-2507",
+      "category": "domestic-general",
+      "size_b": 30.53,
+      "activated_b": 3,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 22.0,
+        "Q5_K_M": 25.6,
+        "Q6_K": 29.3,
+        "Q8_0": 36.6,
+        "FP8": 36.6,
+        "BF16": 73.3
+      },
+      "min_vram": {
+        "vram_min_gb": 22.0,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 22.0,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "Qwen3 30B-A3B Instruct-2507，MoE / 3B 激活，109 万下载（HF 1.1M DLs · 2025-07）"
+    },
+    "qwen2-vl-2b-instruct": {
+      "model": "qwen2-vl-2b-instruct",
+      "category": "vision",
+      "size_b": 2.21,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Qwen/Qwen2-VL-2B-Instruct",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 1.6,
+        "Q5_K_M": 1.9,
+        "Q6_K": 2.1,
+        "Q8_0": 2.7,
+        "FP8": 2.7,
+        "BF16": 5.3
+      },
+      "min_vram": {
+        "vram_min_gb": 1.6,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 1.6,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Qwen2-VL 2B Instruct，前代多模态小尺寸（HF 1.1M DLs · 2024-08）"
+    },
+    "minimax-m2.5": {
+      "model": "minimax-m2.5",
+      "category": "domestic-general",
+      "size_b": 228.69,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "MiniMaxAI/MiniMax-M2.5",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 164.7,
+        "Q5_K_M": 192.1,
+        "Q6_K": 219.5,
+        "Q8_0": 274.4,
+        "FP8": 274.4,
+        "BF16": 548.9
+      },
+      "min_vram": {
+        "vram_min_gb": 164.7,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "multi-gpu",
+        "recommend": "多卡集群：3×80GB 或 7×24GB（Q4_K_M）",
+        "min_gpus_80gb": 3,
+        "min_gpus_24gb": 7,
+        "quant": "Q4_K_M",
+        "vram_required_gb": 164.7,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "MiniMax M2.5，国产大模型旗舰（HF 1.3M DLs · 2026-02）"
+    },
+    "hy3": {
+      "model": "hy3",
+      "category": "domestic-general",
+      "size_b": 298.79,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "tencent/Hy3",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 215.1,
+        "Q5_K_M": 251.0,
+        "Q6_K": 286.8,
+        "Q8_0": 358.5,
+        "FP8": 358.5,
+        "BF16": 717.1
+      },
+      "min_vram": {
+        "vram_min_gb": 215.1,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "multi-gpu",
+        "recommend": "多卡集群：3×80GB 或 9×24GB（Q4_K_M）",
+        "min_gpus_80gb": 3,
+        "min_gpus_24gb": 9,
+        "quant": "Q4_K_M",
+        "vram_required_gb": 215.1,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "腾讯混元 Hy3，通用大模型（HF 1.3M DLs · 2026-07）"
+    },
+    "autotrust-jev-9b": {
+      "model": "autotrust-jev-9b",
+      "category": "decision",
+      "size_b": 8.95,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "autotrust/JEV-9B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 6.4,
+        "Q5_K_M": 7.5,
+        "Q6_K": 8.6,
+        "Q8_0": 10.7,
+        "FP8": 10.7,
+        "BF16": 21.5
+      },
+      "min_vram": {
+        "vram_min_gb": 6.4,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 6.4,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "AutoTrust JEV-9B：Jev 1.13 蒸馏学生模型（Qwen3.5-9B 底座 + LoRA + 24 槽决策头），Apache-2.0，noul AUROC 0.996，29,955 题留出集上与教师选项一致率 87.5%（HF 0.80M DLs · apache-2.0）"
+    },
+    "autotrust-jev-27b": {
+      "model": "autotrust-jev-27b",
+      "category": "decision",
+      "size_b": 26.9,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "autotrust/JEV-27B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 19.4,
+        "Q5_K_M": 22.6,
+        "Q6_K": 25.8,
+        "Q8_0": 32.3,
+        "FP8": 32.3,
+        "BF16": 64.6
+      },
+      "min_vram": {
+        "vram_min_gb": 19.4,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 19.4,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "AutoTrust JEV-27B：Qwen3.8-27B 底座，6 基准平均 84.07% 反超闭源教师 Jev 1.13（83.85%），4/6 基准胜出，Apache-2.0，单张 B200 约 140ms/请求（HF 0.56M DLs · apache-2.0）"
+    },
+    "autotrust-jev-35b": {
+      "model": "autotrust-jev-35b",
+      "category": "decision",
+      "size_b": 35.95,
+      "activated_b": 3,
+      "is_moe": true,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "autotrust/JEV-35B",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 25.9,
+        "Q5_K_M": 30.2,
+        "Q6_K": 34.5,
+        "Q8_0": 43.1,
+        "FP8": 43.1,
+        "BF16": 86.3
+      },
+      "min_vram": {
+        "vram_min_gb": 25.9,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-datacenter",
+        "recommend": "单张 A100 80G / H100（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 25.9,
+        "is_moe": true,
+        "source": "heuristic"
+      },
+      "note": "AutoTrust JEV-35B：Qwen3.5-35B-A3B MoE 底座，HF 147 万下载，已在生产环境跑实时新闻推荐，是本波下载量最大的决策模型（HF 1.47M DLs · apache-2.0）"
+    },
+    "cloudflare-clef-27b": {
+      "model": "cloudflare-clef-27b",
+      "category": "decision",
+      "size_b": 27.36,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Cloudflare/clef",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 19.7,
+        "Q5_K_M": 23.0,
+        "Q6_K": 26.3,
+        "Q8_0": 32.8,
+        "FP8": 32.8,
+        "BF16": 65.7
+      },
+      "min_vram": {
+        "vram_min_gb": 19.7,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 19.7,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Cloudflare Clef 27B：Qwen3.8-27B 底座 + 图像输入（state 可带图），Ollama 0.35.1 起原生支持 /v1/systemone 接口（HF 0.03M DLs · apache-2.0）"
+    },
+    "cloudflare-clef-flash-9b": {
+      "model": "cloudflare-clef-flash-9b",
+      "category": "decision",
+      "size_b": 9.41,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Cloudflare/clef-flash",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 6.8,
+        "Q5_K_M": 7.9,
+        "Q6_K": 9.0,
+        "Q8_0": 11.3,
+        "FP8": 11.3,
+        "BF16": 22.6
+      },
+      "min_vram": {
+        "vram_min_gb": 6.8,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 6.8,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Cloudflare Clef Flash 9B：Qwen3.5-9B 底座，同架构轻量版，3090 + Ollama 实测 12.8GB 占用、3 道类型化问题约 220ms（HF 0.05M DLs · apache-2.0）"
+    },
+    "convai-laya": {
+      "model": "convai-laya",
+      "category": "decision",
+      "size_b": 0.42,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "convaiinnovations/laya",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.3,
+        "Q5_K_M": 0.4,
+        "Q6_K": 0.4,
+        "Q8_0": 0.5,
+        "FP8": 0.5,
+        "BF16": 1.0
+      },
+      "min_vram": {
+        "vram_min_gb": 0.3,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.3,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Laya 0.4B：最受欢迎的开源 Jev 对应物，Apache-2.0，RLCD 训练，约 33ms，pip 可装且自带 MCP extra（HF 0.06M DLs · apache-2.0）"
+    },
+    "convai-laya-multilingual": {
+      "model": "convai-laya-multilingual",
+      "category": "decision",
+      "size_b": 0.32,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "convaiinnovations/laya-multilingual",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.2,
+        "Q5_K_M": 0.3,
+        "Q6_K": 0.3,
+        "Q8_0": 0.4,
+        "FP8": 0.4,
+        "BF16": 0.8
+      },
+      "min_vram": {
+        "vram_min_gb": 0.2,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.2,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Laya 多语言版 0.3B：支持 100+ 语言，上下文 8k tokens（HF 0.02M DLs · apache-2.0）"
+    },
+    "openjev-openjev-27b": {
+      "model": "openjev-openjev-27b",
+      "category": "decision",
+      "size_b": 27.36,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "openjev/openjev",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 19.7,
+        "Q5_K_M": 23.0,
+        "Q6_K": 26.3,
+        "Q8_0": 32.8,
+        "FP8": 32.8,
+        "BF16": 65.7
+      },
+      "min_vram": {
+        "vram_min_gb": 19.7,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 19.7,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "OpenJEV 27B：开放权重复刻 TypeSafe /v1/systemone 请求形状，支持文本/网页/截图三态输入，最多 52 选项，CC BY-NC 4.0（HF 0.01M DLs · cc-by-nc-4.0）"
+    },
+    "juspay-xor-35b": {
+      "model": "juspay-xor-35b",
+      "category": "decision",
+      "size_b": 35.11,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "juspay/xor",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 25.3,
+        "Q5_K_M": 29.5,
+        "Q6_K": 33.7,
+        "Q8_0": 42.1,
+        "FP8": 42.1,
+        "BF16": 84.3
+      },
+      "min_vram": {
+        "vram_min_gb": 25.3,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-datacenter",
+        "recommend": "单张 A100 80G / H100（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 25.3,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Juspay XOR 35B：工业级变体，Qwen3.6-35B-A3B 后训练，最多 255 候选，SGLang 部署（HF 0.00M DLs · apache-2.0）"
+    },
+    "doofz-thx-01": {
+      "model": "doofz-thx-01",
+      "category": "decision",
+      "size_b": 0.32,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "doofz/THX-01",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 0.2,
+        "Q5_K_M": 0.3,
+        "Q6_K": 0.3,
+        "Q8_0": 0.4,
+        "FP8": 0.4,
+        "BF16": 0.8
+      },
+      "min_vram": {
+        "vram_min_gb": 0.2,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 0.2,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "THX-01 0.3B：非自回归 mmBERT 编码器（约 322M），单次决策约 10ms，多语言（az/en/ru/tr/de），最小可用决策模型（HF 0.00M DLs · apache-2.0）"
+    },
+    "mapika-decider-2b": {
+      "model": "mapika-decider-2b",
+      "category": "decision",
+      "size_b": 1.88,
+      "activated_b": null,
+      "is_moe": false,
+      "status": "active",
+      "superseded_by": null,
+      "hf_repo": "Mapika/decider-2b",
+      "vram_gb_by_quant": {
+        "Q4_K_M": 1.4,
+        "Q5_K_M": 1.6,
+        "Q6_K": 1.8,
+        "Q8_0": 2.3,
+        "FP8": 2.3,
+        "BF16": 4.5
+      },
+      "min_vram": {
+        "vram_min_gb": 1.4,
+        "quant": "Q4_K_M",
+        "source": "heuristic",
+        "note": "按总参数 × 0.6 bytes × 1.2 运行时开销估算"
+      },
+      "plan_q4": {
+        "tier": "single-consumer",
+        "recommend": "单张消费级 24GB 卡（Q4_K_M）",
+        "quant": "Q4_K_M",
+        "vram_required_gb": 1.4,
+        "is_moe": false,
+        "source": "heuristic"
+      },
+      "note": "Decider 2B：System One 模型类的明确开源复刻，本波使用最广（HF 0.08M DLs · apache-2.0）"
     }
   }
 }

@@ -2,9 +2,11 @@
 
 > 把「模型规格 / 硬件报价 / 部署方式」做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-[![version](https://img.shields.io/badge/version-v1.1.0-002FA7)](docs/releases/v1.1.0.md) [![models](https://img.shields.io/badge/models-137%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.1.1-002FA7)](docs/releases/v1.1.1.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.1.0**（2026-10-15 发布）· 137 个在架模型 · 8 大分类 · CLI / MCP Server / HTTP API 三通道
+**v1.1.1**（2026-10-29 发布）· 168 个在架模型 · 9 大分类 · CLI / MCP Server / HTTP API 三通道
+
+> 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
 
 ---
 
@@ -29,7 +31,7 @@ v1.0.3 已修正为按总参计算。**完整复盘见 [`docs/moe-vram-pitfall.m
 
 ## 🌟 核心亮点
 
-- **🧠 137 个在架模型 · 8 大分类**（另 1 个已退役标注，共 138 条记录）——
+- **🧠 168 个在架模型 · 9 大分类**（另 1 个已退役标注，共 169 条记录）——
   DeepSeek / Qwen3 / MiMo / GLM / Kimi / Llama-4 / Mistral / Gemma / Phi 全系，
   加代码 / 视觉 / Embedding / Reranker 专用模型
 - **🧮 结构化显存需求**——每个模型 × 6 档量化都有显存数值和可行性判定，
@@ -49,7 +51,7 @@ v1.0.3 已修正为按总参计算。**完整复盘见 [`docs/moe-vram-pitfall.m
 ```bash
 pip install open-source-model-deploy
 
-# 看支持的模型（137 个在架）
+# 看支持的模型（168 个在架）
 osm-deploy list
 
 # 自动检测硬件 + 推荐可部署模型
@@ -127,7 +129,7 @@ Jev 记录在 [`references/jev-integration.md`](references/jev-integration.md)�
 ## 🧮 显存需求
 
 每个模型给出 6 档量化的显存数值（Q4_K_M / Q5_K_M / Q6_K / Q8_0 / FP8 / BF16），
-并给出单卡 / 多卡的可行性判定。完整 137 行对照表见
+并给出单卡 / 多卡的可行性判定。完整 168 行对照表见
 [`references/vram-requirements.md`](references/vram-requirements.md)（自动生成，与代码同步），
 机器可读版本见 [`data/models-knowledge.json`](data/models-knowledge.json)。
 
@@ -157,32 +159,38 @@ Jev 记录在 [`references/jev-integration.md`](references/jev-integration.md)�
 
 ---
 
-## 📊 已覆盖的 137 个模型（8 类 · 2026-10-15）
+## 📊 已覆盖的 168 个模型（9 类 · 2026-10-29）
 
-| 分类 | 模型数 | v1.1.0 新增代表 |
+| 分类 | 模型数 | v1.1.1 新增代表 |
 | --- | ---: | --- |
-| **国内通用** | 44 | （无新增） |
-| **Embedding** | 29 | **EmbeddingGemma 2**（740M 原生多模态，四模态统一 768 维） |
-| **视觉多模态** | 17 | （无新增） |
-| **国际边缘** | 15 | **Strands Decider 2B**（AWS System One 决策模型，Apache-2.0） |
-| **国际密集** | 11 | （无新增） |
+| **国内通用** | 50 | **DeepSeek-V3.2**（685B/37B）· **Qwen3.8-Flash-Next** · **Nemotron 3.5 Lightning** |
+| **Embedding** | 33 | **Qwen3-VL-Embedding 8B / 2B**（多模态向量）· **LaBSE**（82 语种） |
+| **视觉多模态** | 24 | **MiniCPM-V 4.7 35B-A3B / 1B** · **DiffusionGemma 26B** · **DeepSeek-OCR** · **混元 OCR** |
+| **国际边缘** | 15 | （无新增） |
+| **国际密集** | 13 | **Nemotron 3 Ultra 550B / Super 120B** |
+| **决策模型 / System One** | 12 | **AutoTrust JEV-9B / 27B / 35B** · **Cloudflare Clef 27B / Flash 9B** · **Laya 0.4B** |
 | **国内推理** | 10 | （无新增） |
 | **代码专用** | 9 | （无新增） |
 | **Reranker** | 2 | （无新增） |
-| **总计** | **137** | 较 v1.0.3 的 135 **+2**；另 1 个已退役标注（DeepSeek-V4-Flash → V4.1-Flash）不计入 |
+| **总计** | **168** | 较 v1.1.0 的 137 **+31**；另 1 个已退役标注（DeepSeek-V4-Flash → V4.1-Flash）不计入 |
+
+> 🆕 **v1.1.1 新增第 9 类「决策模型 / System One」**：Jev 形态（state + 类型化问题 → 校准概率，一次前向不解码）
+> 的开源可本地部署实现。原 v1.1.0 只有 1 个（Strands Decider 2B），现 12 个。
+> **TypeSafe Jev 本体仍是闭源 SaaS**（API-only，权重从未发布），详见 [`references/jev-integration.md`](references/jev-integration.md)。
 
 各类代表模型速览：
 
 | 分类 | 模型示例 |
 | --- | --- |
-| **国内通用** (44) | DeepSeek-V3 / V4.1-Flash / V2.5 · GLM-5.3 / 4.5 · Kimi-K3 / K2 · MiMo-V2.6 全系 · Qwen3-235B / 32B / 14B |
+| **国内通用** (50) | DeepSeek-V3 / V4.1-Flash / V2.5 · GLM-5.3 / 4.5 · Kimi-K3 / K2 · MiMo-V2.6 全系 · Qwen3-235B / 32B / 14B |
 | **国内推理** (10) | DeepSeek-R1 全系（含 Distill）· GLM-Z1-32B · QwQ-32B |
 | **代码专用** (9) | Qwen3-Coder-480B / 30B · Qwen2.5-Coder-32B / 14B / 7B · DeepSeek-Coder-V2 · Codestral-22B |
-| **视觉多模态** (17) | Qwen2.5-VL-72B / 7B · Qwen3-VL-32B · InternVL3-78B / 8B · LLaVA-OneVision · Florence-2-base |
-| **国际密集** (11) | Llama-4-Maverick / Scout · Llama-3.3-70B · Mistral-Large-2 · Gemma-4-31B |
+| **视觉多模态** (24) | Qwen2.5-VL-72B / 7B · Qwen3-VL-32B · InternVL3-78B / 8B · LLaVA-OneVision · Florence-2-base |
+| **国际密集** (13) | Llama-4-Maverick / Scout · Llama-3.3-70B · Mistral-Large-2 · Gemma-4-31B |
 | **国际边缘** (15) | Llama-3.2-1B / 3B · Gemma-3-9B / 4B · Phi-4 / mini · **Strands Decider 2B** |
-| **Embedding** (29) | BGE 全家桶（M3 / large / base / small 中英）· E5 large/base/small · GTE multilingual / large-en · Nomic · **EmbeddingGemma 2 / 300M** |
+| **Embedding** (33) | BGE 全家桶（M3 / large / base / small 中英）· E5 large/base/small · GTE multilingual / large-en · Nomic · **EmbeddingGemma 2 / 300M** |
 | **Reranker** (2) | BGE-Reranker-large · BGE-Reranker-v2-m3 |
+| **决策模型 / System One** (12) | **AutoTrust JEV-9B / 27B / 35B** · **Cloudflare Clef 27B / Flash 9B** · **Laya 0.4B / 多语言版** · **OpenJEV 27B** · **Juspay XOR 35B** · **THX-01 0.32B** · **Decider 2B** · **Strands Decider 2B** |
 
 ---
 
@@ -191,7 +199,7 @@ Jev 记录在 [`references/jev-integration.md`](references/jev-integration.md)�
 ### 1️⃣ CLI
 
 ```bash
-osm-deploy list                              # 137 个在架模型
+osm-deploy list                              # 168 个在架模型
 osm-deploy list --category code              # 只看代码模型
 osm-deploy list --all                        # 含已退役模型
 osm-deploy assess embeddinggemma-2           # 5 步评估（返回结构化 JSON）
@@ -253,13 +261,13 @@ curl -X POST http://localhost:8765/deploy -d '{"model":"qwen3-32b","framework":"
 | 项目 | 本机实测输出 |
 | --- | --- |
 | 部署档位 | `cpu_only` |
-| 可部署判定 | **137 个在架模型中 85 个可跑** |
+| 可部署判定 | **168 个在架模型中 100 个可跑** |
 | 提示口径 | 每个模型后标注 `Q4_K_M（CPU 慢速·显存需 X GB 不足）` |
 
 一个连集显都算不上的推理环境，如果宣称「137 个模型全能跑」同样是谎报 ——
 正确的做法是把「能跑，但只能 CPU 慢速」和「显存不够，跑不了」分开说清楚。
 
-### 实测 2：137 模型分类清单
+### 实测 2：168 模型分类清单
 
 ![137 模型分类](docs/screenshots/07-实测截图-137模型分类.png)
 
@@ -297,12 +305,12 @@ HF 元数据里没有标准参数字段。工具如实显示 `None`，`size_b` �
 
 ```bash
 $ python scripts/lint_models.py --strict
-模型库体检：138 个模型 · ERROR 0 · WARN 0 · INFO 0
+模型库体检：169 个模型 · ERROR 0 · WARN 0 · INFO 0
 ✓ 全部通过
 ```
 
-> 体检口径是**库内全部 138 条记录**（含 1 个已退役标注），
-> 与 `list` 命令显示的 137 个在架模型是不同口径，不是矛盾。
+> 体检口径是**库内全部 169 条记录**（含 1 个已退役标注），
+> 与 `list` 命令显示的 168 个在架模型是不同口径，不是矛盾。
 
 ### 实测 8：`auto_fetch_models.py --mode=stats`
 
@@ -445,6 +453,7 @@ python scripts/regen_screenshots.py           # 重拍实测截图
 
 | 版本 | 日期 | 模型数 | 重点 |
 | --- | --- | ---: | --- |
+| **v1.1.1** | 2026-10-29 | 168 | +31 模型（DeepSeek-V3.2 / Qwen3.8-Flash-Next / Nemotron 3 系列 / MiniCPM-V 4.7 / Qwen3-VL-Embedding）· 新增第 9 类「决策模型 / System One」12 个（JEV-9B/27B/35B · Clef · Laya · OpenJEV）· 接入 XERJ Corpus Hub · README 数字自动化 |
 | **v1.1.0** | 2026-10-15 | 137 | EmbeddingGemma 2（多模态 embedding）· Strands Decider 2B（System One 决策模型）· JEV 闭源鉴别 · 截图不再编造 nvidia-smi |
 | v1.0.3 | 2026-10-03 | 135 | 修正 MoE 显存误判 · 显存需求结构化 · 模型库体检 CI 卡口 |
 | v1.0.2 | 2026-09-26 | 127 | `auto_fetch_models.py` · 周日自动开 PR |

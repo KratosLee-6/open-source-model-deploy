@@ -41,6 +41,10 @@ def generate_deploy_script(
             framework = "ollama"  # Apple Silicon Ollama 最方便
         elif category in ("embedding", "reranker"):
             framework = "transformers"  # Embedding 通常用 Transformers
+        elif category == "decision":
+            # System One 决策模型：vLLM / SGLang 走 OpenAI 兼容 server，
+            # 再用 /v1/systemone 风格的客户端问 noul/choice/score
+            framework = "vllm" if has_cuda else "llama.cpp"
         elif has_cuda and size_b >= 70:
             framework = "vllm"  # 大模型用 vLLM
         elif has_cuda:

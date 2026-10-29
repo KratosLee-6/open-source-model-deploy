@@ -24,25 +24,26 @@ from src.core.model_resolver import KNOWN_MODELS as K  # noqa: E402
 from src.mcp_server import _call_tool  # noqa: E402
 
 # v1.1.0 基线：137 在架 / 138 条记录
-EXPECT_LIVE = 137
-EXPECT_TOTAL = 138
+EXPECT_LIVE = 168
+EXPECT_TOTAL = 169
 EXPECT_RETIRED = 1
 # 分类分布
 EXPECT_DIST = {
-    "domestic-general": 44,
-    "embedding": 29,
-    "vision": 17,
-    "international-edge": 15,
-    "international-dense": 11,
-    "domestic-reasoning": 10,
     "code": 9,
+    "decision": 12,
+    "domestic-general": 50,
+    "domestic-reasoning": 10,
+    "embedding": 33,
+    "international-dense": 13,
+    "international-edge": 15,
     "reranker": 2,
+    "vision": 24,
 }
 # 按显存反查（本机基线）
-EXPECT_VRAM_FILTER = [(8, 79), (16, 88), (24, 106), (80, 115)]
+EXPECT_VRAM_FILTER = [(8, 94), (16, 103), (24, 128), (80, 140)]
 # 本机 detect 结果
-EXPECT_RECOMMENDATIONS = 137
-EXPECT_RUNNABLE = 85
+EXPECT_RECOMMENDATIONS = 168
+EXPECT_RUNNABLE = 100
 
 README = io.open("README.md", encoding="utf-8").read()
 fails, checks = [], []
@@ -157,8 +158,8 @@ for i in sorted(set(imgs)):
 
 # ---- 10. 版本一致性 ----
 from src import __version__  # noqa: E402
-ck("__version__ = 1.1.0", __version__ == "1.1.0", f"实际 {__version__}")
-ck("README 标题区写 v1.1.0", "**v1.1.0**（2026-10-15 发布）" in README)
+ck("__version__ = 1.1.1", __version__ == "1.1.1", f"实际 {__version__}")
+ck("README 标题区写 v1.1.1", "**v1.1.1**（2026-10-29 发布）" in README)
 ck("README 不再写「开发中」", "开发中" not in README)
 ck("README 不再混入旧版实测段", "实测 6-9" not in README and "35.85 tokens/秒" not in README)
 
