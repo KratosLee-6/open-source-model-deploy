@@ -1,8 +1,123 @@
 """
 部署脚本生成器 - 按硬件 + 模型生成一键启动命令
 支持：vLLM / SGLang / Ollama / llama.cpp / Transformers
+      以及 decision（System One 决策模型）的专用配方 —— 见 decision_recipes.py
 """
+import json
 from typing import Dict, List, Any
+
+from .decision_recipes import get_recipe, ENDPOINT_NOTES
+
+
+def _build_decision_example(recipe: Dict[str, Any], endpoint: str) -> Dict[str, str]:
+    """按 body 格式生成真实的 curl / python 请求示例。
+
+    两种 body 形状不同，不能混用：
+      decide     -> {kind, state, question, options?}
+      systemone  -> {model?, state, questions: {name: {type, instructions, criteria}}}
+
+    ⚠️ body 形状由 recipe['body_format'] 决定，不由 URL 路径决定 ——
+    THX-01 的路径是 /v1/decide，但 body 是 systemone 格式。
+    """
+    port = recipe.get("port") or 8000
+    example = recipe.get("example") or {}
+    body_format = recipe.get("body_format") or (
+        "decide" if endpoint == "/v1/decide" else "systemone"
+    )
+
+    body = dict(example)
+    if body_format == "decide":
+        py_tail = "print(dict(zip(r['options'], r['probabilities'])))"
+    else:
+        py_tail = "print(r['answers'])"
+
+    curl = (
+        f"curl -s http://localhost:{port}{endpoint} \\\n"
+        f"  -H 'Content-Type: application/json' \\\n"
+        f"  -d '{json.dumps(body, ensure_ascii=False)}'"
+    )
+    py = (
+        "import requests\n"
+        f"r = requests.post('http://localhost:{port}{endpoint}', "
+        f"json={json.dumps(body, ensure_ascii=False)}).json()\n"
+        f"{py_tail}"
+    )
+
+    return {"curl": curl, "python": py}
+
+
+def _deploy_decision(model_name: str, model_info: Dict[str, Any]) -> Dict[str, Any]:
+    """decision 类模型的部署脚本（不走通用 vllm/sglang 模板）。"""
+    hf_repo = model_info.get("hf_repo", "")
+    recipe = get_recipe(hf_repo)
+
+    if recipe is None:
+        # 没有配方时，至少不要把 chat 模板当成能用 —— 明确告知缺口
+        return {
+            "framework": "unknown-decision",
+            "install_cmd": "# 未核实的决策模型，暂无配方",
+            "run_cmd": (
+                f"# ⚠️ 未核实：{hf_repo} 是 System One 决策模型，不能用通用 chat 模板部署。\n"
+                f"# 它的接口不是 /v1/chat/completions，而是类型化决策接口（/v1/decide 或 /v1/systemone），\n"
+                f"# 且通常需要 adapter / shim / 专用 serve 脚本。请先查 model card 确认：\n"
+                f"#   启动入口 / 接口路径 / 端口 / 是否需要额外 adapter\n"
+                f"# 参考 references/decision-models.md，或跑 scripts/verify_decision_endpoints.py 补配方。"
+            ),
+            "notes": [
+                "该模型尚未核实部署方式 —— 工具不提供猜测出来的命令。",
+                f"hf_repo: {hf_repo}",
+                "补配方：跑 scripts/verify_decision_endpoints.py 核对 model card，"
+                "再把真实命令加进 src/core/decision_recipes.py",
+            ],
+            "decision": True,
+            "form": "unknown",
+            "endpoint": None,
+            "port": None,
+        }
+
+    endpoint = recipe["endpoint"]
+    form = recipe["form"]
+    port = recipe["port"]
+
+    install_cmd = "\n".join(recipe["install"]) if recipe["install"] else "# 无需额外安装"
+    download = recipe["download"] or []
+    run_lines = recipe["run"] or []
+    run_cmd = "\n".join(run_lines)
+
+    # 下载步骤并进 run（用户复制整段就能执行）
+    if download:
+        run_cmd = "\n".join(download) + "\n\n" + run_cmd
+
+    notes: List[str] = []
+    notes.append(f"形态：{form}" + ("（进程内调用，无需起服务）" if form == "library" else ""))
+    if endpoint:
+        notes.append(f"接口：{endpoint}" + (f"  端口：{port}" if port else ""))
+        notes.append(ENDPOINT_NOTES.get(endpoint, ""))
+    if recipe.get("vram_note"):
+        notes.append(f"显存：{recipe['vram_note']}")
+    notes.extend(recipe["notes"])
+
+    result: Dict[str, Any] = {
+        "framework": recipe["framework"],
+        "install_cmd": install_cmd,
+        "run_cmd": run_cmd,
+        "notes": [n for n in notes if n],
+        "decision": True,
+        "form": form,
+        "endpoint": endpoint,
+        "port": port,
+        "display": recipe["display"],
+    }
+
+    # 有服务形态才给请求示例和健康检查
+    if form != "library" and port:
+        ex = _build_decision_example(recipe, endpoint)
+        result["example_curl"] = ex["curl"]
+        result["example_python"] = ex["python"]
+        if recipe.get("health"):
+            result["health_cmd"] = recipe["health"]
+
+    return result
 
 
 def generate_deploy_script(
@@ -25,12 +140,20 @@ def generate_deploy_script(
           "install_cmd": "pip install vllm",
           "run_cmd": "vllm serve Qwen/Qwen3-32B --gpu-memory-utilization 0.9",
           "docker_cmd": "docker run ...",  # 可选
-          "notes": ["需要 CUDA 12.0+", "..."]
+          "notes": ["需要 CUDA 12.0+", "..."],
+          # decision 类额外带：
+          "decision": True, "form": "service", "endpoint": "/v1/decide",
+          "port": 8000, "example_curl": "...", "example_python": "...", "health_cmd": "..."
         }
     """
     hf_repo = model_info.get("hf_repo", "")
     size_b = model_info.get("size_b", 0)
     category = model_info.get("category", "")
+
+    # System One 决策模型：接口不是 chat/completions，通用模板会误导用户
+    if category == "decision":
+        return _deploy_decision(model_name, model_info)
+
     is_apple = hw_scan.get("apple_silicon") is not None
     has_cuda = len(hw_scan.get("nvidia_gpus", [])) > 0
     total_vram = hw_scan.get("total_vram_gb", 0)

@@ -143,6 +143,19 @@ def cmd_deploy(args):
     print(f"\n{'=' * 70}")
     print(f"【一键部署脚本】{args.model} ({script['framework']})")
     print(f"{'=' * 70}")
+
+    # decision 类：先亮接口，再给命令 —— 否则用户不知道起完服务该问什么
+    if script.get("decision"):
+        form = script.get("form")
+        endpoint = script.get("endpoint")
+        port = script.get("port")
+        if endpoint and port:
+            print(f"\n[接口]  {endpoint}   →  http://localhost:{port}{endpoint}")
+        elif form == "library":
+            print(f"\n[接口]  进程内调用（无 REST 服务）")
+        else:
+            print(f"\n[接口]  ⚠️ 尚未核实")
+
     print(f"\n[安装]")
     print(script["install_cmd"])
     print(f"\n[运行]")
@@ -150,6 +163,19 @@ def cmd_deploy(args):
     if script.get("docker_cmd"):
         print(f"\n[Docker 备选]")
         print(script["docker_cmd"])
+
+    # decision 类：健康检查 + 真实请求示例
+    if script.get("decision"):
+        if script.get("health_cmd"):
+            print(f"\n[健康检查]")
+            print(script["health_cmd"])
+        if script.get("example_curl"):
+            print(f"\n[真实请求 · curl]")
+            print(script["example_curl"])
+        if script.get("example_python"):
+            print(f"\n[真实请求 · Python]")
+            print(script["example_python"])
+
     print(f"\n[注意]")
     for n in script["notes"]:
         print(f"  - {n}")
