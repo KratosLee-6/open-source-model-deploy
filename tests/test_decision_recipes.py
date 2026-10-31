@@ -27,7 +27,8 @@ from src.core.deployment_generator import generate_deploy_script  # noqa: E402
 from src.core.model_resolver import KNOWN_MODELS  # noqa: E402
 
 VALID_FORMS = {"service", "library", "hybrid"}
-VALID_ENDPOINTS = {ENDPOINT_DECIDE, ENDPOINT_SYSTEMONE}
+# /v1/completions 是 JEV 的真实决策入口（2026-10-31 真机验证）
+VALID_ENDPOINTS = {ENDPOINT_DECIDE, ENDPOINT_SYSTEMONE, "/v1/completions"}
 
 # 假硬件（不需要真 GPU，只验生成逻辑）
 FAKE_HW = {
@@ -108,11 +109,11 @@ def test_recipe_example_has_required_keys(hf_repo):
     assert ex, f"{hf_repo}: 缺 example（生成的脚本就没有真实请求示例）"
 
     body_format = r.get("body_format")
-    assert body_format in ("decide", "systemone"), (
+    assert body_format in ("decide", "systemone", "vllm_logprobs"), (
         f"{hf_repo}: body_format={body_format!r} 不合法"
     )
 
-    if body_format == "decide":
+    if body_format in ("decide", "vllm_logprobs"):
         assert "kind" in ex, f"{hf_repo}: decide 格式的示例必须带 kind"
         assert "state" in ex, f"{hf_repo}: decide 格式的示例必须带 state"
         assert "question" in ex, f"{hf_repo}: decide 格式的示例必须带 question"

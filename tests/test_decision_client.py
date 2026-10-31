@@ -180,12 +180,23 @@ def test_both_formats_yield_same_shape():
 # 4. ask() 的分流与报错
 # ---------------------------------------------------------------------------
 def test_ask_jev_splits_into_multiple_requests():
-    """/v1/decide 一次只问一题 -> 多题要拆多次"""
+    """JEV 每题一次请求，走 /v1/completions（不是 /v1/decide）
+
+    2026-10-31 真机实测：/v1/decide 在纯 vLLM 上返回 404，那是图像接口。
+    """
     r = ask("autotrust-jev-9b", state="x",
             noul=["问题A"], choice={"风险": ["低", "高"]}, dry_run=True)
-    assert r["body_format"] == "decide"
+    assert r["body_format"] == "vllm_logprobs"
     assert len(r["requests"]) == 2
-    assert all(req["url"].endswith("/v1/decide") for req in r["requests"])
+    assert all(req["url"].endswith("/v1/completions") for req in r["requests"])
+    # model 必须是 LoRA 名，填基座名会走 System 2 自由生成
+    assert all(req["body"]["model"] == "jev-decision" for req in r["requests"])
+    # 必须带 allowed_token_ids + logprobs，否则读不到校准概率
+    for req in r["requests"]:
+        assert req["body"]["logprobs"] >= 2
+        assert req["body"]["allowed_token_ids"]
+        assert req["body"]["max_tokens"] == 1
+        assert req["body"]["add_special_tokens"] is False
 
 
 def test_ask_clef_single_request():
@@ -236,11 +247,20 @@ def test_ask_base_url_override():
 # 5. 端到端（mock HTTP）
 # ---------------------------------------------------------------------------
 def test_ask_end_to_end_decide_with_mock():
-    """mock 掉 HTTP，验证 decide 形态的多请求合并"""
+    """mock 掉 HTTP，验证 JEV 的 logprobs 路径 + 客户端校准
+
+    真实返回形状（2026-10-31 真机抓的，key 是 "token_id:<id>"）：
+      choices[0].logprobs.top_logprobs[0] = {"token_id:1802": -0.0368,
+                                             "token_id:3721": -3.3200}
+    """
     def fake_post(url, body, timeout):
-        if body["kind"] == "noul":
-            return {"options": ["false", "true"], "probabilities": [0.1, 0.9]}
-        return {"options": body["options"], "probabilities": [0.2, 0.8]}
+        ids = body["allowed_token_ids"]
+        # 让给定 token 中最后一个 logprob 最高 -> 应被判为 true / 高
+        top = {}
+        for i, tid in enumerate(ids):
+            lp = -0.05 if i == len(ids) - 1 else -3.0
+            top[f"token_id:{tid}"] = lp
+        return {"choices": [{"logprobs": {"top_logprobs": [top]}}]}
 
     with mock.patch.object(dc, "_post", side_effect=fake_post):
         r = ask("autotrust-jev-9b", state="材料",
@@ -282,3 +302,88 @@ def test_render_answers_output():
     assert "风险" in text
     assert "中" in text
     assert "0.710" in text
+
+
+# ---------------------------------------------------------------------------
+# 6. JEV 决策头的硬约束（全部来自 2026-10-31 真机实测）
+#    verbalizer 只有 24 个槽：noul 2 + score 6 + choice 16
+#    超了服务端会 IndexError，所以必须在这里拦住并说人话
+# ---------------------------------------------------------------------------
+def test_jev_choice_16_options_ok():
+    """16 个选项是上限，刚好能用满（A-P）"""
+    opts = [f"选项{i}" for i in range(1, 17)]
+    r = ask("autotrust-jev-9b", state="x", choice={"诉求": opts}, dry_run=True)
+    body = r["requests"][0]["body"]
+    assert body["logprobs"] == 16
+    assert body["allowed_token_ids"] == list(range(32, 48))
+
+
+def test_jev_choice_17_options_rejected():
+    """17 个选项超出 verbalizer -> 本地就报错，不发给服务端"""
+    opts = [f"选项{i}" for i in range(1, 18)]
+    with pytest.raises(dc.DecisionError, match="最多 16"):
+        ask("autotrust-jev-9b", state="x", choice={"诉求": opts}, dry_run=True)
+
+
+def test_jev_score_6_levels_ok():
+    """6 档是上限（0-5）"""
+    r = ask("autotrust-jev-9b", state="x",
+            score={"程度": ["a", "b", "c", "d", "e", "f"]}, dry_run=True)
+    body = r["requests"][0]["body"]
+    assert body["logprobs"] == 6
+    assert body["allowed_token_ids"] == [15, 16, 17, 18, 19, 20]
+
+
+def test_jev_score_7_levels_rejected():
+    """7 档超出 6 个档位槽"""
+    with pytest.raises(dc.DecisionError, match="6 个档位槽"):
+        ask("autotrust-jev-9b", state="x",
+            score={"程度": ["a", "b", "c", "d", "e", "f", "g"]}, dry_run=True)
+
+
+def test_jev_prompt_uses_bare_v1_template():
+    """prompt 必须严格是 bare-v1 模板，choice 选项带字母前缀"""
+    r = ask("autotrust-jev-9b", state="合同文本",
+            choice={"风险": ["低", "高"]}, dry_run=True)
+    prompt = r["requests"][0]["body"]["prompt"]
+
+    assert prompt.startswith("[kind] choice\n")
+    assert "\n[state] 合同文本\n" in prompt
+    assert "\n[question] 风险\n" in prompt
+    assert "\n[options]\nA) 低\nB) 高\n" in prompt
+    assert prompt.endswith("\n[decision]:")
+
+
+def test_jev_noul_uses_false_true_tokens():
+    """noul 的选项固定 false/true，槽位 0-1"""
+    r = ask("autotrust-jev-9b", state="x", noul=["是否续约"], dry_run=True)
+    body = r["requests"][0]["body"]
+    assert "false" in body["prompt"] and "true" in body["prompt"]
+    assert body["allowed_token_ids"] == [3721, 1802]
+
+
+def test_jev_score_labels_map_to_model_slots():
+    """score 的模型档位是 0..N-1，返回要映射回用户标签"""
+    def fake_post(url, body, timeout):
+        ids = body["allowed_token_ids"]
+        top = {f"token_id:{tid}": (-0.05 if i == len(ids) - 1 else -3.0)
+               for i, tid in enumerate(ids)}
+        return {"choices": [{"logprobs": {"top_logprobs": [top]}}]}
+
+    with mock.patch.object(dc, "_post", side_effect=fake_post):
+        r = ask("autotrust-jev-9b", state="x",
+                score={"程度": ["无", "轻微", "中等", "严重"]})
+
+    ans = r["answers"]["程度"]
+    # 分布 key 必须是用户标签，不是 "0".."3"
+    assert set(ans["distribution"]) == {"无", "轻微", "中等", "严重"}
+    assert ans["peak"] == "严重"          # fake 让最后一档最高
+    assert ans["peak_index"] == 3
+
+
+def test_jev_dry_run_shows_served_model():
+    """dry-run 要显示真实的 served model（jev-decision），不是基座名"""
+    r = ask("autotrust-jev-9b", state="x", noul=["a"], dry_run=True)
+    assert r["served_model"] == "jev-decision"
+    assert r["endpoint"] == "/v1/completions"
+    assert r["requests"][0]["body"]["model"] == "jev-decision"

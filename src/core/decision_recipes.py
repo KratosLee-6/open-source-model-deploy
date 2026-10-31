@@ -59,6 +59,48 @@ BODY_DECIDE = "decide"
 BODY_SYSTEMONE = "systemone"
 
 
+# ---------------------------------------------------------------------------
+# JEV 决策头常量 —— 2026-10-31 从 autotrust/JEV-9B 真机读取
+#   来源：adapter_vllm/decision_head.json（bias + verbalizer_ids + slots）
+#         calibration.json（per_kind 温度）
+#   为什么内置：这 24 个 bias 只有 ±0.006 量级、温度只有 3 个数，内置后
+#   `osm-deploy ask` 不依赖本地模型文件也能算校准概率；模型若更新版本，
+#   用 --head-json 覆盖。
+# ---------------------------------------------------------------------------
+JEV_DECISION_HEAD: Dict[str, Any] = {
+    # 24 个 verbalizer 的 lm_head LoRA 偏置（真机读出，不是估算）
+    "bias": [
+        0.00044773018453270197, -0.0004479771596379578,
+        -0.0025878134183585644, -0.0012615364976227283,
+        -0.00025007399381138384, 0.0019558551721274853,
+        0.0013559526996687055, -0.0023348911199718714,
+        -0.0004082925443071872, -0.0002078723773593083,
+        -1.2957353646925185e-05, 0.0001676026004133746,
+        0.0005569425993598998, -0.001412136247381568,
+        -0.0028663526754826307, -0.005061559844762087,
+        -0.00593328895047307, -0.004319756291806698,
+        -0.004922541789710522, -0.0049067651852965355,
+        -0.003943523392081261, -0.003319827374070883,
+        -0.005581587553024292, -0.0034480984322726727,
+    ],
+    # 24 个 verbalizer 的 token id（对应 false,true,0..5,A..P）
+    "verbalizer_ids": [
+        3721, 1802, 15, 16, 17, 18, 19, 20,
+        32, 33, 34, 35, 36, 37, 38, 39,
+        40, 41, 42, 43, 44, 45, 46, 47,
+    ],
+    # 槽位分配：noul 2 个、score 6 个、choice 16 个 —— 这就是硬上限的来源
+    "slots": {"noul": [0, 2], "score": [2, 8], "choice": [8, 24]},
+    # 每个原语一个温度（校准用）
+    "calibration": {
+        "noul": 1.0022178236691426,
+        "choice": 0.9840233476014968,
+        "score": 1.012184473350984,
+    },
+    "template": "bare-v1",
+}
+
+
 def _recipe(
     display: str,
     form: str,
@@ -70,6 +112,8 @@ def _recipe(
     run: List[str],
     *,
     body_format: Optional[str] = None,
+    served_model: Optional[str] = None,
+    decision_head: Optional[Dict[str, Any]] = None,
     health: Optional[str] = None,
     example: Optional[Dict[str, Any]] = None,
     notes: Optional[List[str]] = None,
@@ -80,6 +124,10 @@ def _recipe(
         "form": form,                # service | library | hybrid
         "framework": framework,
         "endpoint": endpoint,
+        # 实际请求时用什么 model 名：JEV 走 LoRA 名 jev-decision，不是基座名
+        "served_model": served_model,
+        # vllm_logprobs 形态要的决策头（bias + verbalizer token ids + 温度）
+        "decision_head": decision_head,
         # body 形状：默认跟着 endpoint 走，THX-01 这类要显式覆盖
         "body_format": body_format or (
             BODY_DECIDE if endpoint == ENDPOINT_DECIDE else BODY_SYSTEMONE
@@ -102,15 +150,23 @@ DECISION_RECIPES: Dict[str, Dict[str, Any]] = {
 
     # ===== AutoTrust JEV 系：vLLM + LoRA adapter =====
     # 关键：必须挂 adapter_vllm 这个 LoRA，否则只是普通 Qwen，没有决策头
+    #
+    # ⚠️ 2026-10-31 真机实测纠正：决策走的不是 /v1/decide（那是图像接口，
+    #   纯 vLLM 上返回 404），而是 **/v1/completions + allowed_token_ids + logprobs**，
+    #   客户端再按 decision_head 的 bias 和 per-kind 温度做校准。
     "autotrust/jev-9b": _recipe(
         display="AutoTrust JEV-9B",
         form="service",
         framework="vLLM + LoRA adapter",
-        endpoint=ENDPOINT_DECIDE,
+        endpoint="/v1/completions",
+        body_format="vllm_logprobs",
+        served_model="jev-decision",
+        decision_head=JEV_DECISION_HEAD,
         port=8000,
         install=["pip install vllm"],
         download=[
             "hf download autotrust/JEV-9B --local-dir JEV-9B   # ~18 GB",
+            # 见 notes：huggingface_hub 的 httpx2 bug 会让 tokenizer 文件静默缺失
         ],
         run=[
             "vllm serve JEV-9B \\",
@@ -130,10 +186,17 @@ DECISION_RECIPES: Dict[str, Dict[str, Any]] = {
             "必须带 --enable-lora + --lora-modules jev-decision=<repo>/adapter_vllm，"
             "否则起的是纯 Qwen3.5-9B，没有决策能力。",
             "--logprobs-mode processed_logprobs 不加则读不到校准概率。",
-            "图像输入走多模态路径：bash JEV-9B/vl/serve.sh（会另下 vision encoder）。",
-            "kind 取值：noul（是非）/ choice（2-16 选项）/ score（0-5 分）。",
+            "**决策请求要发到 /v1/completions，model 填 jev-decision（LoRA 名）**；"
+            "填基座名 autotrust/JEV-9B 会走 System 2 自由生成，不是决策。",
+            "/v1/decide 只用于图像输入，需要另起 vl/serve.sh（含 vision encoder），纯 vLLM 上没有这个路由。",
+            "prompt 必须严格用 [kind]/[state]/[question]/[options]/[decision]: 模板，"
+            "choice 选项要带 'A) ' 'B) ' 前缀，否则模型不知道选项顺序。",
+            "choice 最多 16 个选项（verbalizer 只到 A-P），score 固定 6 档（0-5）；超了直接 IndexError。",
+            "下载后用 `python -c \"from transformers import AutoTokenizer; ...\"` 验证 tokenizer，"
+            "若 encode 出 0 个 token 说明 tokenizer.json 缺失（httpx2 的 process() bug），"
+            "用 curl 从 hf-mirror 单独补下 tokenizer.json。",
         ],
-        vram_note="BF16 ~18GB；单卡 24GB 可跑，Q4 量化非官方路径",
+        vram_note="BF16 ~18GB；单卡 24GB 可跑（实测 RTX 4080 SUPER 32GB 舒适），Q4 量化非官方路径",
     ),
 
     "autotrust/jev-27b": _recipe(
