@@ -2,9 +2,9 @@
 
 > 把「模型规格 / 硬件报价 / 部署方式」做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.3.0-002FA7)](docs/releases/v1.3.0.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.1-002FA7)](docs/releases/v1.4.1.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.4.0**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · 决策模型部署+客户端 · 真实成本对比 · CLI / MCP / HTTP 三通道
+**v1.4.1**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **JEV 决策接口真机验证修正** · 真实成本对比 · CLI / MCP / HTTP 三通道
 
 > 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
 
@@ -456,6 +456,7 @@ python scripts/regen_screenshots.py           # 重拍实测截图
 
 | 版本 | 日期 | 模型数 | 重点 |
 | --- | --- | ---: | --- |
+| **v1.4.1** | 2026-10-31 | 168 | **真机验证修正**：JEV 决策不走 `/v1/decide`（那是图像接口，vLLM 上 404），真实入口是 `/v1/completions` + `allowed_token_ids` + `logprobs`，model 必须填 LoRA 名 `jev-decision`，校准在客户端做 · 硬约束 choice≤16 / score≤6 · +8 个测试 |
 | **v1.4.0** | 2026-10-31 | 168 | **真实成本对比** `osm-deploy cost`：按真实显存需求匹配卡型 · 本地整机 vs 云租月费 + 回本周期 · **每个价格带出处+日期，云租给区间不给单点** · 无公开报价的卡不编数字 · 27 个新测试 |
 | **v1.3.0** | 2026-10-31 | 168 | 决策模型**统一客户端** `osm-deploy ask`：一套参数（noul/choice/score）打通 12 个模型 · 自动处理「单题接口拆多次 vs 多题接口一次」· 端口从配方取 · 返回归一化校准概率 · 25 个新测试 |
 | **v1.2.0** | 2026-10-29 | 168 | 决策模型专用部署：12 个 System One 模型逐个核对真实配方（三种形态 / 两种接口 / 端口各异）· `deploy` 输出接口 + 健康检查 + 可跑的真实请求 · 新增 `references/decision-models.md` · 42 个新测试守住「不能套 chat 模板」 |
