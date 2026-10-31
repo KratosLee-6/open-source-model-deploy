@@ -2,9 +2,9 @@
 
 > 把「模型规格 / 硬件报价 / 部署方式」做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.1-002FA7)](docs/releases/v1.4.1.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.2-002FA7)](docs/releases/v1.4.2.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.4.1**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **JEV 决策接口真机验证修正** · 真实成本对比 · CLI / MCP / HTTP 三通道
+**v1.4.2**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **部署自检 verify（含答案正确性）** · JEV 决策接口真机修正 · 真实成本对比
 
 > 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
 
@@ -39,8 +39,9 @@ v1.0.3 已修正为按总参计算。**完整复盘见 [`docs/moe-vram-pitfall.m
 - **🔌 三通道**——CLI（开发者）/ MCP Server（Agent 原生）/ HTTP API（跨语言远程）
 - **🖥️ 硬件自动检测**——跨平台识别 NVIDIA / AMD / Apple Silicon，推荐可部署模型
 - **🚀 一键部署脚本**——自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
-- **🧠 决策模型专用部署**——12 个 System One 模型不是聊天模型，走独立配方：给出真实接口（`/v1/decide` 或 `/v1/systemone`）、正确端口、adapter 参数和**能直接跑的真实请求**，详见 [`references/decision-models.md`](references/decision-models.md)
+- **🧠 决策模型专用部署**——12 个 System One 模型不是聊天模型，走独立配方：给出**真实接口**（`/v1/completions` + logprobs / `/v1/decide` / `/v1/systemone`）、正确端口、adapter 参数和**能直接跑的真实请求**，详见 [`references/decision-models.md`](references/decision-models.md)
 - **🎯 决策模型统一客户端**——`osm-deploy ask` 用同一套参数（`noul` / `choice` / `score`）调所有 12 个决策模型，自动处理「单题接口拆多次请求 vs 多题接口一次问完」，返回归一化的校准概率
+- **🔍 部署自检** `osm-deploy verify`——三层验证：服务在不在、返回字段对不对、**答案对不对**（跑已知答案的 golden set）。没有 golden set 的模型会明确标注「答案未验证」，不把「服务能跑」包装成「部署正确」
 - **💰 真实成本对比**——`osm-deploy cost` 按真实显存需求匹配卡型，算本地整机投入 vs 云租月费 + 回本周期。**每个价格带出处和时间，云租给区间（现货/按需）而不是单点**；没公开报价的卡不编数字
 - **🩺 数据可信度有卡口**——模型库体检（`lint_models.py`）+ README 事实校验
   （`check_readme_facts.py`）作为 CI 卡口，挡住「总参 / 激活参」这类会导致错误采购建议的数据错误
@@ -456,6 +457,7 @@ python scripts/regen_screenshots.py           # 重拍实测截图
 
 | 版本 | 日期 | 模型数 | 重点 |
 | --- | --- | ---: | --- |
+| **v1.4.2** | 2026-10-31 | 168 | **部署自检** `osm-deploy verify`：L1 连通性 → L2 返回结构 → **L3 已知答案 golden set**。没有 golden set 的模型明确标「答案未验证」，不把「服务能跑」当「部署正确」· 修了一个真 bug（noul 期望 False 时该用 1-p 比阈值）· 11 个新测试 |
 | **v1.4.1** | 2026-10-31 | 168 | **真机验证修正**：JEV 决策不走 `/v1/decide`（那是图像接口，vLLM 上 404），真实入口是 `/v1/completions` + `allowed_token_ids` + `logprobs`，model 必须填 LoRA 名 `jev-decision`，校准在客户端做 · 硬约束 choice≤16 / score≤6 · +8 个测试 |
 | **v1.4.0** | 2026-10-31 | 168 | **真实成本对比** `osm-deploy cost`：按真实显存需求匹配卡型 · 本地整机 vs 云租月费 + 回本周期 · **每个价格带出处+日期，云租给区间不给单点** · 无公开报价的卡不编数字 · 27 个新测试 |
 | **v1.3.0** | 2026-10-31 | 168 | 决策模型**统一客户端** `osm-deploy ask`：一套参数（noul/choice/score）打通 12 个模型 · 自动处理「单题接口拆多次 vs 多题接口一次」· 端口从配方取 · 返回归一化校准概率 · 25 个新测试 |

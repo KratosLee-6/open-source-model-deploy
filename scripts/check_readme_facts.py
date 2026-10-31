@@ -158,8 +158,8 @@ for i in sorted(set(imgs)):
 
 # ---- 10. 版本一致性 ----
 from src import __version__  # noqa: E402
-ck("__version__ = 1.4.1", __version__ == "1.4.1", f"实际 {__version__}")
-ck("README 标题区写 v1.4.1", "**v1.4.1**（2026-10-31 发布）" in README)
+ck("__version__ = 1.4.2", __version__ == "1.4.2", f"实际 {__version__}")
+ck("README 标题区写 v1.4.2", "**v1.4.2**（2026-10-31 发布）" in README)
 ck("README 不再写「开发中」", "开发中" not in README)
 ck("README 不再混入旧版实测段", "实测 6-9" not in README and "35.85 tokens/秒" not in README)
 

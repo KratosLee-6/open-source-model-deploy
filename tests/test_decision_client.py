@@ -387,3 +387,17 @@ def test_jev_dry_run_shows_served_model():
     assert r["served_model"] == "jev-decision"
     assert r["endpoint"] == "/v1/completions"
     assert r["requests"][0]["body"]["model"] == "jev-decision"
+
+
+def test_jev_completions_disables_sampling_truncation():
+    """走 /v1/completions 时必须 top_k=0 + top_p=1.0
+
+    官方 JEV-35B card 原文：If you call vLLM's /v1/completions yourself
+    instead of /v1/decide, pass top_k: 0 and top_p: 1.0 so that the
+    returned logprobs are not truncated. 截断会让校准分布失真。
+    """
+    import math
+    r = ask("autotrust-jev-9b", state="x", choice={"a": ["x", "y"]}, dry_run=True)
+    body = r["requests"][0]["body"]
+    assert body["top_k"] == 0, "top_k 必须为 0（不截断候选）"
+    assert math.isclose(body["top_p"], 1.0), "top_p 必须为 1.0（不截断累积概率）"
