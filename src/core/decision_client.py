@@ -37,6 +37,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 import urllib.error
 import urllib.request
@@ -51,6 +52,14 @@ USER_AGENT = "open-source-model-deploy/decision-client"
 KIND_NOUL = "noul"
 KIND_CHOICE = "choice"
 KIND_SCORE = "score"
+
+# JEV 走 /v1/completions + allowed_token_ids + logprobs，不是 /v1/decide
+BODY_VLLM_LOGPROBS = "vllm_logprobs"
+
+# 16 个选项字母（verbalizer 只到 P）
+_LETTERS = "ABCDEFGHIJKLMNOP"
+# score 固定 6 档 0-5
+_SCORE_SLOTS = 6
 
 # score 在 /v1/decide 下的默认档位（JEV 系约定 0-5）
 DEFAULT_SCORE_LEVELS = ["0", "1", "2", "3", "4", "5"]
@@ -175,6 +184,163 @@ def _post(url: str, body: Dict[str, Any], timeout: float) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # 响应归一化（各模型字段不完全一致，这里做宽松解析）
 # ---------------------------------------------------------------------------
+def _as_text(state: Any) -> str:
+    """state 统一转成文本：字符串原样，dict/list 转 JSON。"""
+    if isinstance(state, str):
+        return state
+    try:
+        return json.dumps(state, ensure_ascii=False)
+    except (TypeError, ValueError):
+        return str(state)
+
+
+def _logprobs_body(
+    model_name: str, state: Any, q: Dict[str, Any], head: Dict[str, Any]
+) -> Tuple[Dict[str, Any], List[str], int, int]:
+    """构造 JEV 的 /v1/completions 请求体。
+
+    Returns: (body, options_used, slot_start, temp_index)
+    """
+    kind = q["kind"]
+
+    if kind == KIND_NOUL:
+        opts = ["false", "true"]
+    elif kind == KIND_SCORE:
+        n = len(q["options"])
+        if n > _SCORE_SLOTS:
+            raise DecisionError(
+                f"score[{q['name']!r}] 给了 {n} 档，但 JEV 决策头只有 "
+                f"0-{_SCORE_SLOTS - 1} 共 {_SCORE_SLOTS} 个档位槽；请先合并档位。"
+            )
+        opts = [str(i) for i in range(n)]
+    else:  # choice
+        opts = [str(o) for o in q["options"]]
+        if len(opts) > len(_LETTERS):
+            raise DecisionError(
+                f"choice[{q['name']!r}] 有 {len(opts)} 个选项，但 JEV 的 verbalizer "
+                f"只到 {_LETTERS[-1]}（最多 {len(_LETTERS)} 个）；请先合并选项。"
+            )
+
+    lines = ([f"{_LETTERS[i]}) {o}" for i, o in enumerate(opts)]
+             if kind == KIND_CHOICE else list(opts))
+
+    prompt = (
+        f"[kind] {kind}\n"
+        f"[state] {_as_text(state)}\n"
+        f"[question] {q['instructions']}\n"
+        f"[options]\n" + "\n".join(lines) + "\n[decision]:"
+    )
+
+    start = head["slots"][kind][0]
+    ids = head["verbalizer_ids"][start:start + len(opts)]
+    if len(ids) != len(opts):
+        raise DecisionError(
+            f"决策头槽位不够：{kind} 需要 {len(opts)} 个，槽位表只给出 {len(ids)} 个。"
+        )
+
+    body: Dict[str, Any] = {
+        "model": model_name,
+        "prompt": prompt,
+        "max_tokens": 1,
+        "temperature": 1.0,
+        "logprobs": len(opts),
+        "allowed_token_ids": ids,
+        "add_special_tokens": False,
+        "return_tokens_as_token_ids": True,
+    }
+    return body, opts, start, 0
+
+
+def _logprobs_decide(
+    url: str,
+    model_name: str,
+    state: Any,
+    q: Dict[str, Any],
+    head: Dict[str, Any],
+    timeout: float,
+) -> Dict[str, Any]:
+    """JEV 系：/v1/completions + allowed_token_ids + logprobs + 客户端校准。
+
+    这是 2026-10-31 在 RTX 4080 SUPER 32GB 上真机验证过的路径，不是推测：
+
+        noul「是否包含自动续约条款」 -> true 0.9848（合同确有此条）
+        choice 16 项                 -> 成功
+        choice 17 项                 -> IndexError（verbalizer 只到 P）
+
+    三个必须点：
+      1. model 填 LoRA 名（jev-decision），填基座名会走 System 2 自由生成
+      2. prompt 必须用 bare-v1 模板，choice 选项要带 "A) " 前缀
+      3. 校准在客户端做：(logprob + bias) / 温度 -> softmax
+    """
+    kind = q["kind"]
+    body, opts, start, _ = _logprobs_body(model_name, state, q, head)
+
+    bias = head["bias"]
+    temp = head["calibration"][kind]
+    ids = body["allowed_token_ids"]
+
+    raw = _post(url, body, timeout)
+
+    try:
+        top = raw["choices"][0]["logprobs"]["top_logprobs"][0]
+    except (KeyError, IndexError, TypeError):
+        raise DecisionError(
+            "服务端没返回 top_logprobs。确认启动带了 --logprobs-mode processed_logprobs，"
+            "且请求体里有 logprobs 字段。"
+        ) from None
+
+    lp: Dict[int, float] = {}
+    for k, v in top.items():
+        key = str(k)
+        try:
+            if ":" in key:      # return_tokens_as_token_ids -> "token_id:..."
+                lp[int(key.split(":")[1])] = float(v)
+            else:
+                lp[int(key)] = float(v)
+        except (ValueError, IndexError):
+            continue
+
+    # 校准：head bias 修正后再除以每个原语的温度，最后 softmax
+    z = [(lp.get(t, -1e9) + bias[start + i]) / temp for i, t in enumerate(ids)]
+    m = max(z)
+    ex = [math.exp(x - m) for x in z]
+    total = sum(ex)
+    dist_model = {opts[i]: ex[i] / total for i in range(len(opts))}
+
+    # score 的模型侧档位是 "0".."5"，要映射回用户给的标签
+    if kind == KIND_SCORE:
+        dist = {str(q["options"][i]): dist_model[str(i)] for i in range(len(opts))}
+    else:
+        dist = dist_model
+
+    return _value_from_dist(kind, q, dist)
+
+
+def _value_from_dist(kind: str, q: Dict[str, Any], dist: Dict[str, float]) -> Dict[str, Any]:
+    """把概率分布转成统一答案（value / probability / distribution）。"""
+    base: Dict[str, Any] = {"type": kind, "question": q["instructions"]}
+
+    if kind == KIND_NOUL:
+        p_true = dist.get("true", dist.get("True", 0.0))
+        base.update({"value": p_true >= 0.5, "probability": p_true})
+    elif kind == KIND_CHOICE:
+        best = max(dist, key=lambda k: dist[k])
+        base.update({"value": best, "probability": dist[best]})
+    else:  # score：档位有序，按序号算期望（标签本身不一定是数字）
+        labels = list(dist.keys())
+        expected = sum(i * dist[lb] for i, lb in enumerate(labels))
+        best = max(dist, key=lambda k: dist[k])
+        base.update({
+            "value": round(expected, 3),
+            "peak": best,
+            "peak_index": labels.index(best),
+            "probability": dist[best],
+        })
+
+    base["distribution"] = dist
+    return base
+
+
 def _pick(d: Dict[str, Any], *keys, default=None):
     for k in keys:
         if k in d and d[k] is not None:
@@ -348,6 +514,51 @@ def ask(
     body_format = recipe.get("body_format") or (
         "decide" if endpoint == "/v1/decide" else "systemone"
     )
+
+    # ---- vllm_logprobs：JEV 系专用，组 prompt + 读 logprobs + 客户端校准 ----
+    if body_format == BODY_VLLM_LOGPROBS:
+        head = recipe.get("decision_head")
+        if not head:
+            raise DecisionError(
+                f"{slug} 的配方声明了 vllm_logprobs，但缺 decision_head "
+                f"（bias / verbalizer_ids / slots / calibration）。"
+            )
+        served = recipe.get("served_model") or hf_repo
+
+        lp_result: Dict[str, Any] = {
+            "ok": True,
+            "model": slug,
+            "hf_repo": hf_repo,
+            "endpoint": endpoint,
+            "form": form,
+            "body_format": body_format,
+            "served_model": served,
+            "requests_made": 0,
+            "latency_ms": 0.0,
+            "answers": {},
+            "raw": [],
+        }
+
+        if dry_run:
+            lp_result["requests"] = []
+            for q in questions:
+                body, _opts, _s, _t = _logprobs_body(served, state, q, head)
+                lp_result["requests"].append({
+                    "url": url,
+                    "body": body,
+                    "note": f"logprobs 路径：问题 {q['name']!r} 单独一次请求，max_tokens=1",
+                })
+            lp_result["ok"] = False
+            lp_result["note"] = "dry_run：未发送"
+            return lp_result
+
+        t_lp = time.time()
+        for q in questions:
+            ans = _logprobs_decide(url, served, state, q, head, timeout)
+            lp_result["answers"][q["name"]] = ans
+            lp_result["requests_made"] += 1
+        lp_result["latency_ms"] = round((time.time() - t_lp) * 1000, 1)
+        return lp_result
 
     # 3) 构造请求列表
     if body_format == "systemone":
