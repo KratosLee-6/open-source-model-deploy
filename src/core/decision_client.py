@@ -243,6 +243,10 @@ def _logprobs_body(
         "prompt": prompt,
         "max_tokens": 1,
         "temperature": 1.0,
+        # 官方 JEV-35B card 明确要求：自己调 /v1/completions（而不是 /v1/decide）
+        # 时要传 top_k=0 + top_p=1.0，否则采样会截断 logprobs，校准分布失真。
+        "top_k": 0,
+        "top_p": 1.0,
         "logprobs": len(opts),
         "allowed_token_ids": ids,
         "add_special_tokens": False,

@@ -258,6 +258,23 @@ def cmd_ask(args):
     print(render_answers(result))
 
 
+def cmd_verify(args):
+    """verify 子命令：三层自检（连通性 / 结构 / 已知答案）"""
+    from .core.verifier import verify, render_verify, VerifyError
+
+    try:
+        result = verify(args.model, base_url=args.base_url, timeout=args.timeout)
+    except VerifyError as e:
+        print(f"❌ {e}")
+        return
+
+    if args.json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return
+
+    print(render_verify(result))
+
+
 def cmd_cost(args):
     """cost 子命令：本地一次性投入 vs 云租，含回本周期"""
     from .core.cost_model import compare_cost, render_cost, CostError
@@ -446,6 +463,20 @@ def main():
                         help="电价（元/度，默认 0.8）")
     p_cost.add_argument("--json", action="store_true", help="输出 JSON")
     p_cost.set_defaults(func=cmd_cost)
+
+    # verify（自检部署是否真的可用）
+    p_verify = sub.add_parser(
+        "verify",
+        help="自检一个决策模型：连通性 + 返回结构 + 已知答案（golden set）",
+        description="三层自检：L1 服务在不在、L2 返回字段对不对、L3 答案对不对。"
+                    "没有 golden set 的模型会明确标注「答案未验证」，"
+                    "不会把「服务能跑」包装成「部署正确」。",
+    )
+    p_verify.add_argument("model", help="决策模型 slug（osm-deploy list --category decision）")
+    p_verify.add_argument("--base-url", help="覆盖默认地址（默认 http://localhost:<端口>）")
+    p_verify.add_argument("--timeout", type=float, default=30.0, help="单次请求超时秒数")
+    p_verify.add_argument("--json", action="store_true", help="输出原始 JSON")
+    p_verify.set_defaults(func=cmd_verify)
 
     args = parser.parse_args()
     args.func(args)
