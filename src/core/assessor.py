@@ -2,12 +2,14 @@
 步骤 2-5: 整合器
 - 调用 model_resolver 拿动态数据
 - 调 hardware_prices 算预算
+- 调 cost_model 算「本地一次性 vs 云租」真实成本对比（v1.4.0）
 - 输出标准报告字典
 """
 from typing import Dict, Any, List
 
 from .model_resolver import resolve_model
 from . import vram_requirements as vram
+from . import cost_model
 from ..data_sources import hardware_prices as hw
 
 
@@ -51,6 +53,20 @@ def full_assessment(model_name: str, force: bool = False) -> Dict[str, Any]:
             f"{min_v['source']}）· Q4 部署建议：{vram_profile['plan_q4']['recommend']}"
         )
 
+    # ── 真实成本对比（v1.4.0）──────────────────────────────────────
+    # 本地一次性投入 vs 云租月成本 + 回本周期。价格全部带出处，
+    # 云租给区间（现货/按需），不抹成单点。算不出来就明确说原因。
+    cost: Dict[str, Any] = {}
+    if size_b > 0:
+        try:
+            info_for_cost = dict(resolved)
+            info_for_cost["size_b"] = size_b
+            if resolved.get("activated_b"):
+                info_for_cost["activated_b"] = resolved["activated_b"]
+            cost = cost_model.compare_cost(info_for_cost, quant="Q4_K_M")
+        except (cost_model.CostError, ValueError, KeyError) as e:
+            cost = {"error": f"成本对比算不出来：{type(e).__name__}: {e}"}
+
     return {
         "model_name": model_name,
         "resolved": resolved,
@@ -64,6 +80,7 @@ def full_assessment(model_name: str, force: bool = False) -> Dict[str, Any]:
         "vram_note": vram_note,
         "vram_requirements": vram_profile,
         "budget_estimates": budget,
+        "cost_comparison": cost,
         "category": resolved.get("category"),
         "note": resolved.get("note"),
         "timestamp": _now(),

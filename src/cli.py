@@ -258,6 +258,40 @@ def cmd_ask(args):
     print(render_answers(result))
 
 
+def cmd_cost(args):
+    """cost 子命令：本地一次性投入 vs 云租，含回本周期"""
+    from .core.cost_model import compare_cost, render_cost, CostError
+    from .core.model_resolver import KNOWN_MODELS
+
+    if args.model not in KNOWN_MODELS:
+        print(f"❌ 未知模型: {args.model}")
+        print("用 'osm-deploy list' 查看支持的模型")
+        return
+
+    try:
+        cost = compare_cost(
+            KNOWN_MODELS[args.model],
+            quant=args.quant,
+            electricity_cny_per_kwh=args.electricity,
+            hours_per_month=args.hours,
+        )
+    except CostError as e:
+        print(f"❌ {e}")
+        return
+
+    if args.json:
+        print(json.dumps(cost, indent=2, ensure_ascii=False))
+        return
+
+    print(f"\n{'=' * 72}")
+    print(f"【成本对比】{args.model}")
+    print(f"{'=' * 72}")
+    print(render_cost(cost))
+    print(f"\n[口径说明]")
+    for c in cost.get("caveats", []):
+        print(f"  - {c}")
+
+
 def cmd_resolve(args):
     """resolve 子命令：只解析模型身份"""
     from .core.model_resolver import resolve_model
@@ -394,6 +428,24 @@ def main():
     p_ask.add_argument("--dry-run", action="store_true", help="只显示将发送的请求，不真发")
     p_ask.add_argument("--json", action="store_true", help="输出原始 JSON")
     p_ask.set_defaults(func=cmd_ask)
+
+    # cost（本地 vs 云租成本对比）
+    p_cost = sub.add_parser(
+        "cost",
+        help="本地一次性投入 vs 云租月成本 + 回本周期",
+        description="按真实显存需求匹配卡型，算本地整机价与云租月费，给回本周期。"
+                    "所有价格带出处，云租给区间（现货/按需）。",
+    )
+    p_cost.add_argument("model", help="模型名（如 autotrust-jev-9b）")
+    p_cost.add_argument("--quant", default="Q4_K_M",
+                        choices=["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "FP8", "BF16"],
+                        help="量化档位（默认 Q4_K_M）")
+    p_cost.add_argument("--hours", type=float, default=None,
+                        help="只看单一时长（小时/月）；不传则同时给 24×7 和 8h×22")
+    p_cost.add_argument("--electricity", type=float, default=0.8,
+                        help="电价（元/度，默认 0.8）")
+    p_cost.add_argument("--json", action="store_true", help="输出 JSON")
+    p_cost.set_defaults(func=cmd_cost)
 
     args = parser.parse_args()
     args.func(args)
