@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generator": "open-source-model-deploy v1.1.0",
-  "generated_at": "2026-10-29T12:48:12Z",
+  "generator": "open-source-model-deploy v1.4.2",
+  "generated_at": "2026-10-31T17:41:28Z",
   "model_count": 168,
   "quant_ladder": [
     "Q4_K_M",
@@ -4701,7 +4701,7 @@
     },
     "nemotron-3.5-lightning-30b-a3b": {
       "model": "nemotron-3.5-lightning-30b-a3b",
-      "category": "domestic-general",
+      "category": "international-edge",
       "size_b": 31.58,
       "activated_b": 3,
       "is_moe": true,
