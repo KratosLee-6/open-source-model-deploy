@@ -32,7 +32,7 @@ keywords:
 | 原语 | 含义 | 输入 | 输出 |
 |---|---|---|---|
 | **noul** | 是非判断 | 一个问题 | `true` / `false` 的概率 |
-| **choice** | N 选一 | 问题 + 2–255 个选项 | 每个选项的概率分布 |
+| **choice** | N 选一 | 问题 + 2–16 个选项（JEV 系上限 16，见 §2.1） | 每个选项的概率分布 |
 | **score** | 有序打分 | 问题 + **有序**档位列表 | 落在某档的概率 / 期望分 |
 
 **为什么校准很重要**：输出的是概率，不是文本 —— 值钱的地方在于可以写进代码判断：
@@ -49,9 +49,68 @@ else:
 
 ---
 
-## 2. 两种接口标准（关键：别混用）
+## 2. 三种接口标准（关键：别混用）
 
-### `/v1/decide` —— 单题一问
+### 2.1 `/v1/completions` + logprobs —— JEV 系（✅ 2026-10-31 真机验证）
+
+> ⚠️ **JEV 不走 `/v1/decide`。** 在纯 vLLM 上 `/v1/decide` 返回 `404 {"detail":"Not Found"}` ——
+> 那是它的**图像/多模态**接口，需要另起 `vl/serve.sh`（含 vision encoder）。
+> v1.3.0 之前本文写错了，导致 `osm-deploy ask` 对 JEV 完全不可用。
+
+文本决策走 OpenAI 兼容的 `/v1/completions`：用 `allowed_token_ids` 把采样锁死在
+verbalizer token 上，`max_tokens=1`，读回 logprobs。
+
+```json
+{
+  "model": "jev-decision",
+  "prompt": "[kind] choice\n[state] 合同文本…\n[question] 风险等级\n[options]\nA) 低\nB) 中\nC) 高\n[decision]:",
+  "max_tokens": 1,
+  "temperature": 1.0,
+  "logprobs": 3,
+  "allowed_token_ids": [32, 33, 34],
+  "add_special_tokens": false,
+  "return_tokens_as_token_ids": true
+}
+```
+
+返回 `choices[0].logprobs.top_logprobs[0]`，key 形如 `"token_id:1802"`：
+
+```json
+{"token_id:1802": -0.0368, "token_id:3721": -3.3200}
+```
+
+**四个必须点**（错一个就没有决策能力）：
+
+| # | 要求 | 错了会怎样 |
+|---|---|---|
+| 1 | `model` 填 **LoRA 名 `jev-decision`** | 填基座名 `autotrust/JEV-9B` 会走 System 2 自由生成，返回文本不是概率 |
+| 2 | prompt 严格用 **bare-v1 模板** | 模型不知道在回答什么 |
+| 3 | choice 选项带 **`A) ` `B) ` 前缀** | 模型不知道选项顺序 |
+| 4 | **客户端校准** | 拿到的是未校准 logits，概率不可直接用于阈值判断 |
+
+**校准公式**（`note` 字段原文：decision logits = lm_head-LoRA logprobs of verbalizer ids + bias, then per-kind temperature）：
+
+```
+z_i = (logprob(verbalizer_i) + bias[i]) / T[kind]
+p   = softmax(z)
+```
+
+- `bias`：24 个，量级 ±0.006，在 `adapter_vllm/decision_head.json`
+- `T`：noul 1.0022 / choice 0.9840 / score 1.0122，在 `calibration.json`
+
+**24 个槽位分配（这就是硬上限的来源）**：
+
+| 原语 | 槽位 | verbalizer | 上限 |
+|---|---|---|---|
+| noul | `[0, 2]` | `false`, `true` | 固定 2 项 |
+| score | `[2, 8]` | `0`–`5` | **6 档** |
+| choice | `[8, 24]` | `A`–`P` | **16 项** |
+
+真机实测：choice 16 项成功，**17 项服务端 `IndexError`**。
+
+**用在**：AutoTrust JEV-9B（已验证）。27B / 35B 结构相同但未实测。
+
+### `/v1/decide` —— 单题一问（⚠️ 只用于图像输入）
 
 ```json
 {
@@ -64,7 +123,7 @@ else:
 
 返回 `{"options": [...], "probabilities": [...]}`，27B 还会带 `choice_index` / `choice`。
 
-**用在**：AutoTrust JEV-9B / 27B / 35B、THX-01（路径）
+**用在**：JEV 系的图像/多模态路径（`vl/serve.sh`）、THX-01（路径）
 
 ### `/v1/systemone` —— 一次问多题
 
