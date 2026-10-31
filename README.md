@@ -4,7 +4,7 @@
 
 [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.3-002FA7)](docs/releases/v1.4.3.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.4.3**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **分类启发式修正（白名单 + 功能优先）** · **部署自检 verify（含答案正确性）** · JEV 决策接口真机修正 · 真实成本对比
+**v1.1.1**（2026-10-29 发布）· 168 个在架模型 · 9 大分类 · **分类启发式修正（白名单 + 功能优先）** · **部署自检 verify（含答案正确性）** · JEV 决策接口真机修正 · 真实成本对比
 
 > 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
 

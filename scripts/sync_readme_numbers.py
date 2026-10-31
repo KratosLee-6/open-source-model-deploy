@@ -130,10 +130,12 @@ facts_new, n = re.subn(r"EXPECT_RUNNABLE = \d+", f"EXPECT_RUNNABLE = {n_run}", f
 
 if apply_changes:
     if readme_new != readme:
-        io.open(README_PATH, "w", encoding="utf-8").write(readme_new)
+        # newline="\n"：Windows 上 io.open 默认把 \n 写成 \r\n，
+        # 会把整个文件改成 CRLF，让 git diff 全是行尾噪音。
+        io.open(README_PATH, "w", encoding="utf-8", newline="\n").write(readme_new)
         print(f"\n✅ 已更新 {README_PATH}")
     if facts_new != facts:
-        io.open(FACTS_PATH, "w", encoding="utf-8").write(facts_new)
+        io.open(FACTS_PATH, "w", encoding="utf-8", newline="\n").write(facts_new)
         print(f"✅ 已更新 {FACTS_PATH}")
     print("\n=== 重跑校验 ===")
     r2 = subprocess.run([sys.executable, "scripts/check_readme_facts.py"],
