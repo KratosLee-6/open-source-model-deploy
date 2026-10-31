@@ -181,6 +181,83 @@ def cmd_deploy(args):
         print(f"  - {n}")
 
 
+def cmd_ask(args):
+    """ask 子命令：向决策模型提问（统一两种接口）"""
+    from .core.decision_client import ask, render_answers, DecisionError
+
+    # state
+    state = args.state
+    if args.state_file:
+        if state:
+            print("❌ --state 和 --state-file 只能给一个")
+            return
+        try:
+            with open(args.state_file, encoding="utf-8") as f:
+                state = f.read()
+        except OSError as e:
+            print(f"❌ 读不到 {args.state_file}: {e}")
+            return
+    if not state:
+        print("❌ 需要 --state 或 --state-file 提供待判断的材料")
+        return
+
+    # 解析 "名称=选项1,选项2" 形式
+    def parse_pairs(items, flag):
+        out = {}
+        for raw in items:
+            if "=" not in raw:
+                print(f"❌ {flag} 格式应为 \"名称=选项1,选项2\"，收到: {raw!r}")
+                return None
+            name, opts = raw.split("=", 1)
+            vals = [o.strip() for o in opts.split(",") if o.strip()]
+            if len(vals) < 2:
+                print(f"❌ {flag} {name!r} 至少需要 2 个选项，收到 {len(vals)} 个")
+                return None
+            out[name.strip()] = vals
+        return out
+
+    choice = parse_pairs(args.choice, "--choice")
+    if choice is None:
+        return
+    score = parse_pairs(args.score, "--score")
+    if score is None:
+        return
+
+    try:
+        result = ask(
+            args.model,
+            state=state,
+            noul=args.noul or None,
+            choice=choice or None,
+            score=score or None,
+            base_url=args.base_url,
+            timeout=args.timeout,
+            dry_run=args.dry_run,
+        )
+    except DecisionError as e:
+        print(f"❌ {e}")
+        return
+
+    if args.json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return
+
+    if args.dry_run:
+        print(f"\n{'=' * 70}")
+        print(f"【dry-run】{args.model} — 将发送 {len(result['requests'])} 个请求")
+        print(f"{'=' * 70}")
+        print(f"接口: {result['endpoint']}  body 格式: {result['body_format']}")
+        for i, r in enumerate(result["requests"], 1):
+            print(f"\n[{i}] POST {r['url']}")
+            print("    " + json.dumps(r["body"], ensure_ascii=False)[:400])
+        return
+
+    print(f"\n{'=' * 70}")
+    print(f"【决策结果】{args.model}")
+    print(f"{'=' * 70}")
+    print(render_answers(result))
+
+
 def cmd_resolve(args):
     """resolve 子命令：只解析模型身份"""
     from .core.model_resolver import resolve_model
@@ -295,6 +372,28 @@ def main():
     p_cache = sub.add_parser("cache-clear", help="清缓存")
     p_cache.add_argument("--key", help="指定 key；不传则清全部")
     p_cache.set_defaults(func=cmd_cache_clear)
+
+    # ask（决策模型统一客户端）
+    p_ask = sub.add_parser(
+        "ask",
+        help="向决策模型提问（noul/choice/score 三原语，统一两种接口）",
+        description="System One 决策模型统一调用：不管你用 /v1/decide 还是 "
+                    "/v1/systemone 的模型，都走同一套参数。",
+    )
+    p_ask.add_argument("model", help="决策模型 slug（osm-deploy list --category decision）")
+    p_ask.add_argument("--state", help="待判断的材料（文本）")
+    p_ask.add_argument("--state-file", help="从文件读材料（与 --state 二选一）")
+    p_ask.add_argument("--noul", action="append", default=[],
+                       help='是非题，可重复：--noul "是否包含自动续约条款"')
+    p_ask.add_argument("--choice", action="append", default=[],
+                       help='选择题，可重复：--choice "风险等级=低,中,高"')
+    p_ask.add_argument("--score", action="append", default=[],
+                       help='打分题，可重复：--score "严重程度=无,轻微,严重"')
+    p_ask.add_argument("--base-url", help="覆盖默认地址（默认 http://localhost:<端口>）")
+    p_ask.add_argument("--timeout", type=float, default=60.0, help="单次请求超时秒数")
+    p_ask.add_argument("--dry-run", action="store_true", help="只显示将发送的请求，不真发")
+    p_ask.add_argument("--json", action="store_true", help="输出原始 JSON")
+    p_ask.set_defaults(func=cmd_ask)
 
     args = parser.parse_args()
     args.func(args)

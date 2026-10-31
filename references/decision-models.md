@@ -167,6 +167,59 @@ osm-deploy assess autotrust-jev-9b
 `deploy` 对决策模型输出六段：**接口 → 安装 → 运行 → 健康检查 → 真实请求(curl + Python) → 注意**。
 其中「真实请求」是能直接跑的，不是示意。
 
+### 统一客户端：一套参数打通 12 个模型
+
+两种接口（`/v1/decide` 单题 vs `/v1/systemone` 多题）、五个端口、三种形态——
+`ask` 把这些差异吃掉，调用方只写一次：
+
+```bash
+osm-deploy ask autotrust-jev-9b \
+  --state-file contract.txt \
+  --noul "是否包含自动续约条款" \
+  --noul "是否约定违约金" \
+  --choice "风险等级=低,中,高" \
+  --score  "严重程度=无,轻微,中等,严重"
+```
+
+输出（归一化后，两种接口长得一样）：
+
+```
+模型     : autotrust-jev-9b  (autotrust/JEV-9B)
+接口     : /v1/decide  请求 4 次  耗时 1832.4 ms
+  noul_0                   [noul]   True  (p=0.931)
+  noul_1                   [noul]   False (p=0.884)
+  风险等级                 [choice] 中    (p=0.712)
+                           分布: 中=0.712  低=0.167  高=0.121
+  严重程度                 [score]  期望 2.43  (峰值 3, p=0.382)
+                           分布: 3=0.382  2=0.301  1=0.180
+```
+
+Python 里一样：
+
+```python
+from src.core.decision_client import ask
+
+r = ask("autotrust-jev-9b",
+        state=open("contract.txt").read(),
+        noul=["是否包含自动续约条款"],
+        choice={"风险等级": ["低", "中", "高"]},
+        score={"严重程度": ["无", "轻微", "中等", "严重"]})
+
+if r["answers"]["noul_0"]["probability"] > 0.9:   # 可以直接写进业务判断
+    flag_for_review("含自动续约")
+```
+
+**几个设计点**：
+
+| 行为 | 说明 |
+|---|---|
+| `--dry-run` | 只打印将发送的请求，不真发。调格式时先跑这个 |
+| `requests_made` | `/v1/decide` 一次只问一题，4 个问题 = **4 次请求**；`/v1/systemone` = **1 次**。返回里如实给出 |
+| 端口自动 | 从配方取（Clef 30000 / OpenJEV 3000 / THX-01 8095），不用你记 |
+| library 形态直接报错 | Laya 多语言版没服务，报错并给进程内调用示例，不编 HTTP 地址 |
+| 非决策模型直接报错 | 想拿 `qwen3-8b` 做决策会提示「不是决策模型」，不静默降级 |
+| 零依赖 | 只用标准库 `urllib`，和项目一致 |
+
 ---
 
 ## 7. 常见坑（都是实测踩到的）

@@ -2,9 +2,9 @@
 
 > 把「模型规格 / 硬件报价 / 部署方式」做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.2.0-002FA7)](docs/releases/v1.2.0.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.3.0-002FA7)](docs/releases/v1.3.0.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.2.0**（2026-10-29 发布）· 168 个在架模型 · 9 大分类 · 决策模型专用部署 · CLI / MCP Server / HTTP API 三通道
+**v1.3.0**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · 决策模型专用部署 + 统一客户端 · CLI / MCP Server / HTTP API 三通道
 
 > 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
 
@@ -40,6 +40,7 @@ v1.0.3 已修正为按总参计算。**完整复盘见 [`docs/moe-vram-pitfall.m
 - **🖥️ 硬件自动检测**——跨平台识别 NVIDIA / AMD / Apple Silicon，推荐可部署模型
 - **🚀 一键部署脚本**——自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
 - **🧠 决策模型专用部署**——12 个 System One 模型不是聊天模型，走独立配方：给出真实接口（`/v1/decide` 或 `/v1/systemone`）、正确端口、adapter 参数和**能直接跑的真实请求**，详见 [`references/decision-models.md`](references/decision-models.md)
+- **🎯 决策模型统一客户端**——`osm-deploy ask` 用同一套参数（`noul` / `choice` / `score`）调所有 12 个决策模型，自动处理「单题接口拆多次请求 vs 多题接口一次问完」，返回归一化的校准概率
 - **🩺 数据可信度有卡口**——模型库体检（`lint_models.py`）+ README 事实校验
   （`check_readme_facts.py`）作为 CI 卡口，挡住「总参 / 激活参」这类会导致错误采购建议的数据错误
 - **🌐 国内友好**——自动 fallback 到 `hf-mirror.com` 镜像
@@ -454,6 +455,7 @@ python scripts/regen_screenshots.py           # 重拍实测截图
 
 | 版本 | 日期 | 模型数 | 重点 |
 | --- | --- | ---: | --- |
+| **v1.3.0** | 2026-10-31 | 168 | 决策模型**统一客户端** `osm-deploy ask`：一套参数（noul/choice/score）打通 12 个模型 · 自动处理「单题接口拆多次 vs 多题接口一次」· 端口从配方取 · 返回归一化校准概率 · 25 个新测试 |
 | **v1.2.0** | 2026-10-29 | 168 | 决策模型专用部署：12 个 System One 模型逐个核对真实配方（三种形态 / 两种接口 / 端口各异）· `deploy` 输出接口 + 健康检查 + 可跑的真实请求 · 新增 `references/decision-models.md` · 42 个新测试守住「不能套 chat 模板」 |
 | **v1.1.1** | 2026-10-29 | 168 | +31 模型（DeepSeek-V3.2 / Qwen3.8-Flash-Next / Nemotron 3 系列 / MiniCPM-V 4.7 / Qwen3-VL-Embedding）· 新增第 9 类「决策模型 / System One」12 个（JEV-9B/27B/35B · Clef · Laya · OpenJEV）· 接入 XERJ Corpus Hub · README 数字自动化 |
 | **v1.1.0** | 2026-10-15 | 137 | EmbeddingGemma 2（多模态 embedding）· Strands Decider 2B（System One 决策模型）· JEV 闭源鉴别 · 截图不再编造 nvidia-smi |
