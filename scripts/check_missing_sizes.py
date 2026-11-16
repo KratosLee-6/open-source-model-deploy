@@ -83,7 +83,7 @@ for hf_repo, category in QUERIES:
     except Exception as e:
         print(f"✗ {hf_repo}: {e}")
 
-out_path = "E:/工作/【汐构科技】/客户跟进/开源模型部署检测工具/open-source-model-deploy-clone/docs/missing-models.json"
+out_path = "E:/工作/01_业务/【汐构科技】/客户跟进/开源模型部署检测工具/open-source-model-deploy-clone/docs/missing-models.json"
 with open(out_path, "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2)
 print(f"\n已写入 {out_path}: {len(results)} 条")

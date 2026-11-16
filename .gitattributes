@@ -5,6 +5,7 @@
 *.md           text eol=lf
 *.example      text eol=lf
 *.json         text eol=lf
+*.toml         text eol=lf
 
 # OS/Windows shell / PowerShell: force CRLF
 *.ps1          text eol=crlf
