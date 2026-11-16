@@ -37,13 +37,47 @@ from typing import Dict, List, Tuple
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESOLVER_PATH = os.path.join(REPO_ROOT, "src", "core", "model_resolver.py")
 
-# 8 大类（与现有 KNOWN_MODELS 一致；JEV 类不进，参见 references/jev-integration.md）
+# 9 大类（与现有 KNOWN_MODELS 一致；JEV 类不进，参见 references/jev-integration.md）
+#
+# VALID_CATEGORIES 是**白名单**：分类名必须落在这里。
+# 之前 CATEGORY_BY_TAG 里写了一个 "image-generation"，但 KNOWN_MODELS 里根本没有这一类
+# —— 于是 guess_category 能返回它，生成出来的条目 lint 抓不到（lint 没做白名单校验），
+# 只能等到人工 review 才发现。把白名单显式化 + 让 lint 校验，才能挡住同类错误。
+VALID_CATEGORIES = {
+    "domestic-general",
+    "domestic-reasoning",
+    "international-dense",
+    "international-edge",
+    "code",
+    "vision",
+    "embedding",
+    "reranker",
+    "decision",
+}
+
 CATEGORY_BY_TAG = {
     "text-generation": "domestic-general",   # 默认；后面用 namespace + size 区分
     "image-text-to-text": "vision",
     "sentence-similarity": "embedding",
-    "text-to-image": "image-generation",     # 新类（若需）
+    "text-to-image": "vision",               # 文生图没有独立类，按多模态归 vision
+    "text-ranking": "reranker",
+    "text-to-speech": "domestic-general",    # TTS 不在工具覆盖范围，先不收
+    "automatic-speech-recognition": "domestic-general",
 }
+
+# 国内 namespace（Qwen 系 / DeepSeek / GLM / Kimi / MiniMax / 腾讯 / 混元 …）
+DOMESTIC_NS = (
+    "Qwen", "deepseek-ai", "THUDM", "moonshotai", "MiniMaxAI", "inclusionAI",
+    "tencent", "Hunyuan", "01-ai", "zhipuai", "baai", "BAAI", "Alibaba-NLP",
+)
+# 国际 namespace
+INTERNATIONAL_NS = (
+    "meta-llama", "google", "mistralai", "microsoft", "EleutherAI", "apple",
+    "CohereLabs", "NousResearch", "nvidia", "OpenGVLab", "sentence-transformers",
+    "intfloat", "stabilityai", "openai", "openbmb", "lmms-lab", "microsoft",
+    "THUDM",  # GLM 是国内，放国内；此行仅防误读，实际见 DOMESTIC_NS
+)
+INTERNATIONAL_NS = tuple(ns for ns in INTERNATIONAL_NS if ns not in DOMESTIC_NS)
 
 AUTHORITATIVE_NS = {
     "Qwen", "deepseek-ai", "meta-llama", "google", "mistralai", "THUDM",
@@ -163,24 +197,139 @@ def get_existing_repos() -> set[str]:
     return set(re.findall(r'"hf_repo"\s*:\s*"([^"]+)"', s))
 
 
+def _param_b_from_name(base: str) -> float | None:
+    """从模型名里抠参数量（B）。只用于分类判定（edge/dense 分界），不写进条目。
+
+    与 guess_size_b 同源，但返回 float 便于比较；抠不到返回 None。
+    """
+    m = re.search(r"[-_](\d+(?:\.\d+)?)\s*([bBmM])\b", base)
+    if not m:
+        return None
+    size, unit = float(m.group(1)), m.group(2).lower()
+    return size / 1000 if unit == "m" else size
+
+
+def _effective_b_for_tier(base: str) -> float | None:
+    """MoE 用激活参、密集模型用总参 —— 决定 edge/dense 归属。
+
+    "Nemotron-3-Nano-30B-A3B" 总参 31.58B 但激活 3B：按总参会误判成 dense
+    （需要大机器），按激活参才是 edge（边缘设备友好）。与显存估算口径一致。
+    """
+    m = _MOE_ACTIVATED_RE.search(base)
+    if m:
+        return float(m.group(1))
+    m4 = _MOE_LLAMA4_RE.search(base)
+    if m4:
+        return float(m4.group(1))
+    return _param_b_from_name(base)
+
+
+# edge / dense 的分界参数量（B）。低于此算边缘设备模型。
+#
+# 依据现有 KNOWN_MODELS 的真实分布（size_b 为总参）：
+#   edge  : 1.0 / 1.0 / 3.0 / 3.8 / 3.97 / 4.0 / 7.0 / 8.03 / 9.0 / 14.0 / 20.91 / 31.58(MoE 激活 3B)
+#   dense : 22.0 / 27.0 / 31.27 / 70.0 / 108.6 / 116.83 / 123.0 / 123.61 / 401.6 / 405.0 / 560.52
+# 分界落在 20.91（edge）与 22.0（dense）之间 → 取 21.0。
+#
+# MoE 例外：Nemotron-Nano-30B-A3B 总参 31.58B 但激活仅 3B → 归 edge。
+# 所以 MoE 按**激活参**判定（与显存估算口径一致，见 vram_requirements 的 moe_weight_rule）。
+EDGE_MAX_B = 21.0
+
+# 人工有意与通用规则不同的存量条目（repo → 分类）。
+#
+# 这些是 review 时按「家族定位」而不是「参数量」定的，启发式推不出来：
+#   Llama-4-Maverick/Scout  → 旗舰模型（激活 17B 但总参 400B+）归 dense
+#   Mistral-Large / Small-3  → 名字里没有参数量，抠不到，按家族定位归 dense
+#   Nemotron-3-Super-120B    → 总参 123B 归 dense（虽然激活仅 12B）
+#   gemma-2-9b-it            → 早期按 gemma-2 家族整体归 dense（gemma-3-9b 是 edge）
+#
+# 加进来是为了让「存量数据 = 人工结论」这件事有据可查，而不是靠启发式碰运气。
+CATEGORY_OVERRIDES = {
+    "meta-llama/Llama-4-Maverick-17B-128E-Instruct": "international-dense",
+    "meta-llama/Llama-4-Scout-17B-16E-Instruct": "international-dense",
+    "mistralai/Mistral-Large-Instruct-2407": "international-dense",
+    "mistralai/Mistral-Small-3": "international-dense",
+    "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16": "international-dense",
+    "google/gemma-2-9b-it": "international-dense",
+}
+
+# MoE 命名形态里的激活参：
+#   -A3B / -A12B / -A55B   （Qwen3 / Nemotron / DeepSeek 风格）
+#   -17B-128E              （Llama 4 风格：激活参 + 专家数）
+_MOE_ACTIVATED_RE = re.compile(r"-A(\d+(?:\.\d+)?)B\b", re.IGNORECASE)
+_MOE_LLAMA4_RE = re.compile(r"-(\d+(?:\.\d+)?)B-\d+E\b", re.IGNORECASE)
+
+
 def guess_category(model_id: str, pipeline_tag: str) -> str:
-    """映射到 8 大类。基于 namespace + base name 启发式。"""
+    """映射到 9 大类。基于 namespace + 命名 + pipeline_tag 启发式。
+
+    顺序有讲究：**先判功能类（embedding/reranker/code/vision），再判推理类，
+    最后才按 namespace 分国内/国际**。反过来的话 embedding 模型会因为名字里
+    带 "embed" 但 namespace 是 BAAI（国内）而被误判成通用模型。
+
+    返回值保证落在 VALID_CATEGORIES 内 —— 见 VALID_CATEGORIES 的说明。
+    """
+    org = model_id.split("/", 1)[0]
     base = model_id.split("/", 1)[1].lower()
-    if pipeline_tag == "sentence-similarity" or "embed" in base or "gte-" in base:
+    name = model_id.lower()
+
+    # 人工有意为之的例外优先于启发式
+    override = CATEGORY_OVERRIDES.get(model_id)
+    if override:
+        return override
+
+    # ---- 1. 功能类：靠命名（比 pipeline_tag 更可靠，HF 的 tag 常缺失）----
+    if pipeline_tag == "sentence-similarity" or pipeline_tag == "text-ranking":
+        return "reranker" if pipeline_tag == "text-ranking" else "embedding"
+    if "reranker" in base or "rerank" in base:
+        return "reranker"
+    if "embed" in base or "gte-" in base or "-e5-" in base or "e5-" in base:
         return "embedding"
-    if pipeline_tag == "image-text-to-text" or "-vl" in base or "-vision" in base or "-ocr" in base:
+    # sentence-transformers 整库都是向量模型（名字里不一定带 embed）
+    if org == "sentence-transformers":
+        return "embedding"
+    # bge-* 是 BAAI 的向量模型系列，但名字里没有 "embed"（bge-m3 / bge-base-zh-v1.5）
+    if base.startswith("bge-") or base.startswith("bge_"):
+        return "embedding"
+    if pipeline_tag == "image-text-to-text" or any(
+        k in base for k in ("-vl", "-vision", "-ocr", "-vlm")
+    ):
+        return "vision"
+    # 视觉模型的名字不一定带 -vl：InternVL / MiniCPM-V / llava / Florence / Cosmos
+    # / diffusiongemma / idefics / paligemma / pixtral / mllama
+    if any(k in base for k in (
+        "internvl", "minicpm-v", "llava", "florence", "cosmos", "diffusiongemma",
+        "idefics", "paligemma", "pixtral", "mllama", "got-ocr", "qwen2-vl", "qwen2.5-vl",
+        "hunyuanocr", "hunyuan-ocr", "gemma-4-26b", "gemma-4b",
+    )):
         return "vision"
     if "coder" in base or "code" in base or "starcoder" in base:
         return "code"
-    if "deepseek-r1" in base or "qwq" in base or "deepseek-v4" in base or "r1" in base.split("-")[-1]:
-        return "domestic-reasoning" if any(c in model_id for c in ("Qwen", "deepseek", "THUDM", "moonshotai")) else "domestic-reasoning"
-    if any(t in model_id for t in ("Qwen", "deepseek-ai", "THUDM", "moonshotai", "MiniMaxAI", "inclusionAI", "tencent", "Hunyuan", "01-ai", "zhipuai")):
+
+    # ---- 2. 推理类（国内厂商的 reasoning 模型）----
+    reasoning_markers = (
+        "deepseek-r1", "qwq", "glm-z1", "magistral", "hunyuan-a13b",
+    )
+    if any(k in name for k in reasoning_markers):
+        return "domestic-reasoning"
+    # "-r1" 结尾或 "-reasoning" 结尾
+    if re.search(r"[-_]r1\b", base) or "reasoning" in base:
+        return "domestic-reasoning" if org in DOMESTIC_NS else "international-dense"
+
+    # ---- 3. 按 namespace 分国内 / 国际 ----
+    if org in DOMESTIC_NS:
         return "domestic-general"
-    if any(t in model_id for t in ("meta-llama", "google", "mistralai", "microsoft", "EleutherAI", "apple", "CohereLabs", "NousResearch")):
-        return "international-edge" if re.search(r"(\d+(\.\d+)?)[bB]\b", base) and float(re.search(r"(\d+(\.\d+)?)[bB]\b", base).group(1)) < 20 else "international-dense"
-    if pipeline_tag == "text-to-image":
-        return "image-generation"
-    return "domestic-general"
+    if org in INTERNATIONAL_NS:
+        # 参数量决定 edge / dense；抠不到参数量（Embedding 之外的冷门模型）
+        # 一律按 edge（更保守：不会把跑不动的模型标成 dense）
+        size = _effective_b_for_tier(base)
+        if size is None:
+            return "international-edge"
+        return "international-edge" if size < EDGE_MAX_B else "international-dense"
+
+    # ---- 4. 未知 namespace：按 pipeline_tag 兜底，绝不返回表外分类 ----
+    fallback = CATEGORY_BY_TAG.get(pipeline_tag, "domestic-general")
+    return fallback if fallback in VALID_CATEGORIES else "domestic-general"
 
 
 def guess_size_b(model_id: str) -> str:
