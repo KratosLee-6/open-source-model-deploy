@@ -31,11 +31,11 @@ EXPECT_RETIRED = 1
 EXPECT_DIST = {
     "code": 9,
     "decision": 12,
-    "domestic-general": 50,
+    "domestic-general": 49,
     "domestic-reasoning": 10,
     "embedding": 33,
     "international-dense": 13,
-    "international-edge": 15,
+    "international-edge": 16,
     "reranker": 2,
     "vision": 24,
 }
@@ -158,8 +158,8 @@ for i in sorted(set(imgs)):
 
 # ---- 10. 版本一致性 ----
 from src import __version__  # noqa: E402
-ck("__version__ = 1.4.2", __version__ == "1.4.2", f"实际 {__version__}")
-ck("README 标题区写 v1.4.2", "**v1.4.2**（2026-10-31 发布）" in README)
+ck("__version__ = 1.4.3", __version__ == "1.4.3", f"实际 {__version__}")
+ck("README 标题区写 v1.4.3", "**v1.4.3**（2026-10-31 发布）" in README)
 ck("README 不再写「开发中」", "开发中" not in README)
 ck("README 不再混入旧版实测段", "实测 6-9" not in README and "35.85 tokens/秒" not in README)
 

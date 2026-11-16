@@ -2,9 +2,9 @@
 
 > 把「模型规格 / 硬件报价 / 部署方式」做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
 
-[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.2-002FA7)](docs/releases/v1.4.2.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.3-002FA7)](docs/releases/v1.4.3.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.4.2**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **部署自检 verify（含答案正确性）** · JEV 决策接口真机修正 · 真实成本对比
+**v1.4.3**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **分类启发式修正（白名单 + 功能优先）** · **部署自检 verify（含答案正确性）** · JEV 决策接口真机修正 · 真实成本对比
 
 > 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
 
@@ -186,12 +186,12 @@ Jev 记录在 [`references/jev-integration.md`](references/jev-integration.md)�
 
 | 分类 | 模型示例 |
 | --- | --- |
-| **国内通用** (50) | DeepSeek-V3 / V4.1-Flash / V2.5 · GLM-5.3 / 4.5 · Kimi-K3 / K2 · MiMo-V2.6 全系 · Qwen3-235B / 32B / 14B |
+| **国内通用** (49) | DeepSeek-V3 / V4.1-Flash / V2.5 · GLM-5.3 / 4.5 · Kimi-K3 / K2 · MiMo-V2.6 全系 · Qwen3-235B / 32B / 14B |
 | **国内推理** (10) | DeepSeek-R1 全系（含 Distill）· GLM-Z1-32B · QwQ-32B |
 | **代码专用** (9) | Qwen3-Coder-480B / 30B · Qwen2.5-Coder-32B / 14B / 7B · DeepSeek-Coder-V2 · Codestral-22B |
 | **视觉多模态** (24) | Qwen2.5-VL-72B / 7B · Qwen3-VL-32B · InternVL3-78B / 8B · LLaVA-OneVision · Florence-2-base |
 | **国际密集** (13) | Llama-4-Maverick / Scout · Llama-3.3-70B · Mistral-Large-2 · Gemma-4-31B |
-| **国际边缘** (15) | Llama-3.2-1B / 3B · Gemma-3-9B / 4B · Phi-4 / mini · **Strands Decider 2B** |
+| **国际边缘** (16) | Llama-3.2-1B / 3B · Gemma-3-9B / 4B · Phi-4 / mini · **Strands Decider 2B** |
 | **Embedding** (33) | BGE 全家桶（M3 / large / base / small 中英）· E5 large/base/small · GTE multilingual / large-en · Nomic · **EmbeddingGemma 2 / 300M** |
 | **Reranker** (2) | BGE-Reranker-large · BGE-Reranker-v2-m3 |
 | **决策模型 / System One** (12) | **AutoTrust JEV-9B / 27B / 35B** · **Cloudflare Clef 27B / Flash 9B** · **Laya 0.4B / 多语言版** · **OpenJEV 27B** · **Juspay XOR 35B** · **THX-01 0.32B** · **Decider 2B** · **Strands Decider 2B** |
@@ -457,6 +457,7 @@ python scripts/regen_screenshots.py           # 重拍实测截图
 
 | 版本 | 日期 | 模型数 | 重点 |
 | --- | --- | ---: | --- |
+| **v1.4.3** | 2026-10-31 | 168 | **分类启发式修正** `auto_fetch_models.py`：`VALID_CATEGORIES` 白名单挡住表外分类（原来能返回不存在的 `image-generation`）· 修 `pythia-160m` 被判 dense · 修 `stabilityai/*` 落到国内 · 删死代码 · 功能类判定提到 namespace 之前 · 修一条真值错标（NVIDIA → domestic）· **35 个新测试**（用 169 条真实分类当基准）· 223 passed |
 | **v1.4.2** | 2026-10-31 | 168 | **部署自检** `osm-deploy verify`：L1 连通性 → L2 返回结构 → **L3 已知答案 golden set**。没有 golden set 的模型明确标「答案未验证」，不把「服务能跑」当「部署正确」· 修了一个真 bug（noul 期望 False 时该用 1-p 比阈值）· 11 个新测试 |
 | **v1.4.1** | 2026-10-31 | 168 | **真机验证修正**：JEV 决策不走 `/v1/decide`（那是图像接口，vLLM 上 404），真实入口是 `/v1/completions` + `allowed_token_ids` + `logprobs`，model 必须填 LoRA 名 `jev-decision`，校准在客户端做 · 硬约束 choice≤16 / score≤6 · +8 个测试 |
 | **v1.4.0** | 2026-10-31 | 168 | **真实成本对比** `osm-deploy cost`：按真实显存需求匹配卡型 · 本地整机 vs 云租月费 + 回本周期 · **每个价格带出处+日期，云租给区间不给单点** · 无公开报价的卡不编数字 · 27 个新测试 |
