@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generator": "open-source-model-deploy v1.4.2",
-  "generated_at": "2026-10-31T17:41:28Z",
+  "generator": "open-source-model-deploy v1.4.3",
+  "generated_at": "2026-11-23T05:59:59Z",
   "model_count": 168,
   "quant_ladder": [
     "Q4_K_M",
