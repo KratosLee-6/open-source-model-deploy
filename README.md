@@ -1,52 +1,19 @@
 # 开源大模型部署可行性鉴别工具
 
-> 把「模型规格 / 硬件报价 / 部署方式」做成**实时拉取**的动态数据层，让 Agent 每次询问都拿到当下最准确的信息，而不是过期快照。
+**别再翻三个月前的教程猜自己的机器能跑什么。** 一条命令给你三个答案：能跑哪个开源大模型、显存差多少、启动命令怎么写——数字从 HuggingFace 和最新报价现拉。
 
 [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/KratosLee-6/badge.svg)](https://hub.xerj.org/contributors/KratosLee-6) [![version](https://img.shields.io/badge/version-v1.4.3-002FA7)](docs/releases/v1.4.3.md) [![models](https://img.shields.io/badge/models-168%20%E5%9C%A8%E6%9E%B6-002FA7)](references/vram-requirements.md) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
-**v1.4.3**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · **分类启发式修正（白名单 + 功能优先）** · **部署自检 verify（含答案正确性）** · JEV 决策接口真机修正 · 真实成本对比
+**v1.4.3**（2026-10-31 发布）· 168 个在架模型 · 9 大分类 · 分类启发式修正（白名单 + 功能优先） · 部署自检 verify（含答案正确性） · JEV 决策接口真机修正 · 真实成本对比
 
-> 📌 **本项目已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录** —— 开源 AI 搜索引擎（7.1M stars 覆盖 / 17.5k stars）。Agent 做部署选型时可检索本项目的实现。
+- 🖥️ **先查手上有什么卡** —— `osm-deploy detect` 认 NVIDIA / AMD / Apple Silicon，直接列出这台机器能部署的模型；跑不动的写明差多少显存
+- 🧮 **显存按实测参数算** —— 每个模型 6 档量化都有数值和单卡 / 多卡判定；MoE 按总参算，不拿激活参数冒充总参
+- 🚀 **启动脚本一句话生成** —— `osm-deploy deploy qwen3-32b` 输出 vLLM / SGLang / Ollama / llama.cpp / Transformers 的可执行命令
+- 💰 **买之前先算账** —— `osm-deploy cost` 拿本地整机投入对云租月费、算回本周期；每个价格带出处和日期，没公开报价的卡不编数字
+- 🔌 **三种入口** —— CLI 给人（`osm-deploy`）、MCP Server 给 Agent（`osm-mcp`）、HTTP API 给服务（`osm-http`）
+- 🔄 **数据自己会更新** —— 每周从 HuggingFace API 补新模型；CI 卡口挡住「总参 / 激活参」这类会让人买错卡的错数
 
----
-
-## ⚠️ 如果你只用 v1.0.2 的结论买过硬件，请先看这段
-
-v1.0.2 对 MoE 模型的显存是**按激活参数算的**，这是错的：
-
-> MoE 的 expert 权重**全部常驻显存**，稀疏激活只降低计算量（FLOPs），不降低权重占用。
-
-实测后果（24GB RTX 4090 场景）：
-
-| 模型 | 总参 / 激活 | v1.0.2 算出的显存 | 当时的判定 | 实际 Q4 需求 |
-| --- | --- | ---: | --- | ---: |
-| Kimi-K2 | 1000B / 32B | 23.0 GB | `tight` → **建议能跑** | **720 GB** |
-| Qwen3-235B-A22B | 235B / 22B | 15.8 GB | `fits` → **建议能跑** | **169 GB** |
-| GLM-4.5 | 355B / 32B | 23.0 GB | `tight` → **建议能跑** | **256 GB** |
-
-v1.0.3 已修正为按总参计算。**完整复盘见 [`docs/moe-vram-pitfall.md`](docs/moe-vram-pitfall.md)**，
-它同时也是一份可迁移的判据清单（如果你也在做「模型 × 硬件」匹配，那篇能直接用）。
-
----
-
-## 🌟 核心亮点
-
-- **🧠 168 个在架模型 · 9 大分类**（另 1 个已退役标注，共 169 条记录）——
-  DeepSeek / Qwen3 / MiMo / GLM / Kimi / Llama-4 / Mistral / Gemma / Phi 全系，
-  加代码 / 视觉 / Embedding / Reranker 专用模型
-- **🧮 结构化显存需求**——每个模型 × 6 档量化都有显存数值和可行性判定，
-  `list_models?max_vram_gb=24` 一次就能筛出消费级显卡跑得动的清单
-- **🔌 三通道**——CLI（开发者）/ MCP Server（Agent 原生）/ HTTP API（跨语言远程）
-- **🖥️ 硬件自动检测**——跨平台识别 NVIDIA / AMD / Apple Silicon，推荐可部署模型
-- **🚀 一键部署脚本**——自动生成 vLLM / SGLang / Ollama / llama.cpp / Transformers 启动命令
-- **🧠 决策模型专用部署**——12 个 System One 模型不是聊天模型，走独立配方：给出**真实接口**（`/v1/completions` + logprobs / `/v1/decide` / `/v1/systemone`）、正确端口、adapter 参数和**能直接跑的真实请求**，详见 [`references/decision-models.md`](references/decision-models.md)
-- **🎯 决策模型统一客户端**——`osm-deploy ask` 用同一套参数（`noul` / `choice` / `score`）调所有 12 个决策模型，自动处理「单题接口拆多次请求 vs 多题接口一次问完」，返回归一化的校准概率
-- **🔍 部署自检** `osm-deploy verify`——三层验证：服务在不在、返回字段对不对、**答案对不对**（跑已知答案的 golden set）。没有 golden set 的模型会明确标注「答案未验证」，不把「服务能跑」包装成「部署正确」
-- **💰 真实成本对比**——`osm-deploy cost` 按真实显存需求匹配卡型，算本地整机投入 vs 云租月费 + 回本周期。**每个价格带出处和时间，云租给区间（现货/按需）而不是单点**；没公开报价的卡不编数字
-- **🩺 数据可信度有卡口**——模型库体检（`lint_models.py`）+ README 事实校验
-  （`check_readme_facts.py`）作为 CI 卡口，挡住「总参 / 激活参」这类会导致错误采购建议的数据错误
-- **🌐 国内友好**——自动 fallback 到 `hf-mirror.com` 镜像
-- **💾 智能缓存**——TTL=24h，零额外依赖（纯 Python 标准库）
+> 📌 已被 [XERJ Corpus Hub](https://hub.xerj.org/contributors/KratosLee-6) 收录（开源 AI 搜索引擎，7.1M stars 覆盖）—— Agent 做部署选型时可以检索到这个项目。
 
 ---
 
@@ -67,6 +34,44 @@ osm-deploy assess deepseek-v3
 # 一键生成部署脚本
 osm-deploy deploy qwen3-32b
 ```
+
+---
+
+## ⚠️ 照 v1.0.2 的结论买过硬件？这段一定读
+
+v1.0.2 对 MoE 模型的显存是**按激活参数算的**，这是错的：
+
+> MoE 的 expert 权重**全部常驻显存**，稀疏激活只降低计算量（FLOPs），不降低权重占用。
+
+实测后果（24GB RTX 4090 场景）：
+
+| 模型 | 总参 / 激活 | v1.0.2 算出的显存 | 当时的判定 | 实际 Q4 需求 |
+| --- | --- | ---: | --- | ---: |
+| Kimi-K2 | 1000B / 32B | 23.0 GB | `tight` → **建议能跑** | **720 GB** |
+| Qwen3-235B-A22B | 235B / 22B | 15.8 GB | `fits` → **建议能跑** | **169 GB** |
+| GLM-4.5 | 355B / 32B | 23.0 GB | `tight` → **建议能跑** | **256 GB** |
+
+v1.0.3 已修正为按总参计算。**完整复盘见 [`docs/moe-vram-pitfall.md`](docs/moe-vram-pitfall.md)**，
+它同时也是一份可迁移的判据清单（如果你也在做「模型 × 硬件」匹配，那篇能直接用）。
+
+---
+
+## 🧭 细一点的地方
+
+- **🧠 168 个在架模型 · 9 大分类**（另 1 个已退役标注，共 169 条记录）——
+  DeepSeek / Qwen3 / MiMo / GLM / Kimi / Llama-4 / Mistral / Gemma / Phi 全系，
+  加代码 / 视觉 / Embedding / Reranker 专用模型
+- **🧩 决策模型不是聊天模型**——12 个 System One 走独立配方：真实接口
+  （`/v1/completions` + logprobs / `/v1/decide` / `/v1/systemone`）、正确端口、adapter
+  参数和能直接跑的请求，详见 [`references/decision-models.md`](references/decision-models.md)
+- **🎯 `osm-deploy ask`**——一套参数（`noul` / `choice` / `score`）调完 12 个决策模型，
+  单题接口拆多次、多题接口一次问完都自动处理，返回归一化的校准概率
+- **🔍 `osm-deploy verify`**——三层自检：服务在不在、返回字段对不对、**答案对不对**
+  （跑已知答案的 golden set）。没有 golden set 的模型明确标「答案未验证」，
+  不把「服务能跑」包装成「部署正确」
+- **🩺 数据有卡口**——模型库体检（`lint_models.py`）+ README 事实校验
+  （`check_readme_facts.py`）当 CI 闸门，挡住会导致错误采购建议的错数
+- **🌐 国内友好**——拉不到就自动 fallback 到 `hf-mirror.com`；结果缓存 24h，纯标准库，零额外依赖
 
 ---
 
